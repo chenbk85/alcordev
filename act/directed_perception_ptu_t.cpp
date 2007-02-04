@@ -1,6 +1,6 @@
 #include "directed_perception_ptu_t.h"
 //impl
-#include "detail\ltiDirectedPerceptionPTU.h"
+#include "detail\lti\ltiDirectedPerceptionPTU.h"
 #include <boost\timer.hpp>
 #include "alcor\core\config_parser_t.h"
 //---------------------------------------------------------------------------
