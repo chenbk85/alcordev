@@ -1,0 +1,100 @@
+#ifndef bumblebee_driver_t_H_INCLUDED
+#define bumblebee_driver_t_H_INCLUDED
+//---------------------------------------------------------------------------
+#include "alcor/sense/i_device_driver.h"
+//---------------------------------------------------------------------------
+#include "alcor/core/core.h"
+//---------------------------------------------------------------------------
+#include <boost/shared_ptr.hpp>
+//---------------------------------------------------------------------------
+namespace all{ 
+	namespace sense {
+	///A Point Grey Bumblebee digital camera.
+	class bumblebee_driver_t;
+	class bumblebee_parameters_t;
+
+  namespace detail{
+  class bumblebee_driver_impl;
+  }
+
+	struct left_img_t {};
+	struct right_img_t{};
+	struct depth_img_t{};
+
+  static const left_img_t   left_img    = left_img_t ();
+  static const right_img_t  right_img   = right_img_t ();
+  static const depth_img_t  depth_img   = depth_img_t ();
+}
+	}
+//---------------------------------------------------------------------------
+///Structure for defining the open() parameters of the camera.
+class all::sense::bumblebee_parameters_t
+{
+public:
+	///Constructor. Add here the parameters for the open().
+  bumblebee_parameters_t():
+      _unit_number(0)
+	{
+		// parameters initialization default?
+		_unit_number = 0;		
+	}
+
+	///Parameters
+	unsigned int  _unit_number;
+
+  ///
+  std::string   _digiclopsini;
+  /// 
+  std::string   _triclopsini;
+  ///
+  std::string   _name;    
+  ///
+  void load(const std::string &);
+
+};
+
+//---------------------------------------------------------------------------
+class all::sense::bumblebee_driver_t : public i_device_driver
+	{
+public:
+	///Constructor.
+	bumblebee_driver_t();
+
+	///Inherited
+	bool open(const std::string &);
+
+	///Inherited
+	bool close();
+
+	///Grabs Stereo Color Image.
+	bool grab();
+
+  ///
+  long serialnum () const;
+	///
+	size_t nrows() const;
+	///
+	size_t ncols() const;
+  ///
+  float focal() const;
+  ///
+  float center_row() const;
+  ///
+  float center_col() const;
+  ///
+  std::string name() const;
+
+	///
+  all::core::uint8_sarr  get_color_buffer(left_img_t ,  bool shared = true);
+	///
+  all::core::uint8_sarr  get_color_buffer(right_img_t , bool shared = true);
+	///
+  all::core::single_sarr get_depth_buffer(bool shared = true);
+
+protected:
+	///PIMPL Idiom
+  boost::shared_ptr<detail::bumblebee_driver_impl> impl;
+  bumblebee_parameters_t params;
+	};
+//---------------------------------------------------------------------------
+#endif //bumblebee_t_H_INCLUDED
