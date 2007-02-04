@@ -15,8 +15,8 @@ namespace all
 namespace math
 {
 
-typedef std::vector<point2d>	point2dVect;
-typedef std::vector<pose2d>		pose2dVect;
+typedef std::vector<point2d>	        point2dVect;
+typedef std::vector<pose2d>		    pose2dVect;
 
 typedef point2dVect::iterator			point2dVectIt;
 typedef point2dVect::const_iterator		point2dVectCit;
