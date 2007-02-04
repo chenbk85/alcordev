@@ -55,23 +55,30 @@ void all::sense::bumblebee_ipc_t::run_thread()
 	//
     //--------------------------------------------------------------------
     std::string camname = bee->name();
-    //////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////
+//names: hardcoded this class serves only bumblebees...
+    std::string info_name       = camname + "_IPC_bumblebee_info";
+    std::string left_rgb_name   = camname + "_IPC_bumblebee_rgb_left";
+    std::string right_rgb_name  = camname + "_IPC_bumblebee_rgb_right";
+    std::string xyz_name        = camname + "_IPC_bumblebee_xyz";
+//////////////////////////////////////////////////////////////////////
     //RGB INFO
     core::ipc_serializable_t<core::image_info_t> image_info(core::open_write,
-                                        "_ipc_bumblebee_rgb_info_");
+                                                            info_name);
     //
     image_info.get_reference().height       =  bee->nrows();
     image_info.get_reference().width        =  bee->ncols();
     image_info.get_reference().channels     =  3;
+    //unsueful. .... ot really??
     image_info.get_reference().memory_size  =  bee->nrows()* bee->ncols() *3;
     image_info.get_reference().focal        =  bee->focal();
     //////////////////////////////////////////////////////////////////////
-    //RGB IMAGE
-    ipc::shared_memory_object::remove("ipc_bumblebee_rgb");
+    //RIGHT RGB IMAGE
+    ipc::shared_memory_object::remove( right_rgb_name.c_str() );
     //Create a shared memory object.
     ipc::shared_memory_object shm_rgb
          (ipc::open_or_create                  //only open
-          ,"ipc_bumblebee_rgb"              //name
+          ,right_rgb_name.c_str()             //name
           ,ipc::read_write  //read-write mode
          );
     //Set the size of the shared memory segment
@@ -84,11 +91,11 @@ void all::sense::bumblebee_ipc_t::run_thread()
          );
     //////////////////////////////////////////////////////////////////////
     //XYZ IMAGE
-	ipc::shared_memory_object::remove("ipc_bumblebee_xyz");
+    ipc::shared_memory_object::remove(xyz_name.c_str());
     //Create a shared memory object.
 	ipc::shared_memory_object shm_xyz
          (ipc::open_or_create                  //only open
-          ,"ipc_bumblebee_xyz"              //name
+          ,xyz_name.c_str()              //name
 		      ,ipc::read_write  //read-write mode
          );
     //Set the size of the shared memory segment
@@ -101,8 +108,8 @@ void all::sense::bumblebee_ipc_t::run_thread()
          );
 
     //Get the address of the mapped region
-    core::uint8_ptr  rgb_addr  = (core::uint8_ptr)rgb_region.get_address();
-    core::single_ptr xyz_addr  = (core::single_ptr)xyz_region.get_address();
+    core::uint8_ptr  rgb_addr  = (core::uint8_ptr)  rgb_region.get_address();
+    core::single_ptr xyz_addr  = (core::single_ptr) xyz_region.get_address();
     ///////////////////////////////////////////////////////////////////////
   const std::size_t    rgb_imag_size      = bee->ncols() * bee->nrows() * 3;
 
@@ -132,7 +139,7 @@ void all::sense::bumblebee_ipc_t::run_thread()
 		Sleep(25);
 		}//out of thread loop...
 	///////////////////////////////////////////////////////////////////////
-	ipc::shared_memory_object::remove("ipc_bumblebee_rgb");
-	ipc::shared_memory_object::remove("ipc_bumblebee_xyz");
+  ipc::shared_memory_object::remove(right_rgb_name.c_str());
+  ipc::shared_memory_object::remove(xyz_name.c_str());
 	}
 //-------------------------------------------------------------------++

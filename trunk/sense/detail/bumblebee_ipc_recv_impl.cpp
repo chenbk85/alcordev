@@ -97,17 +97,17 @@ class bumblebee_ipc_recv_impl
 //////////////////////////////////////////////////////////////////
     public:
 	///
-	std::auto_ptr<ipc::shared_memory_object>	_rgb_shm;
+	std::auto_ptr<ipc::shared_memory_object>	    _rgb_shm;
 	///
-	std::auto_ptr<ipc::mapped_region>			_rgb_region;
+	std::auto_ptr<ipc::mapped_region>			        _rgb_region;
+  ///
+  std::auto_ptr<ipc::shared_memory_object>    _xyz_shm;
     ///
-    std::auto_ptr<ipc::shared_memory_object>    _xyz_shm;
-    ///
-	std::auto_ptr<ipc::mapped_region>			_xyz_region;
+	std::auto_ptr<ipc::mapped_region>			        _xyz_region;
 	///
 	//std::auto_ptr<ipc::named_mutex>				_mutex_ptr;	
     ///
-    core::image_info_t                          image_info_;
+  core::image_info_t                          image_info_;
 	};
 //-------------------------------------------------------------------------++
 	}}}

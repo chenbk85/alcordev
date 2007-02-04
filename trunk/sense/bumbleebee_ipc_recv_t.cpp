@@ -6,48 +6,48 @@
 ///impl
 #include "detail/bumblebee_ipc_recv_impl.cpp"
 //-------------------------------------------------------------------------++
-#include <boost/type_traits/has_trivial_assign.hpp>
-//-------------------------------------------------------------------------++
-namespace all { 
-	namespace core { 
-		namespace detail {
-//TODO:is this a nice solution?
-//-------------------------------------------------------------------------++
-template<typename I1, typename I2, bool b>
-I2 copy_imp(I1 first, I1 last, I2 out, const boost::integral_constant<bool, b>&)
-{
-   while(first != last)
-   {
-      *out = *first;
-      ++out;
-      ++first;
-   }
-   return out;
-}
-//-------------------------------------------------------------------------++
-template<typename T>
-T* copy_imp(const T* first, const T* last, T* out, const boost::true_type&)
-{
-   memcpy(out, first, (last-first)*sizeof(T));
-   return out+(last-first);
-}
-//-------------------------------------------------------------------------++
-//-------------------------------------------------------------------------++
-}//namespace detail
-//-------------------------------------------------------------------------++
-template<typename I1, typename I2>
-inline I2 copy(I1 first, I1 last, I2 out)
-{
-   //
-   // We can copy with memcpy if T has a trivial assignment operator,
-   // and if the iterator arguments are actually pointers (this last
-   // requirement we detect with overload resolution):
-   //
-   typedef typename std::iterator_traits<I1>::value_type value_type;
-   return detail::copy_imp(first, last, out, boost::has_trivial_assign<value_type>());
-}
-//-------------------------------------------------------------------------++
-}}//namespace all::core
+//#include <boost/type_traits/has_trivial_assign.hpp>
+////-------------------------------------------------------------------------++
+//namespace all { 
+//	namespace core { 
+//		namespace detail {
+////TODO:is this a nice solution?
+////-------------------------------------------------------------------------++
+//template<typename I1, typename I2, bool b>
+//I2 copy_imp(I1 first, I1 last, I2 out, const boost::integral_constant<bool, b>&)
+//{
+//   while(first != last)
+//   {
+//      *out = *first;
+//      ++out;
+//      ++first;
+//   }
+//   return out;
+//}
+////-------------------------------------------------------------------------++
+//template<typename T>
+//T* copy_imp(const T* first, const T* last, T* out, const boost::true_type&)
+//{
+//   memcpy(out, first, (last-first)*sizeof(T));
+//   return out+(last-first);
+//}
+////-------------------------------------------------------------------------++
+////-------------------------------------------------------------------------++
+//}//namespace detail
+////-------------------------------------------------------------------------++
+//template<typename I1, typename I2>
+//inline I2 copy(I1 first, I1 last, I2 out)
+//{
+//   //
+//   // We can copy with memcpy if T has a trivial assignment operator,
+//   // and if the iterator arguments are actually pointers (this last
+//   // requirement we detect with overload resolution):
+//   //
+//   typedef typename std::iterator_traits<I1>::value_type value_type;
+//   return detail::copy_imp(first, last, out, boost::has_trivial_assign<value_type>());
+//}
+////-------------------------------------------------------------------------++
+//}}//namespace all::core
 //-------------------------------------------------------------------------++
 
 ////-------------------------------------------------------------------++
@@ -70,7 +70,31 @@ bool all::sense::bumblebee_ipc_recv_t::open_xyz(const std::string& in_name)
 	{
 	return impl_->open_xyz(in_name);
 	}
+////#####################################################################
+	///Inherited
+bool bumblebee_ipc_recv_t::open(const std::string &)
+{
+    //std::string info_name       = camname + "_IPC_bumblebee_info";
+    //std::string left_rgb_name   = camname + "_IPC_bumblebee_rgb_left";
+    //std::string right_rgb_name  = camname + "_IPC_bumblebee_rgb_right";
+    //std::string xyz_name        = camname + "_IPC_bumblebee_xyz";
+}
 ////-------------------------------------------------------------------++
+///
+all::core::uint8_sarr  bumblebee_ipc_recv_t::get_color_buffer(left_img_t ,  bool shared = true)
+{
+}
+////-------------------------------------------------------------------++
+///
+all::core::uint8_sarr  bumblebee_ipc_recv_t::get_color_buffer(right_img_t , bool shared = true)
+{
+}
+////-------------------------------------------------------------------++
+///
+all::core::single_sarr bumblebee_ipc_recv_t::get_depth_buffer(bool shared = true)
+{
+}
+////#####################################################################
 void all::sense::bumblebee_ipc_recv_t::use_internal_buffers()
 	{
 	//right_image_buf.reset(new core::byte_t[impl_->_rgb_region->get_size()]);

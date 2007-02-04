@@ -20,7 +20,7 @@ struct image_info_t
 	int channels;
   ///
   double focal;
-  ///
+  ///what for?
   std::size_t memory_size;
 	///	
 	image_info_t& operator=( const image_info_t& );
