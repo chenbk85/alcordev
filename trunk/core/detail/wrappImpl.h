@@ -16,6 +16,10 @@ class wrappImpl{
 public:
 	wrappImpl();
 	wrappImpl(const char* f);
+
+  ///Andrea:: d'tor anyone?
+  ~wrappImpl();
+
 	int create(const char* f);
 	bool Load(const char* f); ///< Load an ini file in the dictionary
 	int Size(); ///< returns how many entries there are in the dictionary
@@ -29,8 +33,9 @@ public:
 	double GetDouble(char* key, double not_def);
 	int GetBool(char* key, int not_def);
 	void Save(char* f); ///< save the dictionary in the ini file specified
+
 private:
-	dictionary *dict;
+	dictionary* dict;
 };
 //---------------------------------------------------------------------------
 #endif
