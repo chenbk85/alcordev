@@ -163,5 +163,6 @@ void all::sense::bumblebee_ipc_t::run_thread()
 	///////////////////////////////////////////////////////////////////////
   ipc::shared_memory_object::remove(right_rgb_name.c_str());
   ipc::shared_memory_object::remove(xyz_name.c_str());
+  ipc::shared_memory_object::remove(left_rgb_name.c_str());
 	}
 //-------------------------------------------------------------------++

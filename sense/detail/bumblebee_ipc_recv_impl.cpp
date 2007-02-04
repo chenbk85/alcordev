@@ -8,6 +8,7 @@
 //-------------------------------------------------------------------------++
 #include "alcor/core/image_info_t.h"
 #include "alcor/core/ipc_serializable_t.h"
+#include "alcor/core/core.h"
 //-------------------------------------------------------------------------++
 namespace ipc=boost::interprocess;
 //-------------------------------------------------------------------------++
@@ -26,6 +27,12 @@ struct bumblebee_ipc_recv_impl
 	~bumblebee_ipc_recv_impl()
 		{
 		};
+
+  void allocate_buffers()
+  {
+    //TODO:
+    
+  }
 
   bool open_info(const std::string& in_name)
   {     
@@ -134,6 +141,14 @@ struct bumblebee_ipc_recv_impl
 		}//catch block
         return true;
         }
+
+  ///
+		///
+  all::core::uint8_sarr   left_image_sptr;		
+	/////
+  all::core::uint8_sarr   right_image_sptr;
+	///
+  all::core::single_sarr  depth_image_sptr;
 
 	///
 	std::auto_ptr<ipc::shared_memory_object>	    right_rgb_shm;
