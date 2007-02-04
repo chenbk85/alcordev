@@ -47,13 +47,13 @@ class all::sense::bumblebee_ipc_recv_t
 
     //NUOVA INTERFACCIA
     	///Inherited
-	//bool open(const std::string &);
-	/////
- // all::core::uint8_sarr  get_color_buffer(left_img_t ,  bool shared = true);
-	/////
- // all::core::uint8_sarr  get_color_buffer(right_img_t , bool shared = true);
-	/////
- // all::core::single_sarr get_depth_buffer(bool shared = true);
+	  bool open(const std::string &);
+	  ///
+    all::core::uint8_sarr  get_color_buffer(left_img_t ,  bool shared = true);
+	  ///
+    all::core::uint8_sarr  get_color_buffer(right_img_t , bool shared = true);
+	  ///
+    all::core::single_sarr get_depth_buffer(bool shared = true);
 
 		///deprecata
 		void use_internal_buffers();
@@ -76,9 +76,9 @@ class all::sense::bumblebee_ipc_recv_t
 		///
 		boost::shared_ptr<sense::detail::bumblebee_ipc_recv_impl> impl_;
 		///
-    boost::shared_array<core::uint8_t> left_image_buf;		
+    boost::shared_array<core::uint8_t>  left_image_buf;		
 		/////
-    boost::shared_array<core::uint8_t> right_image_sptr;
+    boost::shared_array<core::uint8_t>  right_image_sptr;
 		///
     boost::shared_array<core::single_t> depth_image_sptr;
 
