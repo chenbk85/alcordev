@@ -11,7 +11,7 @@
 //:errorFile_("errorFile.log",std::ios::out)
 
 iniWrapper::iniWrapper(){
-	wrImpl = new wrappImpl;
+	wrImpl.reset(new wrappImpl());
 };
 
 /*! 
@@ -20,9 +20,17 @@ iniWrapper::iniWrapper(){
 	\param f ini filename with extension
 */ 
 iniWrapper::iniWrapper(const char* f){
-	wrImpl = new wrappImpl(f);
+	wrImpl.reset(new wrappImpl(f) );
 };
 
+/*! 
+	iniWrapper try to parse the iniFile f in the dictionary.
+	If the file doesn't exist the constructor create an empty file named like f
+	\param f ini filename with extension
+*/ 
+iniWrapper::iniWrapper(const std::string& filepath){
+  wrImpl.reset( new wrappImpl(filepath.c_str()) );
+};
 /*! 
 	Load store an iniFile into the dictionary.
 	\param f ini filname with extension

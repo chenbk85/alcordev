@@ -11,6 +11,7 @@
 #pragma comment (lib,"iniwrapper.lib")
 //---------------------------------------------------------------------------
 #include <string>
+#include <memory>
 //---------------------------------------------------------------------------
 class	wrappImpl; ///< fwd
 //---------------------------------------------------------------------------
@@ -18,6 +19,7 @@ class	iniWrapper{
 public:
 	iniWrapper();
 	iniWrapper(const char* f);
+  iniWrapper(const std::string& filepath );
 
 	int		create(const char* f);
 
@@ -40,7 +42,7 @@ public:
 	void	  Save(char* f); ///< save the dictionary in the ini file specified
 
 private: 
-	wrappImpl* wrImpl;
+  std::auto_ptr<wrappImpl> wrImpl;
 };
 //---------------------------------------------------------------------------
 #endif

@@ -9,9 +9,19 @@
 #include "wrappImpl.h"
 #include <fstream>
 
-wrappImpl::wrappImpl(){
-
+wrappImpl::wrappImpl():dict(0)
+{
 };
+
+/*! 
+	DTOR
+*/ 
+wrappImpl::~wrappImpl()
+{
+  if (dict)
+    iniparser_free(dict);
+}
+
 /*! 
 	iniWrapper try to parse the iniFile f in the dictionary.
 	If the file doesn't exist the constructor create an empty file named like f
