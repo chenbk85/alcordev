@@ -44,7 +44,9 @@ struct bumblebee_ipc_recv_impl
     );
 
   }
-
+  /////////////////////////////////////////////////////////////////////////
+  //OPEN
+  ///////////////////////////////////////////////////////////////////////////
   bool open_info(const std::string& in_name)
   {     
     try {
@@ -153,7 +155,66 @@ struct bumblebee_ipc_recv_impl
         return true;
         }
 
-  ///
+  /////////////////////////////////////////////////////////////////////////
+  //GETTERS
+  ///////////////////////////////////////////////////////////////////////////  
+    bool get_color_(all::core::left_img_t, all::core::uint8_sarr arr)
+    {
+  		try 
+      {
+		  void * addr       = left_rgb_region->get_address();
+		  std::size_t size  = left_rgb_region->get_size();
+		  ///Write.....
+      memcpy(left_image_sptr.get(), (core::uint8_ptr)addr, size);
+      }//try_block
+
+		  catch(ipc::interprocess_exception &ex)
+      {
+			  std::cout << "Unexpected exception: " << ex.what() << std::endl;
+			  return false;
+		  }
+      arr = left_image_sptr;
+	    return true;
+    }
+
+
+    bool get_color_(all::core::right_img_t, all::core::uint8_sarr arr)
+    {
+  		try 
+      {
+		  void * addr       = right_rgb_region->get_address();
+		  std::size_t size  = right_rgb_region->get_size();
+		  ///Write.....
+      memcpy(right_image_sptr.get(), (core::uint8_ptr)addr, size);
+      }//try_block
+
+		  catch(ipc::interprocess_exception &ex)
+      {
+			  std::cout << "Unexpected exception: " << ex.what() << std::endl;
+			  return false;
+		  }
+      arr = right_image_sptr;
+	    return true;
+    }
+
+    bool get_depth_(all::core::single_sarr arr)
+    {
+		  try 
+      {
+	    void * addr       = xyz_region->get_address();
+	    std::size_t size  = xyz_region->get_size();
+      memcpy(depth_image_sptr.get(), (core::single_ptr)addr, size);
+		  } //try_block
+		  catch(ipc::interprocess_exception &ex)
+      {
+        std::cout << "get_internal_depth::Unexpected exception: " 
+            << ex.what() << std::endl;
+			  return   false;
+		  }
+      arr=depth_image_sptr;
+    return true;
+    }
+
 		///
   all::core::uint8_sarr   left_image_sptr;		
 	/////
