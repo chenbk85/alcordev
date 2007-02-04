@@ -126,6 +126,10 @@ void all::sense::bumblebee_ipc_t::run_thread()
 			  {
         memcpy(rgb_addr, bee->get_color_buffer(sense::right_img).get(), rgb_region.get_size() );
 			  }
+         //LEFT
+			  {
+        //memcpy(rgb_addr, bee->get_color_buffer(sense::right_img).get(), rgb_region.get_size() );
+			  }
         //-------------------------------------------------------------------
         //DMAP
         {

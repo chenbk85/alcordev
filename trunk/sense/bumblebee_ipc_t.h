@@ -41,7 +41,7 @@ class all::sense::bumblebee_ipc_t
     ///
     boost::scoped_ptr<bumblebee_driver_t> bee;
     ///
-    boost::scoped_ptr<boost::thread> thisthread; 
+    boost::scoped_ptr<boost::thread>      thisthread; 
     ///
 		volatile bool _running;
 	};
