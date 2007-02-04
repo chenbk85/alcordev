@@ -16,14 +16,6 @@ namespace all{
   namespace detail{
   class bumblebee_driver_impl;
   }
-
-	//struct left_img_t {};
-	//struct right_img_t{};
-	//struct depth_img_t{};
-
- // static const left_img_t   left_img    = left_img_t ();
- // static const right_img_t  right_img   = right_img_t ();
- // static const depth_img_t  depth_img   = depth_img_t ();
 }
 	}
 //---------------------------------------------------------------------------

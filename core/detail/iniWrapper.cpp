@@ -31,6 +31,14 @@ bool iniWrapper::Load(const char* f){
 	return wrImpl->Load(f);
 };
 
+/*! 
+	Load store an iniFile into the dictionary.
+	\param f ini filname with extension
+*/
+bool iniWrapper::Load(const std::string& filepath){
+	return wrImpl->Load(filepath.c_str());
+};
+
 /*!
 	Size returns how many entries are in the dictionary.
 */
