@@ -75,33 +75,49 @@ bool all::sense::bumblebee_ipc_recv_t::open(const std::string & config)
   std::string right_rgb_name  = camname + "_IPC_bumblebee_rgb_right";
   std::string xyz_name        = camname + "_IPC_bumblebee_xyz";
 
+  //
   openok = openok && ( impl_->open_info(info_name) );
+
+
   openok = openok && ( impl_->open_rgb_right(right_rgb_name ) );
   openok = openok && ( impl_->open_rgb_left(left_rgb_name ) );
   openok = openok && ( impl_->open_xyz(xyz_name ) );
-  //TODO: change
+
+  if(openok)
+  {
+    //allocate
+    allocate_();
+  }
+
   return openok;
+}
+////-------------------------------------------------------------------++
+void 
+all::sense::bumblebee_ipc_recv_t::allocate_()
+{
+//
+  impl_->allocate_buffers();
 }
 ////-------------------------------------------------------------------++
 ///
 all::core::uint8_sarr  
   all::sense::bumblebee_ipc_recv_t::get_color_buffer(core::left_img_t ,  bool shared )
 {
-  return left_image_sptr;
+  return impl_->left_image_sptr;
 }
 ////-------------------------------------------------------------------++
 ///
 all::core::uint8_sarr  
   all::sense::bumblebee_ipc_recv_t::get_color_buffer(core::right_img_t , bool shared)
 {
-  return right_image_sptr;
+  return impl_->right_image_sptr;
 }
 ////-------------------------------------------------------------------++
 ///
 all::core::single_sarr 
   all::sense::bumblebee_ipc_recv_t::get_depth_buffer(bool shared)
 {
-  return depth_image_sptr;
+  return impl_->depth_image_sptr;
 }
 ////#####################################################################
 //void all::sense::bumblebee_ipc_recv_t::use_internal_buffers()

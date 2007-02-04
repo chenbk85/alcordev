@@ -74,12 +74,14 @@ class all::sense::bumblebee_ipc_recv_t
 	private:
 		///
 		boost::shared_ptr<sense::detail::bumblebee_ipc_recv_impl> impl_;
-		///
-    all::core::uint8_sarr   left_image_sptr;		
+    ///
+    void allocate_();
 		/////
-    all::core::uint8_sarr   right_image_sptr;
-		///
-    all::core::single_sarr  depth_image_sptr;
+  //  all::core::uint8_sarr   left_image_sptr;		
+		///////
+  //  all::core::uint8_sarr   right_image_sptr;
+		/////
+  //  all::core::single_sarr  depth_image_sptr;
 
 
 
