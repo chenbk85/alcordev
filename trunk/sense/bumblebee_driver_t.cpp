@@ -1,7 +1,8 @@
 #include "alcor/sense/bumblebee_driver_t.h"
 #include "alcor/sense/detail/bumblebee_driver_impl.cpp"
 //------------------------------------------------------------------+
-#include "alcor/core/config_parser_t.h"
+//#include "alcor/core/config_parser_t.h"
+#include "alcor/core/iniWrapper.h"
 //------------------------------------------------------------------+
 namespace all { namespace sense {
 //------------------------------------------------------------------+
@@ -114,15 +115,16 @@ all::core::single_sarr bumblebee_driver_t::get_depth_buffer(bool shared)
 //###################################################################
 void bumblebee_parameters_t::load(const std::string& confname)
 {
-  core::config_parser_t config;
-  config.load(core::ini, confname);
-  _unit_number  = config.as_long("config.unitnumber", 6213002);
+  iniWrapper config;
+  config.Load(confname);
 
-  _digiclopsini = config.as_string("config.digiclopsini", "digiclopsA.ini");
+  _unit_number  = config.GetInt("config:unitnumber", 6213002);
 
-  _triclopsini  = config.as_string("config.triclopsini", "triclopsA.ini");
+  _digiclopsini = config.GetString("config:digiclopsini");//, "digiclopsA.ini");
 
-  _name         = config.as_string("config.name", "aristotele");
+  _triclopsini  = config.GetString("config:triclopsini"); //"triclopsA.ini");
+
+  _name         = config.GetString("config:name");//, "aristotele");
 
 };
 //###################################################################
