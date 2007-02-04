@@ -53,9 +53,9 @@
 
 ////-------------------------------------------------------------------++
 all::sense::bumblebee_ipc_recv_t::bumblebee_ipc_recv_t()
-	//:impl_(0)
+	//:impl(0)
 	{
-	impl_.reset(new all::sense::detail::bumblebee_ipc_recv_impl);
+	impl.reset(new all::sense::detail::bumblebee_ipc_recv_impl);
 	}
 ////-------------------------------------------------------------------++
 all::sense::bumblebee_ipc_recv_t::~bumblebee_ipc_recv_t()
@@ -76,12 +76,12 @@ bool all::sense::bumblebee_ipc_recv_t::open(const std::string & config)
   std::string xyz_name        = camname + "_IPC_bumblebee_xyz";
 
   //
-  openok = openok && ( impl_->open_info(info_name) );
+  openok = openok && ( impl->open_info(info_name) );
 
 
-  openok = openok && ( impl_->open_rgb_right(right_rgb_name ) );
-  openok = openok && ( impl_->open_rgb_left(left_rgb_name ) );
-  openok = openok && ( impl_->open_xyz(xyz_name ) );
+  openok = openok && ( impl->open_rgb_right(right_rgb_name ) );
+  openok = openok && ( impl->open_rgb_left(left_rgb_name ) );
+  openok = openok && ( impl->open_xyz(xyz_name ) );
 
   if(openok)
   {
@@ -96,28 +96,28 @@ void
 all::sense::bumblebee_ipc_recv_t::allocate_()
 {
 //
-  impl_->allocate_buffers();
+  impl->allocate_buffers();
 }
 ////-------------------------------------------------------------------++
 ///
 all::core::uint8_sarr  
   all::sense::bumblebee_ipc_recv_t::get_color_buffer(core::left_img_t ,  bool shared )
 {
-  return impl_->left_image_sptr;
+  return impl->left_image_sptr;
 }
 ////-------------------------------------------------------------------++
 ///
 all::core::uint8_sarr  
   all::sense::bumblebee_ipc_recv_t::get_color_buffer(core::right_img_t , bool shared)
 {
-  return impl_->right_image_sptr;
+  return impl->right_image_sptr;
 }
 ////-------------------------------------------------------------------++
 ///
 all::core::single_sarr 
   all::sense::bumblebee_ipc_recv_t::get_depth_buffer(bool shared)
 {
-  return impl_->depth_image_sptr;
+  return impl->depth_image_sptr;
 }
 ////#####################################################################
 //void all::sense::bumblebee_ipc_recv_t::use_internal_buffers()
@@ -125,11 +125,11 @@ all::core::single_sarr
 //
 //        std::printf("use_internal_buffers\n");
 //    right_image_sptr.reset(new core::uint8_t 
-//                [impl_->_rgb_region->get_size()]
+//                [impl->_rgb_region->get_size()]
 //    );
 //
 //     depth_image_sptr.reset(new core::single_t
-//                    [impl_->_xyz_region->get_size()]
+//                    [impl->_xyz_region->get_size()]
 //    );
 //	}
 //////-------------------------------------------------------------------++
@@ -137,8 +137,8 @@ all::core::single_sarr
 //	{
 //		{
 //		try {
-//		void * addr       = impl_->_rgb_region->get_address();
-//		std::size_t size  = impl_->_rgb_region->get_size();
+//		void * addr       = impl->_rgb_region->get_address();
+//		std::size_t size  = impl->_rgb_region->get_size();
 //		///Write.....
 //    memcpy(user_buffer, (core::uint8_ptr)addr, size);
 //		} //try_block
@@ -156,9 +156,9 @@ all::core::single_sarr
 //{
 //	try {
 //        //
-//		void * addr       = impl_->_rgb_region->get_address();
+//		void * addr       = impl->_rgb_region->get_address();
 //        //
-//		std::size_t size  = impl_->_rgb_region->get_size();
+//		std::size_t size  = impl->_rgb_region->get_size();
 //		//
 //        if(user_buffer.size() != size)
 //            {
@@ -185,8 +185,8 @@ all::core::single_sarr
 //all::sense::bumblebee_ipc_recv_t::get_internal_color(sense::detail::right_cam_t)
 //	{
 //		try {
-//		void * addr       = impl_->_rgb_region->get_address();
-//		std::size_t size  = impl_->_rgb_region->get_size();
+//		void * addr       = impl->_rgb_region->get_address();
+//		std::size_t size  = impl->_rgb_region->get_size();
 //		///Write.....
 //        memcpy(&right_image_sptr[0], (core::uint8_ptr)addr, size);
 //		} //try_block
@@ -207,8 +207,8 @@ all::core::single_sarr
 //all::sense::bumblebee_ipc_recv_t::get_internal_depth()
 //    {
 //		try {
-//		void * addr       = impl_->_xyz_region->get_address();
-//		std::size_t size  = impl_->_xyz_region->get_size();
+//		void * addr       = impl->_xyz_region->get_address();
+//		std::size_t size  = impl->_xyz_region->get_size();
 //		///Write.....
 //        memcpy(depth_image_sptr.get(), (core::single_ptr)addr, size);
 //		} //try_block
@@ -222,26 +222,26 @@ all::core::single_sarr
 ////-------------------------------------------------------------------++
 int all::sense::bumblebee_ipc_recv_t::height()    const
     {
-    return impl_->image_info_.height;
+    return impl->image_info_.height;
     }
 ////-------------------------------------------------------------------++
 int all::sense::bumblebee_ipc_recv_t::width()     const
     {
-    return impl_->image_info_.width;
+    return impl->image_info_.width;
     }
 ////-------------------------------------------------------------------++
 int all::sense::bumblebee_ipc_recv_t::channels()  const
     {
-    return impl_->image_info_.channels;
+    return impl->image_info_.channels;
     }
 ////-------------------------------------------------------------------++
 float all::sense::bumblebee_ipc_recv_t::focal() const
 {
-  return impl_->image_info_.focal;
+  return impl->image_info_.focal;
 }
-////-------------------------------------------------------------------++
-    std::size_t all::sense::bumblebee_ipc_recv_t::memsize() const
-    {
-    return impl_->image_info_.memory_size;
-    }
+//////-------------------------------------------------------------------++
+//    std::size_t all::sense::bumblebee_ipc_recv_t::memsize() const
+//    {
+//    return impl->image_info_.memory_size;
+//    }
 ////-------------------------------------------------------------------++
