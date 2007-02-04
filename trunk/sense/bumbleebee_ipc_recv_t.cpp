@@ -66,6 +66,7 @@ all::sense::bumblebee_ipc_recv_t::~bumblebee_ipc_recv_t()
 	///
 bool all::sense::bumblebee_ipc_recv_t::open(const std::string & config)
 {
+  bool openok = true;
   //open ini and get the name
   iniWrapper inifile(config.c_str());
   std::string camname = inifile.GetString("config:name");
@@ -74,7 +75,7 @@ bool all::sense::bumblebee_ipc_recv_t::open(const std::string & config)
   std::string right_rgb_name  = camname + "_IPC_bumblebee_rgb_right";
   std::string xyz_name        = camname + "_IPC_bumblebee_xyz";
 
-  impl_->open_info(info_name);
+  openok = openok && ( impl_->open_info(info_name) );
   //TODO: change
   return true;
 }

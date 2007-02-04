@@ -19,7 +19,7 @@ iniWrapper::iniWrapper(){
 	If the file doesn't exist the constructor create an empty file named like f
 	\param f ini filename with extension
 */ 
-iniWrapper::iniWrapper(char* f){
+iniWrapper::iniWrapper(const char* f){
 	wrImpl = new wrappImpl(f);
 };
 

@@ -15,8 +15,8 @@
 class wrappImpl{
 public:
 	wrappImpl();
-	wrappImpl(char* f);
-	int create(char* f);
+	wrappImpl(const char* f);
+	int create(const char* f);
 	bool Load(const char* f); ///< Load an ini file in the dictionary
 	int Size(); ///< returns how many entries there are in the dictionary
 	int Add(char* key,char* value); ///< set the value for the key in the directory specified
