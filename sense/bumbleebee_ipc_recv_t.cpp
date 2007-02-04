@@ -76,8 +76,11 @@ bool all::sense::bumblebee_ipc_recv_t::open(const std::string & config)
   std::string xyz_name        = camname + "_IPC_bumblebee_xyz";
 
   openok = openok && ( impl_->open_info(info_name) );
+  openok = openok && ( impl_->open_rgb_right(right_rgb_name ) );
+  openok = openok && ( impl_->open_rgb_left(left_rgb_name ) );
+  openok = openok && ( impl_->open_xyz(xyz_name ) );
   //TODO: change
-  return true;
+  return openok;
 }
 ////-------------------------------------------------------------------++
 ///
@@ -216,7 +219,7 @@ int all::sense::bumblebee_ipc_recv_t::channels()  const
     return impl_->image_info_.channels;
     }
 ////-------------------------------------------------------------------++
-double all::sense::bumblebee_ipc_recv_t::focal() const
+float all::sense::bumblebee_ipc_recv_t::focal() const
 {
   return impl_->image_info_.focal;
 }

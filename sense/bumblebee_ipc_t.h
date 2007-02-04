@@ -35,7 +35,7 @@ class all::sense::bumblebee_ipc_t
     ///
     void run_thread();
 		//Mutex to protect access to the queue
-		boost::scoped_ptr<boost::interprocess::named_mutex> _mutex_ptr;
+		//boost::scoped_ptr<boost::interprocess::named_mutex> _mutex_ptr;
     ///
     boost::scoped_ptr<bumblebee_driver_t> bee;
     ///

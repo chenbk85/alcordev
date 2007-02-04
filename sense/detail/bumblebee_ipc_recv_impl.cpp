@@ -28,12 +28,20 @@ struct bumblebee_ipc_recv_impl
 		};
 
   bool open_info(const std::string& in_name)
-  {        
+  {     
+    try {
     all::core::ipc_serializable_t<core::image_info_t>
-            image_info(core::open_read,in_name);
+      image_info(core::open_read,in_name);
     image_info_ = image_info.get_reference();
-    //TODO: change ...
+      } //try_block
+
+    catch(ipc::interprocess_exception &ex){
+	    std::cout << "Unexpected exception: " << ex.what() << std::endl;
+	    return false;
+    }//catch block
+
     return true;
+
   }
 
 		///OPENS RIGHT //////////////////////////////////////
