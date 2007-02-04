@@ -17,7 +17,7 @@ wrappImpl::wrappImpl(){
 	If the file doesn't exist the constructor create an empty file named like f
 	\param f ini filename with extension
 */ 
-wrappImpl::wrappImpl(char* f){
+wrappImpl::wrappImpl(const char* f){
 	FILE* file_;
 	if (!Load(f)){
 		file_ = fopen(f,"w");
