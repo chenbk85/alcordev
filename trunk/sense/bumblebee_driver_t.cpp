@@ -77,7 +77,7 @@ bool  bumblebee_driver_t::grab()
 }
 //------------------------------------------------------------------+
 ///
-all::core::uint8_sarr  bumblebee_driver_t::get_color_buffer(left_img_t , bool shared)
+all::core::uint8_sarr  bumblebee_driver_t::get_color_buffer(core::left_img_t , bool shared)
 {
   all::core::uint8_sarr return_ptr = impl->get_rgb_left_();
 
@@ -91,7 +91,7 @@ all::core::uint8_sarr  bumblebee_driver_t::get_color_buffer(left_img_t , bool sh
 }
 //------------------------------------------------------------------+
 ///
-all::core::uint8_sarr bumblebee_driver_t::get_color_buffer(right_img_t , bool shared )
+all::core::uint8_sarr bumblebee_driver_t::get_color_buffer(core::right_img_t , bool shared )
 {
   all::core::uint8_sarr return_ptr = impl->get_rgb_right_();
 

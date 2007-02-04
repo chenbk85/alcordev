@@ -7,10 +7,8 @@
 #include <boost/scoped_ptr.hpp>
 #include <boost/thread/thread.hpp>
 //-------------------------------------------------------------------++
-//#include "alcor/sense/BumbleBeeDeviceProxy.h"
 #include "alcor/sense/bumblebee_driver_t.h"
 #include "alcor/core/core.h"
-//-------------------------------------------------------------------++
 //-------------------------------------------------------------------++
 namespace all{ 
 	namespace sense{
