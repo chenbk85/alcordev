@@ -31,7 +31,18 @@ struct bumblebee_ipc_recv_impl
   void allocate_buffers()
   {
     //TODO:
-    
+    right_image_sptr.reset( 
+        new core::uint8_t[image_info_.height*image_info_.width*image_info_.channels] 
+    );
+
+    left_image_sptr.reset( 
+        new core::uint8_t[image_info_.height*image_info_.width*image_info_.channels] 
+    );
+
+    depth_image_sptr.reset( 
+      new core::single_t[image_info_.height*image_info_.width*image_info_.channels] 
+    );
+
   }
 
   bool open_info(const std::string& in_name)
