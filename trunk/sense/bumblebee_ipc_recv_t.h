@@ -35,7 +35,7 @@ class all::sense::bumblebee_ipc_recv_t
     int     height()    const;
     int     width()     const;
     int     channels()  const;
-    double  focal()   const;
+    float   focal()     const;
     ///
     std::size_t memsize() const;
 

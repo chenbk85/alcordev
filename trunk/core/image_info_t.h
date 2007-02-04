@@ -19,7 +19,7 @@ struct image_info_t
 	///
 	int channels;
   ///
-  double focal;
+  float focal;
   ///what for?
   std::size_t memory_size;
 	///	
