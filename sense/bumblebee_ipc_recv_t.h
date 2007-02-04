@@ -53,8 +53,6 @@ class all::sense::bumblebee_ipc_recv_t
 	private:
 		///
 		boost::shared_ptr<sense::detail::bumblebee_ipc_recv_impl> impl;
-    ///
-    void allocate_();
 
 	};
 //-------------------------------------------------------------------------++
