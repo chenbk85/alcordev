@@ -20,8 +20,6 @@ struct image_info_t
 	int channels;
   ///
   float focal;
-  ///what for?
-  std::size_t memory_size;
 	///	
 	image_info_t& operator=( const image_info_t& );
 
@@ -31,7 +29,7 @@ struct image_info_t
 	};
 ///////////////////////////////////////////////////////////////////////////++
 inline image_info_t::image_info_t():
-height(0),width(0),channels(0),memory_size(0)
+height(0),width(0),channels(0)
 {
 }
 ///////////////////////////////////////////////////////////////////////////++
@@ -43,7 +41,6 @@ inline image_info_t::image_info_t(const image_info_t & other)
 
 	channels=other.channels;
 
-	memory_size=other.memory_size;
 }
 ///////////////////////////////////////////////////////////////////////////++
 inline image_info_t& image_info_t::operator=( const image_info_t& other )
@@ -58,7 +55,6 @@ inline void image_info_t::swap_(image_info_t& other)
 	std::swap(height, other.height);
 	std::swap(width, other.width);
 	std::swap(channels,	other.channels );
-	std::swap(memory_size, other.memory_size);
 }
 ///////////////////////////////////////////////////////////////////////////++
 inline std::ostream& operator<<(std::ostream& os, const image_info_t& temp)
