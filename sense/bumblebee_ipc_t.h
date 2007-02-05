@@ -2,7 +2,8 @@
 #define bumblebee_ipc_t_H_INCLUDED 
 //-------------------------------------------------------------------++
 //boost includes
-#include <boost/interprocess/sync/named_mutex.hpp>
+//#include <boost/interprocess/sync/scoped_lock.hpp>
+//#include <boost/interprocess/sync/named_mutex.hpp>
 #include <memory>
 #include <boost/scoped_ptr.hpp>
 #include <boost/thread/thread.hpp>
