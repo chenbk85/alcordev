@@ -6,7 +6,7 @@
 /// last modified: 11/05/06
 ///////////////////////////////////////////////
 #include "../iniWrapper.h"
-#include "wrappImpl.h"
+#include "wrappImpl.cpp"
 /// constructors
 //:errorFile_("errorFile.log",std::ios::out)
 

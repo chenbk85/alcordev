@@ -5,18 +5,51 @@
 /// created: 11/05/06
 /// last modified: 11/05/06
 ///////////////////////////////////////////////
-
-#include "wrappImpl.h"
+//#include "wrappImpl.h"
 #include <fstream>
+//---------------------------------------------------------------------------
+#include <iostream>
+//---------------------------------------------------------------------------
+#include "iniparser.h"
+//---------------------------------------------------------------------------
+class wrappImpl{
+public:
+	wrappImpl();
+	wrappImpl(const char* f);
 
-wrappImpl::wrappImpl():dict(0)
+  ///Andrea:: d'tor anyone?
+  ~wrappImpl();
+
+	int create(const char* f);
+	bool Load(const char* f); ///< Load an ini file in the dictionary
+	int Size(); ///< returns how many entries there are in the dictionary
+	int Add(char* key,char* value); ///< set the value for the key in the directory specified
+	void Remove(char* key); ///< delete the value for the specific directory and key
+	std::string GetString(char* key);
+	///ANDREA:: Overloaded method to handle char*
+	char* GetStringAsChar(char* key, char* not_def);
+
+	int GetInt(char* key, int not_def);
+	double GetDouble(char* key, double not_def);
+	int GetBool(char* key, int not_def);
+	void Save(char* f); ///< save the dictionary in the ini file specified
+
+private:
+	dictionary* dict;
+};
+
+/////////////////////////////////////////////////////////////////////////////
+//IMPLEMENTATION
+/////////////////////////////////////////////////////////////////////////////
+
+inline wrappImpl::wrappImpl():dict(0)
 {
 };
 
 /*! 
 	DTOR
 */ 
-wrappImpl::~wrappImpl()
+inline wrappImpl::~wrappImpl()
 {
   if (dict)
     iniparser_free(dict);
@@ -27,7 +60,7 @@ wrappImpl::~wrappImpl()
 	If the file doesn't exist the constructor create an empty file named like f
 	\param f ini filename with extension
 */ 
-wrappImpl::wrappImpl(const char* f){
+inline wrappImpl::wrappImpl(const char* f){
 	FILE* file_;
 	if (!Load(f)){
 		file_ = fopen(f,"w");
@@ -40,7 +73,7 @@ wrappImpl::wrappImpl(const char* f){
 	Load store an iniFile into the dictionary.
 	\param f ini filname with extension
 */
-bool wrappImpl::Load(const char* f){
+inline bool wrappImpl::Load(const char* f){
 	dict = iniparser_new(f);
 	return (dict != NULL);
 };
@@ -48,7 +81,7 @@ bool wrappImpl::Load(const char* f){
 /*!
 	Size returns how many entries are in the dictionary.
 */
-int wrappImpl::Size(){
+inline int wrappImpl::Size(){
 	return dict->n;
 };
 
@@ -59,7 +92,7 @@ int wrappImpl::Size(){
 	\param value value to add or update in the ini file
 */
 
-int wrappImpl::Add(char* key,char* value){
+inline int wrappImpl::Add(char* key,char* value){
 	return iniparser_setstr(dict,key,value);
 };
 
@@ -68,7 +101,7 @@ int wrappImpl::Add(char* key,char* value){
 	\param key name of the entry in the directory of the ini file. Syntax directory:entry
 */
 
-void wrappImpl::Remove(char* key){
+inline void wrappImpl::Remove(char* key){
 	iniparser_unset(dict,key);
 }
 
@@ -76,7 +109,7 @@ void wrappImpl::Remove(char* key){
 	GetString return the string value in the specific entry of the dictionary.
 	\param key name of the entry in the directory of the ini file. Syntax directory:entry
 */
-std::string wrappImpl::GetString(char* key){
+inline std::string wrappImpl::GetString(char* key){
 	return iniparser_getstr(dict,key);
 };
 
@@ -85,7 +118,7 @@ std::string wrappImpl::GetString(char* key){
 	\param key name of the entry in the directory of the ini file. Syntax directory:entry
 	\param not_def value that function returns if there isn't the specified entry
 */
-char* wrappImpl::GetStringAsChar(char* key, char* not_def){
+inline char* wrappImpl::GetStringAsChar(char* key, char* not_def){
 	return iniparser_getstring(dict,key,not_def);
 };
 
@@ -95,7 +128,7 @@ char* wrappImpl::GetStringAsChar(char* key, char* not_def){
 	\param not_def value that function returns if there isn't the specified entry
 */
 
-int wrappImpl::GetInt(char* key, int not_def){
+inline int wrappImpl::GetInt(char* key, int not_def){
 	return iniparser_getint(dict,key,not_def);
 
 }
@@ -107,7 +140,7 @@ int wrappImpl::GetInt(char* key, int not_def){
 
 */
 
-double wrappImpl::GetDouble(char* key,double not_def){
+inline double wrappImpl::GetDouble(char* key,double not_def){
 	return iniparser_getdouble(dict,key,not_def);
 }
 
@@ -118,7 +151,7 @@ double wrappImpl::GetDouble(char* key,double not_def){
 	\param not_def value that function returns if there isn't the specified entry
 */
 
-int wrappImpl::GetBool(char* key,int not_def){
+inline int wrappImpl::GetBool(char* key,int not_def){
 	return iniparser_getboolean(dict,key,not_def);
 }
 
@@ -126,7 +159,7 @@ int wrappImpl::GetBool(char* key,int not_def){
 	Save store the dictionary into the ini file specified.
 	\param f
 */
-void wrappImpl::Save(char* f){
+inline void wrappImpl::Save(char* f){
 	FILE* file_;
 	file_ = fopen(f,"w");
 	iniparser_dump_ini(dict,file_);
