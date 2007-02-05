@@ -12,7 +12,6 @@
 //---------------------------------------------------------------------------
 #include <string>
 #include <memory>
-//#include <boost/scoped_ptr.hpp>
 //---------------------------------------------------------------------------
 class	wrappImpl; ///< fwd
 //---------------------------------------------------------------------------
@@ -21,6 +20,8 @@ public:
 	iniWrapper();
 	iniWrapper(const char* f);
   iniWrapper(const std::string& filepath );
+
+  ~iniWrapper(){};
 
 	int		create(const char* f);
 
