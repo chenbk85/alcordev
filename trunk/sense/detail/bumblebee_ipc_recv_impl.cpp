@@ -18,9 +18,7 @@ struct bumblebee_ipc_recv_impl
 	{
 	///
 	bumblebee_ipc_recv_impl()
-
 		{
-
 		};
 
 	///
@@ -43,6 +41,11 @@ struct bumblebee_ipc_recv_impl
       new core::single_t[image_info_.height*image_info_.width*image_info_.channels] 
     );
 
+  }
+
+  void create_mutex(std::string& mutexname)
+  {
+    mutex_sptr.reset( new ipc::named_mutex(ipc::open_or_create, mutexname.c_str()) );
   }
   /////////////////////////////////////////////////////////////////////////
   //OPEN
@@ -221,6 +224,9 @@ struct bumblebee_ipc_recv_impl
   all::core::uint8_sarr   right_image_sptr;
 	///
   all::core::single_sarr  depth_image_sptr;
+
+  ///
+  std::auto_ptr<ipc::named_mutex> mutex_sptr;//(open_or_create, "cout_named_mutex");
 
 	///
 	std::auto_ptr<ipc::shared_memory_object>	    right_rgb_shm;

@@ -130,7 +130,7 @@ void all::sense::bumblebee_ipc_t::run_thread()
   const std::size_t    l_rgb_imag_size      =  left_rgb_region.get_size();
   const std::size_t    xyz_imag_size        =  xyz_region.get_size();
 	///////////////////////////////////////////////////////////////////////
-  ipc::named_mutex mutex(open_or_create, shmutex.c_str());
+  ipc::named_mutex mutex(ipc::open_or_create, shmutex.c_str());
   ///////////////////////////////////////////////////////////////////////
    //in the thread_loop
 	while (_running)

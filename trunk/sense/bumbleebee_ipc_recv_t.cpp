@@ -16,6 +16,18 @@ all::sense::bumblebee_ipc_recv_t::bumblebee_ipc_recv_t()
 all::sense::bumblebee_ipc_recv_t::~bumblebee_ipc_recv_t()
 	{
 	}
+////#####################################################################
+//
+void all::sense::bumblebee_ipc_recv_t::lock()
+{
+impl->mutex_sptr->lock();
+}
+////-------------------------------------------------------------------++
+//
+void all::sense::bumblebee_ipc_recv_t::unlock()
+{
+impl->mutex_sptr->unlock();
+}
 ////-------------------------------------------------------------------++
 ////#####################################################################
 	///
@@ -25,10 +37,12 @@ bool all::sense::bumblebee_ipc_recv_t::open(const std::string & config)
   //open ini and get the name
   iniWrapper inifile(config.c_str());
   std::string camname         = inifile.GetString("config:name");
+  //
   std::string info_name       = camname + "_IPC_bumblebee_info";
   std::string left_rgb_name   = camname + "_IPC_bumblebee_rgb_left";
   std::string right_rgb_name  = camname + "_IPC_bumblebee_rgb_right";
   std::string xyz_name        = camname + "_IPC_bumblebee_xyz";
+  //
   std::string shmutex         = camname + "_IPC_bumblebee_mutex";
   //
   openok = openok && ( impl->open_info(info_name) );
@@ -41,6 +55,7 @@ bool all::sense::bumblebee_ipc_recv_t::open(const std::string & config)
   if(openok)
   {
     impl->allocate_buffers();
+    impl->create_mutex(shmutex);
   }
 
   return openok;
