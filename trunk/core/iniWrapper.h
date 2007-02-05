@@ -11,7 +11,7 @@
 #pragma comment (lib,"iniwrapper.lib")
 //---------------------------------------------------------------------------
 #include <string>
-#include <memory>
+#include <boost/shared_ptr.hpp>
 //---------------------------------------------------------------------------
 class	wrappImpl; ///< fwd
 //---------------------------------------------------------------------------
@@ -44,7 +44,7 @@ public:
 	void	  Save(char* f); ///< save the dictionary in the ini file specified
 
 private: 
-  std::auto_ptr<wrappImpl> wrImpl;
+  boost::shared_ptr<wrappImpl> wrImpl;
 };
 //---------------------------------------------------------------------------
 #endif
