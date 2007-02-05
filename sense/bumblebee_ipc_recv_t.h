@@ -32,9 +32,9 @@ class all::sense::bumblebee_ipc_recv_t
 		~bumblebee_ipc_recv_t();
 
     //
-    void get_lock(){};
+    void lock();
     //
-    void release_lock(){};
+    void unlock();
 
     //
     int     height()    const;
