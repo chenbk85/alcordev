@@ -226,8 +226,7 @@ struct bumblebee_ipc_recv_impl
   all::core::single_sarr  depth_image_sptr;
 
   ///
-  std::auto_ptr<ipc::named_mutex> mutex_sptr;//(open_or_create, "cout_named_mutex");
-
+  std::auto_ptr<ipc::named_mutex> mutex_sptr;
 	///
 	std::auto_ptr<ipc::shared_memory_object>	    right_rgb_shm;
 	///
