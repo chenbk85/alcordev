@@ -3,6 +3,8 @@
 #include <boost/bind.hpp>
 #include "alcor/core/image_info_t.h"
 #include "alcor/core/ipc_serializable_t.h"
+#include <boost/interprocess/sync/scoped_lock.hpp>
+#include <boost/interprocess/sync/named_mutex.hpp>
 //-------------------------------------------------------------------++
 namespace ipc = boost::interprocess;
 //-------------------------------------------------------------------++
@@ -20,6 +22,7 @@ bool  all::sense::bumblebee_ipc_t::open(std::string& config_file)
   if( bee->open(config_file) )
   {
     printf("\nBumblebee camera: %s Opened!\n", bee->name());
+
     printf("Starting Thread!\n");
     thisthread.reset(
           new boost::thread 
@@ -56,6 +59,7 @@ void all::sense::bumblebee_ipc_t::run_thread()
   std::string left_rgb_name   = camname + "_IPC_bumblebee_rgb_left";
   std::string right_rgb_name  = camname + "_IPC_bumblebee_rgb_right";
   std::string xyz_name        = camname + "_IPC_bumblebee_xyz";
+  std::string shmutex         = camname + "_IPC_bumblebee_mutex";
 //////////////////////////////////////////////////////////////////////
   //RGB INFO
   core::ipc_serializable_t<core::image_info_t> image_info(core::open_write,
@@ -64,8 +68,6 @@ void all::sense::bumblebee_ipc_t::run_thread()
   image_info.get_reference().height       =  bee->nrows();
   image_info.get_reference().width        =  bee->ncols();
   image_info.get_reference().channels     =  3;
-  //unsueful. .... ot really??
-  image_info.get_reference().memory_size  =  bee->nrows()* bee->ncols() *3;
   image_info.get_reference().focal        =  bee->focal();
   //////////////////////////////////////////////////////////////////////
   //RIGHT RGB IMAGE
@@ -77,7 +79,7 @@ void all::sense::bumblebee_ipc_t::run_thread()
         ,ipc::read_write  //read-write mode
        );
   //Set the size of the shared memory segment
-  right_shm_rgb.truncate(image_info.get_const_reference().memory_size);
+  right_shm_rgb.truncate(bee->ncols()*bee->nrows()*3);
 
   //Map the whole shared memory in this process
   ipc::mapped_region right_rgb_region
@@ -94,7 +96,7 @@ void all::sense::bumblebee_ipc_t::run_thread()
         ,ipc::read_write  //read-write mode
        );
   //Set the size of the shared memory segment
-  left_shm_rgb.truncate(image_info.get_const_reference().memory_size);
+  left_shm_rgb.truncate(bee->ncols()*bee->nrows()*3);
 
   //Map the whole shared memory in this process
   ipc::mapped_region left_rgb_region
@@ -128,12 +130,15 @@ void all::sense::bumblebee_ipc_t::run_thread()
   const std::size_t    l_rgb_imag_size      =  left_rgb_region.get_size();
   const std::size_t    xyz_imag_size        =  xyz_region.get_size();
 	///////////////////////////////////////////////////////////////////////
+  ipc::named_mutex mutex(open_or_create, shmutex.c_str());
+  ///////////////////////////////////////////////////////////////////////
    //in the thread_loop
 	while (_running)
 		{
       ///////////////////////////////////////////////////////////////////
      if (bee->grab())//acquisition
      {
+       ipc::scoped_lock<ipc::named_mutex> lock(mutex);
         //TODO: lock mutex
        //RIGHT
 		    {

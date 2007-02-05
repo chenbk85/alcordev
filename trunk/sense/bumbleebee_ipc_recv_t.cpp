@@ -29,7 +29,7 @@ bool all::sense::bumblebee_ipc_recv_t::open(const std::string & config)
   std::string left_rgb_name   = camname + "_IPC_bumblebee_rgb_left";
   std::string right_rgb_name  = camname + "_IPC_bumblebee_rgb_right";
   std::string xyz_name        = camname + "_IPC_bumblebee_xyz";
-
+  std::string shmutex         = camname + "_IPC_bumblebee_mutex";
   //
   openok = openok && ( impl->open_info(info_name) );
 
