@@ -5,10 +5,6 @@
 #include <boost/type_traits/has_trivial_assign.hpp>
 //-------------------------------------------------------------------------++
 //
-// opt::copy
-// same semantics as std::copy
-// calls memcpy where appropriate.
-//
 //-------------------------------------------------------------------------++
 namespace all { 
 	namespace core { 
