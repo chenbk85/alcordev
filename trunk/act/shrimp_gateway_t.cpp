@@ -2,8 +2,16 @@
 
 #include "detail/shrimp_gateway_impl.cpp"
 
+
+
 namespace all {
 	namespace act {
+
+const double shrimp_gateway_t::SPEED_STEP_TO_MMpS = shrimp_gateway_impl::MAX_SPEED_MMpS / shrimp_gateway_impl::MAX_SPEED_STEP;
+const double shrimp_gateway_t::SPEED_MMpS_TO_STEP = 1 / SPEED_STEP_TO_MMpS;
+const double shrimp_gateway_t::STEER_STEP_TO_DEG = shrimp_gateway_impl::MAX_STEER_DEG / shrimp_gateway_impl::MAX_STEER_STEP;
+const double shrimp_gateway_t::STEER_DEG_TO_STEP = 1 / STEER_STEP_TO_DEG;
+
 
 shrimp_gateway_t::shrimp_gateway_t(char* ini_file) {
 	pimpl.reset(new shrimp_gateway_impl(ini_file));
@@ -33,20 +41,26 @@ void shrimp_gateway_t::em_release() {
 	pimpl->em_release();
 }
 
-void shrimp_gateway_t::set_speed(short speed) {
-	pimpl->set_speed(speed);
+void shrimp_gateway_t::set_speed(int speed) {
+	short step_speed = speed * SPEED_MMpS_TO_STEP;
+	printf("speed: %i\n", step_speed);
+	pimpl->set_speed(step_speed);
 }
 
-void shrimp_gateway_t::set_steer(short steer) {
-	pimpl->set_steer(steer);
+void shrimp_gateway_t::set_steer(all::math::angle steer) {
+	short step_steer = steer.deg() * (STEER_DEG_TO_STEP);
+	printf("steer: %i\n", step_steer);
+	pimpl->set_steer(step_steer);
 }
 
-short shrimp_gateway_t::get_speed() {
-	return pimpl->get_speed();
+int shrimp_gateway_t::get_speed() {
+	return pimpl->get_speed() * SPEED_STEP_TO_MMpS;
 }
 
-short shrimp_gateway_t::get_steer() {
-	return pimpl->get_steer();
+all::math::angle shrimp_gateway_t::get_steer() {
+	short step_steer = pimpl->get_steer() * (STEER_STEP_TO_DEG);
+	all::math::angle deg_steer(step_steer, all::math::deg_tag);
+	return deg_steer;
 }
 
 double shrimp_gateway_t::get_voltage() {
@@ -54,12 +68,12 @@ double shrimp_gateway_t::get_voltage() {
 }
 
 bool shrimp_gateway_t::is_on() {
-	pimpl->get_power_state();
+	pimpl->update_power_state();
 	return pimpl->m_power_state.test(0);
 }
 
 bool shrimp_gateway_t::is_em() {
-	pimpl->get_power_state();
+	pimpl->update_power_state();
 	return pimpl->m_power_state.test(1);
 }
 
