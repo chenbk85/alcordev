@@ -1,10 +1,11 @@
 #include <iostream>
-#include <wx/ctb/serport.h>
-#include <wx/ctb/timer.h>
 #include <bitset>
-#include "alcor/core/iniWrapper.h"
+#include <alcor.extern/wx/ctb/serport.h>
+#include <alcor.extern/wx/ctb/timer.h>
+#include <alcor/core/iniWrapper.h>
+#include <alcor/core/core.h>
 #include "shrimp_command_t.hpp"
-#include "alcor/core/core.h"
+
 
 
 class shrimp_gateway_impl {
@@ -12,10 +13,14 @@ class shrimp_gateway_impl {
 public:
 	static const int COM_TIMEOUT = 3000;
 
-	static const short MAX_SPEED = 23;
-	static const short MAX_STEER = 18;
+	static const short MAX_SPEED_STEP = 23;
+	static const short MAX_STEER_STEP = 18;
+	
+	static const int MAX_SPEED_MMpS = 450;
+	static const int MAX_STEER_DEG = 90;
 	
 	shrimp_gateway_impl(char* ini_file);
+
 	
 	bool connect();
 	void disconnect();
@@ -33,9 +38,6 @@ public:
 	short get_steer();
 
 	double get_voltage();
-	void get_power_state();
-	void get_status_flags();
-	void get_control_flags();
 
 public:
 	void init();
@@ -43,6 +45,12 @@ public:
 	bool is_feasible_speed(short);
 	bool is_feasible_steer(short);
 	
+	void enable_voltage_reading();
+
+	void update_power_state();
+	void update_status_flags();
+	void update_control_flags();
+
 	int send_command(const shrimp_command_t&);
 	int read_reply();
 
@@ -89,28 +97,28 @@ bool shrimp_gateway_impl::connect() {
 
 void shrimp_gateway_impl::init() {
 	m_shrimp.SetBaudRate(wxBAUD_9600);
-	
-	//activate voltage reading
-	get_control_flags();
-	m_control_flags.set(7);
-	shrimp_command_t enable_get_voltage(CONTROL_FLAGS, write_t, m_control_flags.to_ulong());
-	send_command(enable_get_voltage);
-	m_control_flags.set(0);
-	m_control_flags.set(1);
-	//get_control_flags();
-
 }
 
 void shrimp_gateway_impl::disconnect() {
+	set_robot_standby();
 	m_shrimp.Close();
 }
 
 bool shrimp_gateway_impl::is_feasible_steer(short steer) {
-	return (abs(steer) <= MAX_STEER);
+	return (abs(steer) <= MAX_STEER_STEP);
 }
 
 bool shrimp_gateway_impl::is_feasible_speed(short speed) {
-	return (abs(speed) <= MAX_SPEED);
+	return (abs(speed) <= MAX_SPEED_STEP);
+}
+
+void shrimp_gateway_impl::enable_voltage_reading() {
+	
+	update_control_flags();
+	m_control_flags.set(6);
+
+	shrimp_command_t enable_voltage(CONTROL_FLAGS, write_t, m_control_flags.to_ulong());
+	send_command(enable_voltage);
 }
 
 int shrimp_gateway_impl::send_command(const shrimp_command_t& command) {
@@ -118,9 +126,10 @@ int shrimp_gateway_impl::send_command(const shrimp_command_t& command) {
 	m_timer_status = 0;
 	m_io_timer.start();
 
-	char* cmd = new char[3];
-	memcpy(cmd, command.to_buf(), 3);
+	unsigned char* cmd = new unsigned char[3];
+	memcpy(cmd, command.to_buf(), command.get_size());
 	printf("%i %i %i", cmd[0], cmd[1], cmd[2]);
+
 	int wd = m_shrimp.Writev(command.to_buf(), command.get_size(), &m_timer_status);
 	printf("bytes sent %i\n", wd);
 	return wd;
@@ -130,16 +139,21 @@ int shrimp_gateway_impl::read_reply() {
 	
 	m_timer_status = 0;
 	m_io_timer.start();
-	char r;
-	int rd = m_shrimp.Readv(&r, 1, &m_timer_status);
-	m_reply = r;
+	char* r = new char[10];
+	int rd = m_shrimp.Readv(r, 1, &m_timer_status);
+	printf("r: %i\n", r[0]);
+	m_reply = r[0];
 	printf("byte read %i\n", rd);
 	return rd;
 }
 
 void shrimp_gateway_impl::set_robot_on() {
+	
 	shrimp_command_t command(ROB_ON_OFF, write_t, 0x0f);
 	send_command(command);
+	
+	enable_voltage_reading();
+
 }
 
 void shrimp_gateway_impl::set_robot_standby() {
@@ -161,18 +175,26 @@ void shrimp_gateway_impl::set_speed(short speed) {
 	if (is_feasible_speed(speed)) {
 		shrimp_command_t set_speed_command(SPEED, write_t, speed);
 		send_command(set_speed_command);
+		update_control_flags();
+		m_control_flags.set(0);
 		shrimp_command_t update_speed_command(CONTROL_FLAGS, write_t, m_control_flags.to_ulong());
 		send_command(update_speed_command);
 	}
+	else
+		printf("Speed out of range\n");
 }
 
 void shrimp_gateway_impl::set_steer(short steer) {
 	if (is_feasible_steer(steer)) {
 		shrimp_command_t set_steer_command(STEER, write_t, static_cast <all::core::uint8_t> (steer));
 		send_command(set_steer_command);
+		update_control_flags();
+		m_control_flags.set(1);
 		shrimp_command_t update_steer_command(CONTROL_FLAGS, write_t, m_control_flags.to_ulong());
 		send_command(update_steer_command);
 	}
+	else
+		printf("Steer out of range\n");
 }
 
 short shrimp_gateway_impl::get_speed() {
@@ -196,10 +218,11 @@ short shrimp_gateway_impl::get_steer() {
 }
 
 double shrimp_gateway_impl::get_voltage() {
+	
 	shrimp_command_t command(V_BATT, read_t);
 	send_command(command);
 	if (read_reply()) {
-		printf("voltage: %i\n", m_reply);
+		//printf("voltage: %i\n", m_reply);
 		double voltage = (m_reply >> 4);
 		return voltage;
 	}
@@ -207,34 +230,34 @@ double shrimp_gateway_impl::get_voltage() {
 		return 0;
 }
 
-void shrimp_gateway_impl::get_status_flags() {
+void shrimp_gateway_impl::update_status_flags() {
 	shrimp_command_t command(STATUS_FLAGS, read_t);
 	send_command(command);
 	if (read_reply()) {
 		m_status_flags = m_reply;
+		std::cout << "status flag: " << m_status_flags << std::endl;
 	}
 	else
 		printf("error getting status flags\n");
 }
 
-void shrimp_gateway_impl::get_power_state() {
+void shrimp_gateway_impl::update_power_state() {
 	shrimp_command_t command(PWR_STATE, read_t);
 	send_command(command);
 	if (read_reply()) {
 		m_power_state = m_reply;
+		std::cout << "power state: " << m_power_state << std::endl;
 	}
 	else
 		printf("error getting power state\n");
 }
 
-void shrimp_gateway_impl::get_control_flags() {
+void shrimp_gateway_impl::update_control_flags() {
 	shrimp_command_t command(CONTROL_FLAGS, read_t);
 	send_command(command);
 	if (read_reply()) {
-		std::bitset<8> control_flags(static_cast <unsigned long> (m_reply));
-		m_control_flags = control_flags;
-		std::cout << "control flags: " << control_flags << std::endl;
-		printf("m_reply: %i", m_reply);
+		m_control_flags = m_reply;
+		std::cout << "control flags: " << m_control_flags << std::endl;
 	}
 	else
 		printf("error getting control flags\n");

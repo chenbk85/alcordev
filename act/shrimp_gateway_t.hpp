@@ -2,6 +2,7 @@
 #define shrimp_gateway_t_H_INCLUDED
 
 #include <memory>
+#include <alcor/math/angle.h>
 
 class shrimp_gateway_impl;
 
@@ -10,6 +11,13 @@ namespace all {
 
 class shrimp_gateway_t {
 public:
+
+	static const double SPEED_STEP_TO_MMpS;
+	static const double STEER_STEP_TO_DEG;
+
+	static const double SPEED_MMpS_TO_STEP;
+	static const double STEER_DEG_TO_STEP;
+
 	shrimp_gateway_t(char* ini_file = "config/shrimp_config.ini");
 
 	bool connect();
@@ -21,11 +29,11 @@ public:
 	void em_stop();
 	void em_release();
 
-	void set_speed(short);
-	void set_steer(short);
+	void set_speed(int);
+	void set_steer(all::math::angle);
 
-	short get_speed();
-	short get_steer();
+	int get_speed();
+	all::math::angle get_steer();
 
 	double get_voltage();
 
