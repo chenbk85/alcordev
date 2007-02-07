@@ -5,6 +5,9 @@
 
 class shrimp_gateway_impl;
 
+namespace all {
+	namespace act {
+
 class shrimp_gateway_t {
 public:
 	shrimp_gateway_t(char* ini_file = "config/shrimp_config.ini");
@@ -33,5 +36,7 @@ public:
 private:
 	std::auto_ptr<shrimp_gateway_impl> pimpl;
 };
+
+}} //namespace
 
 #endif
