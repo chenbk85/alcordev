@@ -117,7 +117,7 @@ void shrimp_gateway_impl::enable_voltage_reading() {
 	update_control_flags();
 	m_control_flags.set(6);
 
-	shrimp_command_t enable_voltage(CONTROL_FLAGS, write_t, m_control_flags.to_ulong());
+	shrimp_command_t enable_voltage(CONTROL_FLAGS, write_t, static_cast <all::core::uint8_t> (m_control_flags.to_ulong()));
 	send_command(enable_voltage);
 }
 
@@ -173,11 +173,11 @@ void shrimp_gateway_impl::em_release() {
 
 void shrimp_gateway_impl::set_speed(short speed) {
 	if (is_feasible_speed(speed)) {
-		shrimp_command_t set_speed_command(SPEED, write_t, speed);
+		shrimp_command_t set_speed_command(SPEED, write_t, static_cast <all::core::uint8_t> (speed));
 		send_command(set_speed_command);
 		update_control_flags();
 		m_control_flags.set(0);
-		shrimp_command_t update_speed_command(CONTROL_FLAGS, write_t, m_control_flags.to_ulong());
+		shrimp_command_t update_speed_command(CONTROL_FLAGS, write_t, static_cast <all::core::uint8_t> (m_control_flags.to_ulong()));
 		send_command(update_speed_command);
 	}
 	else
@@ -190,7 +190,7 @@ void shrimp_gateway_impl::set_steer(short steer) {
 		send_command(set_steer_command);
 		update_control_flags();
 		m_control_flags.set(1);
-		shrimp_command_t update_steer_command(CONTROL_FLAGS, write_t, m_control_flags.to_ulong());
+		shrimp_command_t update_steer_command(CONTROL_FLAGS, write_t, static_cast <all::core::uint8_t> (m_control_flags.to_ulong()));
 		send_command(update_steer_command);
 	}
 	else
