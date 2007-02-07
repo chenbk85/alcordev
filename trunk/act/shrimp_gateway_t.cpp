@@ -2,6 +2,9 @@
 
 #include "detail/shrimp_gateway_impl.cpp"
 
+namespace all {
+	namespace act {
+
 shrimp_gateway_t::shrimp_gateway_t(char* ini_file) {
 	pimpl.reset(new shrimp_gateway_impl(ini_file));
 }
@@ -59,3 +62,5 @@ bool shrimp_gateway_t::is_em() {
 	pimpl->get_power_state();
 	return pimpl->m_power_state.test(1);
 }
+
+}} //namespace
