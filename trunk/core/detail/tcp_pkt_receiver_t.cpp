@@ -58,46 +58,55 @@ void tcp_pkt_receiver_t::handle_read_data(const boost::system::error_code& error
 		
 		std::istream is(&m_in_pkt_buffer);
 
-		//start waiting for next packet
-		if (m_listen_f)
-			//async->returns immediatly
-			read_packet();
-		
 		//check header size
 		if (bytes_transferred < net_packet_header_t::HEADER_LENGTH) {
-			//printf("error in packet header reading\n");
+			
+			if (m_listen_f)
+				read_packet();
+
 			if (m_error_callback) {
-				//boost::system::error_code data_error(boost::asio::error::no_data);
-				//m_error_callback(data_error);
+				boost::system::error_code data_error(boost::asio::error::no_data);
+				m_error_callback(data_error);
 			}
+
 			return;
+
 		}
 		
 		//read packet header
 		is.read(m_in_header_buffer, net_packet_header_t::HEADER_LENGTH);
 
-		//build packet header
 		net_packet_header_t header;
+
+		//try build packet header
 		if (!header.build_header_from_string(m_in_header_buffer)) {
-			//printf("error building packet header\n");
+			
+			if (m_listen_f)
+				read_packet();
+
 			if (m_error_callback) {
-				//boost::system::error_code data_error(boost::asio::error::no_data);
-				//m_error_callback(data_error);
+				boost::system::error_code data_error(boost::asio::error::no_data);
+				m_error_callback(data_error);
 			}
+
 			return;
 		}
 		
 		//check packet size consistency
 		std::size_t data_size = bytes_transferred - net_packet_header_t::HEADER_LENGTH;
 		if (data_size != header.get_packet_size()) {
-			//printf("packet size inconsistency error\n");
+			
+			if (m_listen_f)
+				read_packet();
+
 			if (m_error_callback) {
-				//boost::system::error_code data_error(boost::asio::error::no_data);
-				//m_error_callback(data_error);
+				boost::system::error_code data_error(boost::asio::error::no_data);
+				m_error_callback(data_error);
 			}
+
 			return;
 		}
-
+		
 		//read packet data
 		if (m_in_data_buffer != NULL)
 			delete [] m_in_data_buffer;
@@ -108,6 +117,12 @@ void tcp_pkt_receiver_t::handle_read_data(const boost::system::error_code& error
 		//build packet
 		m_packet_ptr.reset(new net_packet_t(header, m_in_data_buffer));
 		
+
+		//start waiting for next packet
+		if (m_listen_f)
+			//async->returns immediatly
+			read_packet();
+
 		//invoke read callback
 		if (m_read_callback) 
 			m_read_callback(m_packet_ptr);
