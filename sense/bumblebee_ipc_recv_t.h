@@ -41,11 +41,8 @@ class all::sense::bumblebee_ipc_recv_t
     int     width()     const;
     int     channels()  const;
     float   focal()     const;
-    ///
-    //std::size_t memsize() const;
 
     //NUOVA INTERFACCIA
-    	///Inherited
 	  bool open(const std::string &);
 	  ///
     all::core::uint8_sarr  get_color_buffer(core::left_img_t ,  bool shared = true);
