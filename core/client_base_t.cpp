@@ -188,6 +188,7 @@ void client_base_t::in_packet_error_cb(const boost::system::error_code& error) {
 	else if (error == boost::asio::error::eof) {
 		printf("Lost connection with server...reconnecting\n");
 		m_state = STATE_LOST_CONNECTION;
+    m_tcp_socket.close();
 		try_connect();
 	}
 	else
