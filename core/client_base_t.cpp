@@ -186,8 +186,9 @@ void client_base_t::in_packet_error_cb(const boost::system::error_code& error) {
 		printf("Bad packet received\n");
 	}
 	else if (error == boost::asio::error::eof) {
-		printf("Lost connection with server\n");
+		printf("Lost connection with server...reconnecting\n");
 		m_state = STATE_LOST_CONNECTION;
+		try_connect();
 	}
 	else
 		printf("Error receiving packet: \n%s", error.message());
