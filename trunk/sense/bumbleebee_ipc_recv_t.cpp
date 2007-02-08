@@ -35,8 +35,12 @@ bool all::sense::bumblebee_ipc_recv_t::open(const std::string & config)
 {
   bool openok = true;
   //open ini and get the name
+  printf("\nOpening Camera Ini: %s\n\n", config.c_str());
   iniWrapper inifile(config.c_str());
-  std::string camname         = inifile.GetString("config:name");
+  char* tempname   = inifile.GetStringAsChar("config:name","bubbola");
+  std::string camname(tempname);         //= inifile.GetStringAsChar("config:name");
+
+  printf("Opening Camera %s\n\n", camname.c_str());
   //
   std::string info_name       = camname + "_IPC_bumblebee_info";
   std::string left_rgb_name   = camname + "_IPC_bumblebee_rgb_left";
@@ -54,6 +58,7 @@ bool all::sense::bumblebee_ipc_recv_t::open(const std::string & config)
 
   if(openok)
   {
+    printf("Allocating memory buffer\n\n");
     impl->allocate_buffers();
     impl->create_mutex(shmutex);
   }

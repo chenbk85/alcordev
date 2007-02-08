@@ -160,7 +160,7 @@ inline bool bumblebee_driver_impl::init_digiclops_context_(DigiclopsSerialNumber
  de = digiclopsSetImageTypes( digiclops_context_,  ALL_IMAGES );
  bok = bok && handle_digiclops_error( "digiclopsSetImageTypes()", de );
 
- 	printf("Setting Resolution and Color Processing\n");
+ 	//printf("Setting Resolution and Color Processing\n");
 		//     // set the Digiclops resolution
 	de = digiclopsSetImageResolution( digiclops_context_,  DIGICLOPS_FULL);
  bok = bok && handle_digiclops_error( "digiclopsSetImageResolution()", de );
@@ -171,7 +171,8 @@ inline bool bumblebee_driver_impl::init_digiclops_context_(DigiclopsSerialNumber
 
 	de = digiclopsSetColorProcessing(digiclops_context_,  DIGICLOPS_EDGE_SENSING );
 	bok = bok && handle_digiclops_error( "digiclopsSetColorProcessing()", de );
-
+  
+  printf("Reading Digiclops Settings from %s\n", (char*)digiclopsfile.c_str());
   settings_sptr.reset( new ::Settings(digiclops_context_) );
   settings_sptr->loadFromFile(digiclopsfile.c_str());
 
@@ -182,7 +183,7 @@ inline bool bumblebee_driver_impl::init_triclops_context_(std::string& triclopsf
 {
   bool bok = true;
 	TriclopsError  te;
-	
+	  printf("Reading Triclops Settings from %s\n", triclopsfile.c_str());
   te = triclopsGetDefaultContextFromFile(&triclops_context_, (char*)triclopsfile.c_str() );
 	bok = bok && handle_triclops_error( "triclopsGetDefaultContextFromFile()", te );
 

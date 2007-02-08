@@ -1,4 +1,5 @@
 #include "bumblebee_ipc_t.h"
+#include "alcor.extern/CImg/CImg.h"
 ////-------------------------------------------------------------------++
 #include <boost/bind.hpp>
 #include "alcor/core/image_info_t.h"
@@ -21,7 +22,7 @@ bool  all::sense::bumblebee_ipc_t::open(std::string& config_file)
 
   if( bee->open(config_file) )
   {
-    printf("\nBumblebee camera: %s Opened!\n", bee->name());
+    printf("\nBumblebee camera: %s Opened!\n", bee->name().c_str());
 
     printf("Starting Thread!\n");
     thisthread.reset(
@@ -69,6 +70,7 @@ void all::sense::bumblebee_ipc_t::run_thread()
   image_info.get_reference().width        =  bee->ncols();
   image_info.get_reference().channels     =  3;
   image_info.get_reference().focal        =  bee->focal();
+  printf("Focal is: %f\n", bee->focal() );
   //////////////////////////////////////////////////////////////////////
   //RIGHT RGB IMAGE
   ipc::shared_memory_object::remove( right_rgb_name.c_str() );
@@ -132,6 +134,8 @@ void all::sense::bumblebee_ipc_t::run_thread()
 	///////////////////////////////////////////////////////////////////////
   ipc::named_mutex mutex(ipc::open_or_create, shmutex.c_str());
   ///////////////////////////////////////////////////////////////////////
+  cimg_library::CImgDisplay dispr(bee->ncols(), bee->nrows(), "Bumblebee ipc /Right");
+  cimg_library::CImg<core::uint8_t> right;
    //in the thread_loop
 	while (_running)
 		{
@@ -145,6 +149,8 @@ void all::sense::bumblebee_ipc_t::run_thread()
         memcpy(right_rgb_addr, 
           bee->get_color_buffer(core::right_img).get(), 
           r_rgb_imag_size );
+          right.assign(right_rgb_addr, bee->ncols(),bee->nrows(),1,3);
+          right.display(dispr);
 		    }
          //LEFT
 		    {

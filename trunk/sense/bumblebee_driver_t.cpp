@@ -117,7 +117,7 @@ all::core::single_sarr bumblebee_driver_t::get_depth_buffer(bool shared)
 bool bumblebee_parameters_t::load(const std::string& confname)
 {
   iniWrapper config;
-
+  printf("\n");
   if( config.Load(confname) )
     //printf("Ini File loaded!\n");
     printf("Loading parameters from: %s\n", confname.c_str());
@@ -128,8 +128,9 @@ bool bumblebee_parameters_t::load(const std::string& confname)
   }
   char* temp;
 
-  _unit_number = config.GetInt("config:unitnumber", 6213002);
-  printf ("config:unitnumber = %l\n", _unit_number );
+  int tmp_unit_number = config.GetInt("config:unitnumber", 6213002);
+  _unit_number = static_cast<int>(tmp_unit_number);
+  printf ("config:unitnumber = %d\n", _unit_number );
 
   temp = config.GetStringAsChar("config:digiclopsini", "digiclopsA.ini");
   _digiclopsini.assign(temp);
@@ -144,8 +145,9 @@ bool bumblebee_parameters_t::load(const std::string& confname)
   printf ("config:name = %s\n", _name.c_str());
 
   printf("Loaded parameters from: %s\n", confname.c_str());
-  return true;
 
+  printf("\n");
+  return true;
 };
 //###################################################################
 
