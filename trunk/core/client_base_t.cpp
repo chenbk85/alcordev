@@ -188,11 +188,15 @@ void client_base_t::in_packet_error_cb(const boost::system::error_code& error) {
 	else if (error == boost::asio::error::eof) {
 		printf("Lost connection with server...reconnecting\n");
 		m_state = STATE_LOST_CONNECTION;
-    m_tcp_socket.close();
+		m_tcp_socket.close();
 		try_connect();
 	}
-	else
-		printf("Error receiving packet: \n%s", error.message());
+	else {
+		printf("Error with server connection: %s\n Resetting...\n", error.message().c_str());
+		m_state = STATE_LOST_CONNECTION;
+		m_tcp_socket.close();
+		try_connect();
+	}
 }
 
 void client_base_t::command_packet_handler (net_packet_ptr_t packet) {

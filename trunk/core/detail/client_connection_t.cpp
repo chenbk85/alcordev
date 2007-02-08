@@ -58,8 +58,10 @@ void client_connection_t::read_packet_error_cb(const boost::system::error_code& 
 		printf("Lost connection with client %s...\n", m_remote_addr.hostname.c_str());
 		m_client_manager_ref.stop_client(shared_from_this());
 	}
-	else
-		printf("Error receiving packet: \n%s", error.message());
+	else {
+		printf("Error in connection with client %s: %s\n Disconnecting client...\n", m_remote_addr.hostname.c_str(), error.message().c_str());
+		m_client_manager_ref.stop_client(shared_from_this());
+	}
 }
 
 void client_connection_t::handle_shutdown() {
