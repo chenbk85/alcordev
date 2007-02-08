@@ -31,14 +31,6 @@ private:
   void change_state(i_connection_state_t*);
 
 public:
-	/////callback handlers
- // boost::function< void (void) > register_to;
-
-	/////Called when disconnected
- // boost::function< void (void) > lost_connection;
-
-
-public:
 	//alcor::types::tServiceAddr 
   all::core::ip_address_t m_addr;
   ///
