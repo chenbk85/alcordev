@@ -97,6 +97,9 @@ void client_base_t::handle_connect(const boost::system::error_code& error, boost
 		
 		m_tcp_receiver.start_listen();
 
+		if (m_connect_cb)
+			m_connect_cb();
+
     } 
 	else if (endpoint_iterator != boost::asio::ip::tcp::resolver::iterator()) {
 		// The connection failed. Try the next endpoint in the list.
@@ -197,4 +200,8 @@ void client_base_t::add_command_handler(std::string command, boost::function <vo
 void client_base_t::shutdown_handler(net_packet_ptr_t packet) {
 	printf("Server shutting down...disconnecting\n");
 	handle_stop();
+}
+
+void client_base_t::set_connect_callback(boost::function <void (void)> connect_cb) {
+	m_connect_cb = connect_cb;
 }

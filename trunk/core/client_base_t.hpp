@@ -49,6 +49,8 @@ public:
 	
 	//add a command handler
 	void add_command_handler(std::string, boost::function <void (net_packet_ptr_t)> );
+
+	void set_connect_callback(boost::function <void(void)>);
 	
 
 private:
@@ -85,6 +87,8 @@ private:
 
 	std::map <net_packet_type, in_packet_handler_t > m_packet_handler_list;
 	std::map <std::string, in_packet_handler_t> m_command_handler_list;
+
+	boost::function < void (void)> m_connect_cb;
 
 };
 
