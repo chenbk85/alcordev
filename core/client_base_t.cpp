@@ -23,14 +23,17 @@ client_base_t::client_base_t():
 }
 
 void client_base_t::run() {
-	boost::asio::ip::tcp::resolver::query query(boost::asio::ip::tcp::v4(), 
-												m_server_addr.hostname, 
-												boost::lexical_cast<std::string>(m_server_addr.port));
-    m_resolver.async_resolve(query,
-							 boost::bind(&client_base_t::handle_resolve, 
-							             this,
-										 boost::asio::placeholders::error,
-										 boost::asio::placeholders::iterator));
+	//boost::asio::ip::tcp::resolver::query query(boost::asio::ip::tcp::v4(), 
+	//											m_server_addr.hostname, 
+	//											boost::lexical_cast<std::string>(m_server_addr.port));
+	//m_resolver.async_resolve(query,
+	//						 boost::bind(&client_base_t::handle_resolve, 
+	//						             this,
+	//									 boost::asio::placeholders::error,
+	//									 boost::asio::placeholders::iterator));
+
+	try_connect();
+
 	m_io_service.run();
 
 }
@@ -53,6 +56,21 @@ void client_base_t::stop() {
 
 void client_base_t::set_server_addr(all::core::ip_address_t server_address) {
 	m_server_addr = server_address;
+}
+
+bool client_base_t::is_connected() {
+	return (m_state == STATE_CONNECTED);
+}
+
+void client_base_t::try_connect() {
+	boost::asio::ip::tcp::resolver::query query(boost::asio::ip::tcp::v4(), 
+												m_server_addr.hostname, 
+												boost::lexical_cast<std::string>(m_server_addr.port));
+    m_resolver.async_resolve(query,
+							 boost::bind(&client_base_t::handle_resolve, 
+							             this,
+										 boost::asio::placeholders::error,
+										 boost::asio::placeholders::iterator));
 }
 
 void client_base_t::handle_resolve(const boost::system::error_code& error, boost::asio::ip::tcp::resolver::iterator endpoint_iterator) {
@@ -111,7 +129,8 @@ void client_base_t::handle_connect(const boost::system::error_code& error, boost
 										   ++endpoint_iterator));
     } 
 	else {
-		printf("error in client_base_t::handle_connect \n %s", error.message());
+		printf("Error connecting to the server...trying again\n");
+		try_connect();
 	}
      
 }

@@ -33,6 +33,8 @@ public:
 
 	void set_server_addr(all::core::ip_address_t);
 
+	bool is_connected();
+
 	//send a command to the server (no answer)
 	void send_command(std::string);
 	void send_command(std::string, net_packet_ptr_t);
@@ -56,6 +58,8 @@ public:
 private:
 
 	void handle_stop();
+
+	void try_connect();
 
 	void handle_resolve(const boost::system::error_code&, boost::asio::ip::tcp::resolver::iterator);
 	void handle_connect(const boost::system::error_code&, boost::asio::ip::tcp::resolver::iterator);

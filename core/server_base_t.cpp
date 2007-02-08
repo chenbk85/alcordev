@@ -77,8 +77,8 @@ void server_base_t::in_packet_cb(client_connection_ptr_t client, net_packet_ptr_
 	std::map <net_packet_type, in_pkt_callback_t>::iterator type_it = m_packet_handler_list.find(packet_type);
 	
 	if (type_it != m_packet_handler_list.end()) {
-        in_pkt_callback_t in_pkt_callback = type_it->second;
-		in_pkt_callback(client, packet);
+        in_pkt_callback_t in_cmd_callback = type_it->second;
+		in_cmd_callback(client, packet);
 	}
 	else {
 		printf("No handler found for the received packet type\n");
