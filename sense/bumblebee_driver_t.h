@@ -41,7 +41,7 @@ public:
   ///
   std::string   _name;    
   ///
-  void load(const std::string &);
+  bool load(const std::string &);
 
 };
 

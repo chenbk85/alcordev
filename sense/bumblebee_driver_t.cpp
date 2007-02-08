@@ -21,8 +21,9 @@ namespace all { namespace sense {
   bIsOk   = bIsOk && impl->init_digiclops_context_(params._unit_number, params._digiclopsini);
   bIsOk   = bIsOk && impl->init_triclops_context_(params._triclopsini);
   bIsOk   = bIsOk && impl->init_grabbing_();
-if (bIsOk)
-  impl->allocate_buffers_();
+
+  if (bIsOk)
+    impl->allocate_buffers_();
 
   return bIsOk;
 }
@@ -113,18 +114,37 @@ all::core::single_sarr bumblebee_driver_t::get_depth_buffer(bool shared)
 //------------------------------------------------------------------+
 
 //###################################################################
-void bumblebee_parameters_t::load(const std::string& confname)
+bool bumblebee_parameters_t::load(const std::string& confname)
 {
   iniWrapper config;
-  config.Load(confname);
 
-  _unit_number  = config.GetInt("config:unitnumber", 6213002);
+  if( config.Load(confname) )
+    //printf("Ini File loaded!\n");
+    printf("Loading parameters from: %s\n", confname.c_str());
+  else
+  {
+    printf("Impossible to read from %s\n", confname.c_str());
+    return false;
+  }
+  char* temp;
 
-  _digiclopsini = config.GetString("config:digiclopsini");//, "digiclopsA.ini");
+  _unit_number = config.GetInt("config:unitnumber", 6213002);
+  printf ("config:unitnumber = %l\n", _unit_number );
 
-  _triclopsini  = config.GetString("config:triclopsini"); //"triclopsA.ini");
+  temp = config.GetStringAsChar("config:digiclopsini", "digiclopsA.ini");
+  _digiclopsini.assign(temp);
+  printf ("config:digiclopsini = %s\n", _digiclopsini.c_str());
 
-  _name         = config.GetString("config:name");//, "aristotele");
+  temp  = config.GetStringAsChar("config:triclopsini", "triclopsA.ini");
+  _triclopsini.assign(temp);
+  printf ("config:triclopsini = %s\n", _triclopsini.c_str());
+
+  temp  = config.GetStringAsChar("config:name", "aristotele");
+  _name.assign(temp);
+  printf ("config:name = %s\n", _name.c_str());
+
+  printf("Loaded parameters from: %s\n", confname.c_str());
+  return true;
 
 };
 //###################################################################

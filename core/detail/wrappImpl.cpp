@@ -109,7 +109,12 @@ inline void wrappImpl::Remove(char* key){
 	\param key name of the entry in the directory of the ini file. Syntax directory:entry
 */
 inline std::string wrappImpl::GetString(char* key){
-	return iniparser_getstr(dict,key);
+  printf("READING STRING: %s\n", key);
+  char* temp;
+  temp =  iniparser_getstr(dict,key);
+  std::string retstr(temp);
+  printf("STRING: %s\n", retstr);
+	return retstr;
 };
 
 /*!
