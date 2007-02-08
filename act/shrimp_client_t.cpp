@@ -6,7 +6,7 @@ namespace all {
 shrimp_client_t::shrimp_client_t(char* ini_file) {
 	if (m_ini_config.Load(ini_file)) {
 		all::core::ip_address_t server_address;
-		server_address.hostname = m_ini_config.GetString("server:address");
+		server_address.hostname = m_ini_config.GetStringAsChar("server:address", "127.0.0.1");
 		server_address.port = m_ini_config.GetInt("server:port", 12345);
 		set_server_addr(server_address);
 	}
