@@ -1,5 +1,10 @@
 #include "tcp_pkt_sender_t.hpp"
 
+namespace all {
+	namespace core {
+		namespace detail {
+
+
 tcp_pkt_sender_t::tcp_pkt_sender_t(boost::asio::ip::tcp::socket& socket) : m_socket(socket) 
 {
 }
@@ -40,3 +45,6 @@ void tcp_pkt_sender_t::handle_write(const boost::system::error_code& error, std:
 			m_error_callback(error);
 	}
 }
+
+
+}}} //namespaces

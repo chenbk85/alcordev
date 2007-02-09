@@ -1,5 +1,8 @@
 #include "client_base_t.hpp"
 
+namespace all {
+	namespace core {
+
 client_base_t::client_base_t():
 						m_io_service(),
 						m_tcp_socket(m_io_service),
@@ -23,19 +26,8 @@ client_base_t::client_base_t():
 }
 
 void client_base_t::run() {
-	//boost::asio::ip::tcp::resolver::query query(boost::asio::ip::tcp::v4(), 
-	//											m_server_addr.hostname, 
-	//											boost::lexical_cast<std::string>(m_server_addr.port));
-	//m_resolver.async_resolve(query,
-	//						 boost::bind(&client_base_t::handle_resolve, 
-	//						             this,
-	//									 boost::asio::placeholders::error,
-	//									 boost::asio::placeholders::iterator));
-
 	try_connect();
-
 	m_io_service.run();
-
 }
 
 void client_base_t::run_async() {
@@ -230,3 +222,5 @@ void client_base_t::shutdown_handler(net_packet_ptr_t packet) {
 void client_base_t::set_connect_callback(boost::function <void (void)> connect_cb) {
 	m_connect_cb = connect_cb;
 }
+
+}} //namespaces
