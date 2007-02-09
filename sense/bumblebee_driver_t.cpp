@@ -87,7 +87,14 @@ all::core::uint8_sarr  bumblebee_driver_t::get_color_buffer(core::left_img_t , b
     return return_ptr;
   else
   {
-    all::core::uint8_sarr a_copy_of( return_ptr.get() ); 
+    size_t a_size = impl->rows_ 
+                    * impl->cols_ 
+                    * 3;
+
+    all::core::uint8_sarr a_copy_of(new all::core::uint8_t[a_size]);
+  
+    memcpy(a_copy_of.get(), return_ptr.get(), a_size);
+
     return a_copy_of;
   }
 }
@@ -101,7 +108,14 @@ all::core::uint8_sarr bumblebee_driver_t::get_color_buffer(core::right_img_t , b
     return return_ptr;
   else
   {
-    all::core::uint8_sarr a_copy_of( return_ptr.get() ); 
+    size_t a_size = impl->rows_ 
+                    * impl->cols_ 
+                    * 3;
+
+    all::core::uint8_sarr a_copy_of(new all::core::uint8_t[a_size]);
+  
+    memcpy(a_copy_of.get(), return_ptr.get(), a_size);
+
     return a_copy_of;
   }
 }
