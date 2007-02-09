@@ -1,7 +1,7 @@
 #ifndef shrimp_server_data_t_H_INCLUDED
 #define shrimp_server_data_t_H_INCLUDED
 
-#include <alcor/core/detail/net_packet_t.hpp>
+#include <alcor/core/net_packet_t.hpp>
 
 namespace all {
 	namespace act {
@@ -9,8 +9,8 @@ namespace all {
 class shrimp_server_data_t {
 
 public:
-	void import(net_packet_ptr_t);
-	void pack(net_packet_ptr_t);
+	void import(core::net_packet_ptr_t);
+	void pack(core::net_packet_ptr_t);
 
 public:
 	int m_speed;
