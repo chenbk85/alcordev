@@ -60,6 +60,7 @@ bool all::sense::bumblebee_ipc_recv_t::open(const std::string & config)
   {
     printf("Allocating memory buffer\n\n");
     impl->allocate_buffers();
+    printf("Allocating mutex \n\n");
     impl->create_mutex(shmutex);
   }
 
@@ -70,8 +71,8 @@ bool all::sense::bumblebee_ipc_recv_t::open(const std::string & config)
 all::core::uint8_sarr  
   all::sense::bumblebee_ipc_recv_t::get_color_buffer(core::left_img_t ,  bool shared )
 {
-  all::core::uint8_sarr temp;
-  impl->get_color_(all::core::left_img,  temp);
+  all::core::uint8_sarr temp =
+    impl->get_color_(all::core::left_img);
   return temp;
 }
 ////-------------------------------------------------------------------++
@@ -79,8 +80,8 @@ all::core::uint8_sarr
 all::core::uint8_sarr  
   all::sense::bumblebee_ipc_recv_t::get_color_buffer(core::right_img_t , bool shared)
 {
-  all::core::uint8_sarr temp;
-  impl->get_color_(all::core::right_img,  temp);
+  all::core::uint8_sarr temp =
+    impl->get_color_(all::core::right_img) ;
   return temp;
 }
 ////-------------------------------------------------------------------++
@@ -88,8 +89,8 @@ all::core::uint8_sarr
 all::core::single_sarr 
   all::sense::bumblebee_ipc_recv_t::get_depth_buffer(bool shared)
 {
-  all::core::single_sarr temp;
-  impl->get_depth_(temp);
+  all::core::single_sarr temp =
+    impl->get_depth_(temp);
   return temp;
 }
 ////-------------------------------------------------------------------++

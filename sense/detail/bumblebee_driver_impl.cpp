@@ -152,10 +152,6 @@ inline bool bumblebee_driver_impl::init_digiclops_context_(DigiclopsSerialNumber
  de = digiclopsInitializeFromSerialNumber(digiclops_context_,  serial_num);
  bok = bok && handle_digiclops_error( "digiclopsInitialize()", de );
 
- //// get the camera module configuration
- //de = digiclopsGetTriclopsContextFromCamera( digiclops_context_, &triclops_context_ );
- //bok = bok && handle_digiclops_error( "digiclopsGetTriclopsContextFromCamera()", de );
-
   // set the digiclops to deliver the stereo image and right (color) image
  de = digiclopsSetImageTypes( digiclops_context_,  ALL_IMAGES );
  bok = bok && handle_digiclops_error( "digiclopsSetImageTypes()", de );
