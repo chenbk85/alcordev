@@ -71,6 +71,7 @@ struct bumblebee_ipc_recv_impl
 		///OPENS RIGHT //////////////////////////////////////
   bool open_rgb_right(const std::string& in_name)
 			{
+        //printf("\nRight Image IPC name: %s\n", in_name.c_str());
         //RGB map
 			try {
 			//Open already created shared memory object.
@@ -162,7 +163,7 @@ struct bumblebee_ipc_recv_impl
   /////////////////////////////////////////////////////////////////////////
   //GETTERS
   ///////////////////////////////////////////////////////////////////////////  
-    bool get_color_(all::core::left_img_t, all::core::uint8_sarr arr)
+    all::core::uint8_sarr get_color_(all::core::left_img_t)
     {
   		try 
       {
@@ -175,33 +176,34 @@ struct bumblebee_ipc_recv_impl
 		  catch(ipc::interprocess_exception &ex)
       {
 			  std::cout << "Unexpected exception: " << ex.what() << std::endl;
-			  return false;
+        all::core::uint8_sarr err;
+			  return err;
 		  }
-      arr = left_image_sptr;
-	    return true;
+      return left_image_sptr;
     }
 
 
-    bool get_color_(all::core::right_img_t, all::core::uint8_sarr arr)
+    all::core::uint8_sarr get_color_(all::core::right_img_t )
     {
   		try 
       {
-		  void * addr       = right_rgb_region->get_address();
-		  std::size_t size  = right_rgb_region->get_size();
-		  ///Write.....
-      memcpy(right_image_sptr.get(), (core::uint8_ptr)addr, size);
+		    void * addr       = right_rgb_region->get_address();
+		    std::size_t size  = right_rgb_region->get_size();
+        //printf("RIGHT IMG size: %d\n", size);
+		    ///Write.....
+        memcpy(right_image_sptr.get(), (core::uint8_ptr)addr, size);
       }//try_block
 
 		  catch(ipc::interprocess_exception &ex)
       {
 			  std::cout << "Unexpected exception: " << ex.what() << std::endl;
-			  return false;
+        all::core::uint8_sarr err;
+			  return err;
 		  }
-      arr = right_image_sptr;
-	    return true;
+      return right_image_sptr;
     }
 
-    bool get_depth_(all::core::single_sarr arr)
+    all::core::single_sarr get_depth_(all::core::single_sarr arr)
     {
 		  try 
       {
@@ -213,10 +215,10 @@ struct bumblebee_ipc_recv_impl
       {
         std::cout << "get_internal_depth::Unexpected exception: " 
             << ex.what() << std::endl;
-			  return   false;
+        all::core::single_sarr err;
+			  return err;
 		  }
-      arr=depth_image_sptr;
-    return true;
+      return depth_image_sptr;
     }
 
 		///
@@ -227,7 +229,7 @@ struct bumblebee_ipc_recv_impl
   all::core::single_sarr  depth_image_sptr;
 
   ///
-  std::auto_ptr<ipc::named_mutex> mutex_sptr;
+  std::auto_ptr<ipc::named_mutex>               mutex_sptr;
 	///
 	std::auto_ptr<ipc::shared_memory_object>	    right_rgb_shm;
 	///
