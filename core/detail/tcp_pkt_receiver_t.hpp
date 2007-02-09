@@ -5,7 +5,12 @@
 #include <boost/function.hpp>
 #include <boost/bind.hpp>
 #include <map>
-#include "net_packet_t.hpp"
+#include "../net_packet_t.hpp"
+
+
+namespace all {
+	namespace core {
+		namespace detail {
 
 class tcp_pkt_receiver_t {
 
@@ -54,5 +59,7 @@ private:
 	bool m_listen_f;
 	bool m_interrupt_f;
 };
+
+}}} //namespaces 
 
 #endif

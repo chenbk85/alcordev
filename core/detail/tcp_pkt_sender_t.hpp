@@ -4,7 +4,12 @@
 #include <boost/asio.hpp>
 #include <boost/function.hpp>
 #include <boost/bind.hpp>
-#include "net_packet_t.hpp"
+#include "../net_packet_t.hpp"
+
+namespace all {
+	namespace core {
+		namespace detail {
+
 
 class tcp_pkt_sender_t {
 
@@ -28,5 +33,7 @@ private:
 	std::string m_out_header_buffer;
 	std::string m_out_data_buffer;
 };
+
+}}} //namespaces
 
 #endif

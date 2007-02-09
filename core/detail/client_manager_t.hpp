@@ -3,8 +3,13 @@
 
 #include <set>
 #include <boost/function.hpp>
-#include "net_packet_t.hpp"
-#include "client_connection_t.hpp"
+#include "../net_packet_t.hpp"
+#include "../client_connection_t.hpp"
+
+namespace all {
+	namespace core {
+		namespace detail {
+
 
 class client_manager_t {
 
@@ -24,5 +29,7 @@ private:
 	std::set <client_connection_ptr_t> m_client_list;
 
 };
+
+}}} //namespaces
 
 #endif

@@ -6,6 +6,10 @@
 #include <vector>
 #include <limits>
 
+
+namespace all {
+	namespace core {
+
 enum net_packet_type {
 		COMMAND_PACKET,
 		REQUEST_PACKET,
@@ -100,5 +104,7 @@ protected:
 };
 
 typedef boost::shared_ptr <net_packet_t> net_packet_ptr_t;
+
+}} //namespaces 
 
 #endif

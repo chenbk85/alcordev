@@ -1,8 +1,11 @@
 #include "client_connection_t.hpp"
-#include "client_manager_t.hpp"
+#include "detail/client_manager_t.hpp"
+
+namespace all {
+	namespace core {
 
 client_connection_t::client_connection_t(boost::asio::io_service& io_service,
-									     client_manager_t& client_manager):
+										 detail::client_manager_t& client_manager):
 
 								m_socket(io_service),
 								m_client_manager_ref(client_manager),
@@ -118,3 +121,5 @@ void client_connection_t::handle_timer_req(const boost::system::error_code& erro
 										  req_timer, req_callback, freq));
 	}
 }
+
+}} //namespaces

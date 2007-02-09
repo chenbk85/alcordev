@@ -7,16 +7,20 @@
 #include <boost/enable_shared_from_this.hpp>
 #include <alcor/core/core.h>
 #include "net_packet_t.hpp"
-#include "tcp_pkt_receiver_t.hpp"
-#include "tcp_pkt_sender_t.hpp"
+#include "detail/tcp_pkt_receiver_t.hpp"
+#include "detail/tcp_pkt_sender_t.hpp"
 
-class client_manager_t;
+namespace all {
+	namespace core {
 
+		namespace detail {
+			class client_manager_t;
+		}
 //handler for client connection
 
 class client_connection_t : public boost::enable_shared_from_this <client_connection_t> {
 public:
-	client_connection_t(boost::asio::io_service&, client_manager_t&);
+	client_connection_t(boost::asio::io_service&, detail::client_manager_t&);
 	
 	boost::asio::ip::tcp::socket& get_socket();
 
@@ -52,11 +56,11 @@ public:
 private:
 	boost::asio::ip::tcp::socket m_socket;
 
-	tcp_pkt_receiver_t m_tcp_receiver;
+	detail::tcp_pkt_receiver_t m_tcp_receiver;
 
-	tcp_pkt_sender_t m_tcp_sender;
+	detail::tcp_pkt_sender_t m_tcp_sender;
 
-	client_manager_t& m_client_manager_ref;
+	detail::client_manager_t& m_client_manager_ref;
 
 	all::core::ip_address_t m_remote_addr;
 
@@ -66,5 +70,7 @@ private:
 };
 
 typedef boost::shared_ptr <client_connection_t> client_connection_ptr_t;
+
+}} //namespaces
 
 #endif

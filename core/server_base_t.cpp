@@ -1,5 +1,9 @@
 #include "server_base_t.hpp"
 
+namespace all {
+	namespace core {
+
+
 server_base_t::server_base_t():
 							m_io_service(),
 							m_client_acceptor(m_io_service),
@@ -187,3 +191,5 @@ void server_base_t::send_answer_packet(std::string command, client_connection_pt
 void server_base_t::send_finalized_packet(client_connection_ptr_t client, net_packet_ptr_t packet) {
 	client->send_packet(packet);
 }
+
+}} //namespaces

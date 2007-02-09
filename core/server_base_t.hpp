@@ -8,9 +8,11 @@
 #include <boost/bind.hpp>
 #include <boost/function.hpp>
 #include "detail/client_manager_t.hpp"
-#include "detail/client_connection_t.hpp"
-#include "detail/net_packet_t.hpp"
+#include "client_connection_t.hpp"
+#include "net_packet_t.hpp"
 
+namespace all {
+	namespace core {
 
 class server_base_t {
 
@@ -80,7 +82,7 @@ private:
 	typedef boost::shared_ptr< boost::thread > thread_t;
 
 	//manage clients currently connected on the server
-	client_manager_t m_client_manager;
+	detail::client_manager_t m_client_manager;
 
 	//handler of new incoming connection to the server
 	client_connection_ptr_t m_new_client_connection_ptr;
@@ -91,6 +93,8 @@ private:
 
 	std::map <net_packet_type, in_pkt_callback_t> m_packet_handler_list;
 };
+
+}} //namespaces
 
 #endif
 

@@ -1,5 +1,10 @@
 #include "tcp_pkt_receiver_t.hpp"
 
+namespace all {
+	namespace core {
+		namespace detail {
+
+
 tcp_pkt_receiver_t::tcp_pkt_receiver_t(boost::asio::ip::tcp::socket& socket) : m_socket(socket) {
 	m_in_data_buffer = NULL;
 	m_listen_f = false;
@@ -133,3 +138,5 @@ void tcp_pkt_receiver_t::handle_read_data(const boost::system::error_code& error
 			m_error_callback(error);
 	}
 }
+
+}}} //namespaces

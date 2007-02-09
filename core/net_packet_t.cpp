@@ -1,8 +1,11 @@
 #include "net_packet_t.hpp"
 #include <iostream>
 
+namespace all {
+	namespace core {
+
 const unsigned short net_packet_header_t::MAX_ID = std::numeric_limits<unsigned short>::max();
-const std::string net_packet_t::END_SEQUENCE = "end_of_packet";
+const std::string net_packet_t::END_SEQUENCE = "#end#";
 unsigned short net_packet_header_t::next_id = 0;
 
 net_packet_header_t::net_packet_header_t() {
@@ -275,3 +278,4 @@ const net_packet_header_t& net_packet_t::get_header() const{
 	return m_header;
 }
 
+}} //namespaces

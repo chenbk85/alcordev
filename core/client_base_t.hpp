@@ -6,9 +6,12 @@
 #include <boost/shared_ptr.hpp>
 #include <alcor/core/core.h>
 #include <boost/bind.hpp>
-#include "detail/net_packet_t.hpp"
+#include "net_packet_t.hpp"
 #include "detail/tcp_pkt_sender_t.hpp"
 #include "detail/tcp_pkt_receiver_t.hpp"
+
+namespace all {
+	namespace core {
 
 class client_base_t {
 	
@@ -84,8 +87,8 @@ private:
 
 	all::core::ip_address_t m_server_addr;
 
-	tcp_pkt_sender_t m_tcp_sender;
-	tcp_pkt_receiver_t m_tcp_receiver;
+	detail::tcp_pkt_sender_t m_tcp_sender;
+	detail::tcp_pkt_receiver_t m_tcp_receiver;
 
 	typedef boost::function <void (net_packet_ptr_t)> in_packet_handler_t;
 
@@ -95,5 +98,7 @@ private:
 	boost::function < void (void)> m_connect_cb;
 
 };
+
+}} //namespaces
 
 #endif
