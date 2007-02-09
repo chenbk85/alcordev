@@ -71,9 +71,25 @@ bool all::sense::bumblebee_ipc_recv_t::open(const std::string & config)
 all::core::uint8_sarr  
   all::sense::bumblebee_ipc_recv_t::get_color_buffer(core::left_img_t ,  bool shared )
 {
-  all::core::uint8_sarr temp =
-    impl->get_color_(all::core::left_img);
-  return temp;
+
+  all::core::uint8_sarr return_sptr =
+    impl->get_color_(all::core::left_img);  
+
+  if(shared)
+    return return_sptr;
+  else
+  {
+    size_t a_size = impl->image_info_.height 
+                    * impl->image_info_.width 
+                    * 3;
+
+    all::core::uint8_sarr a_copy(new all::core::uint8_t[a_size]);
+  
+    memcpy(a_copy.get(), return_sptr.get(), a_size);
+
+    return a_copy;
+  }
+
 }
 ////-------------------------------------------------------------------++
 ///
