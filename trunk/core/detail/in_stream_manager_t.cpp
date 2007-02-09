@@ -104,7 +104,7 @@ void in_stream_manager_t::in_packet_cb(stream_packet_ptr_t packet) {
 }
 
 void in_stream_manager_t::in_packet_error_cb(const boost::system::error_code& error) {
-	printf("In packet error\n");
+	printf("in packet error\n");
 }
 
 void in_stream_manager_t::set_frame_buffer(std::size_t buffer_size) {

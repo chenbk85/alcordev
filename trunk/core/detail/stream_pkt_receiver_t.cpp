@@ -69,22 +69,30 @@ void stream_pkt_receiver_t::handle_read_data(const boost::system::error_code& er
 		
 		m_packet_ptr.reset(new stream_packet_t());
 
-
-		//start waiting for next packet
-		if (m_listen_f)
-			//async->returns immediatly
-			read_packet();
-		
 		//build packet
 		if (!m_packet_ptr->build_packet_from_string(m_in_data_buffer, bytes_transferred)) {
+			
 			printf("Error building packet from socket\n");
+			
+			//start waiting for next packet
+			if (m_listen_f)
+			//async->returns immediatly
+				read_packet();
+			
 			if (m_error_callback)
 				m_error_callback(boost::asio::error::no_data);
+
 		}
 		//invoke read callback
-		else if (m_read_callback) 
-			m_read_callback(m_packet_ptr);
-
+		else { 
+			//start waiting for next packet
+			if (m_listen_f)
+				//async->returns immediatly
+				read_packet();
+			
+			if (m_read_callback) 
+				m_read_callback(m_packet_ptr);
+		}
 	}
 	else {
 		if (m_error_callback)
