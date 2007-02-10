@@ -79,7 +79,7 @@ private:
 
 private:
 	
-	client_state m_state;
+	volatile client_state m_state;
 
 	boost::asio::io_service m_io_service;
 	boost::asio::ip::tcp::socket m_tcp_socket;
