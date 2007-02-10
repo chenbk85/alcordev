@@ -6,6 +6,7 @@ using std::cout;
 using std::endl;
 //-------------------------------------------------------------------------++
 #include <alcor/sense/opencv_grabber_t.h>
+#include "alcor/core/image_utils.h"
 //-------------------------------------------------------------------------++
 //#define OPENCV_OPENAVI
 //-------------------------------------------------------------------------++
@@ -34,7 +35,7 @@ all::sense::opencv_grabber_t::~opencv_grabber_t()
 	}
 //-------------------------------------------------------------------------++
 ///
-bool all::sense::opencv_grabber_t::open(core::detail::camera_mode_t, int in_cam) 
+bool all::sense::opencv_grabber_t::open(core::camera_mode_t, int in_cam) 
 	{
     // Release any previously allocated resources, just in case
     close();
@@ -52,7 +53,7 @@ bool all::sense::opencv_grabber_t::open(core::detail::camera_mode_t, int in_cam)
 
 }
 //-------------------------------------------------------------------------++
-bool all::sense::opencv_grabber_t::open(core::detail::video_mode_t, const std::string& in_file)
+bool all::sense::opencv_grabber_t::open(core::video_mode_t, const std::string& in_file)
 	{
         // Try to open a capture object for the file
         m_capture = (void*)cvCaptureFromAVI(in_file.c_str());
@@ -78,9 +79,10 @@ bool all::sense::opencv_grabber_t::internal_open_()
     }
 
 	//
-	m_w  = _iplFrame->width;
-	m_h  = _iplFrame->height;
-	m_ch = _iplFrame->nChannels;
+	m_w     = _iplFrame->width;
+	m_h     = _iplFrame->height;
+	m_ch    = _iplFrame->nChannels;
+  m_order = _iplFrame->dataOrder;
 	m_byte_size = _iplFrame->imageSize;
 
   image_sptr.reset(new core::uint8_t[m_w*m_h*m_ch] );
@@ -112,9 +114,8 @@ bool all::sense::opencv_grabber_t::internal_open_()
 	}
 //-------------------------------------------------------------------------++
 ///
-bool all::sense::opencv_grabber_t::close() {
-
-    //
+bool all::sense::opencv_grabber_t::close() 
+{
 
     if(m_ipl_image)  cvReleaseImage(&m_ipl_image);
 
@@ -145,23 +146,22 @@ bool all::sense::opencv_grabber_t::get_color_buffer
     if (0 == iplFrame) {
          return false;
     }
-	
+	  //printf("acquired\n");
 	cvConvertImage(iplFrame, m_ipl_image, CV_CVTIMG_FLIP);
 
-	cvConvertImage(m_ipl_image, m_ipl_image, CV_CVTIMG_SWAP_RB);
+	//cvConvertImage(m_ipl_image, m_ipl_image, CV_CVTIMG_SWAP_RB);
 
-  //
-  user_buffer.reset((core::uint8_ptr)m_ipl_image->imageData);
+  memcpy(user_buffer.get()
+	,(unsigned char*)m_ipl_image->imageData 
+	 ,  m_byte_size);
 
-/////
-//   cvCvtPixToPlane( const CvArr* src, CvArr* dst0, NULL,
-//             NULL, NULL);
+  if(!m_order)
+  {
+    //to planar!
+    printf("Change Ordering to Planar\n");
+    core::change_ordering::to_planar(user_buffer, m_h, m_w, m_ch);
+  }
 
-  //memcpy(user_buffer.get()
-		//,(unsigned char*)m_ipl_image->imageData 
-		// ,  m_byte_size);
-	
-	//cvReleaseImage(&iplImage);
     //// That's it
     return true;
 
