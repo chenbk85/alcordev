@@ -18,18 +18,16 @@ class all::sense::opencv_grabber_t
 {
 public:
 
-	///
-    opencv_grabber_t(int cam = -1); 
-  
-    // Destroy an OpenCV image grabber.
-    virtual ~opencv_grabber_t();
+///
+  opencv_grabber_t(int cam = -1); 
+
+  // Destroy an OpenCV image grabber.
+  virtual ~opencv_grabber_t();
 
 	///
 	bool open(core::detail::camera_mode_t, int);
-
 	///
 	bool open(core::detail::video_mode_t, const std::string&);
-
 	///
 	bool close();
 	///
