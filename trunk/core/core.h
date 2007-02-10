@@ -44,10 +44,10 @@ static const gray_t gray_tag = gray_t();
 struct video_mode_t {};
 struct camera_mode_t {};
 
-static const core::detail::video_mode_t   open_video  = 
-										core::detail::video_mode_t();
-static const core::detail::camera_mode_t  open_camera = 
-										core::detail::camera_mode_t();
+static const core::video_mode_t   open_video  = 
+										core::video_mode_t();
+static const core::camera_mode_t  open_camera = 
+										core::camera_mode_t();
 //---------------------------------------------------------------------------+
 template<class T>
   class constants 
