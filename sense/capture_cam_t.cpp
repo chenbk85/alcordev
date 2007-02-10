@@ -3,7 +3,7 @@
 #include "alcor/core/ipc_serializable_t.h"
 //-----------------------------------------------------------------------++
 #include "opencv_grabber_t.h"
-#include "alcor/core/config_parser_t.h"
+#include "alcor/core/iniwrapper.h"
 //-----------------------------------------------------------------------++
 #include <boost/thread/thread.hpp>
 //-----------------------------------------------------------------------++
@@ -32,7 +32,13 @@ all::sense::capture_cam_t::capture_cam_t(const std::string& xml)
 				
 	{
 	_impl.reset(new all::sense::opencv_grabber_t);
-    open_conf_(xml);
+   open_conf_(xml);
+   	//boost::thread capture_thr
+	//	(
+	//	boost::bind(
+ //           &sense::capture_cam_t::run_thread
+	//	    ,&capture_cam) 
+	//	);
 	}
 //-----------------------------------------------------------------------++
 all::sense::capture_cam_t::~capture_cam_t()

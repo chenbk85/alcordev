@@ -9,9 +9,9 @@ class capture_cam_t;
 #include "alcor/sense/i_device_driver.h"
 #include "alcor/core/core.h"
 #include "alcor/core/detail/grabber_mode_tags.hpp"
-//#define BOOST_DATE_AND_TIME_NO_LIB
 //-------------------------------------------------------------------------++
-#include <memory>
+#include <boost/thread/thread.hpp>
+#include <boost/shared_ptr.hpp>
 //-------------------------------------------------------------------------++
 ///forward
 //-------------------------------------------------------------------------++
@@ -28,17 +28,17 @@ class all::sense::capture_cam_t : public i_device_driver
 		void set_avi_mode(){camera_mode=false;};
 	
 	public:
-
 		///
 		bool close();
 
 	public:
-		///
-		void run_thread();
+
 		///
 		void cancel() {_running=false;};
 
-	private:	        
+	private:	   		
+    ///
+		void run_thread();     
     ///
     void open_conf_(const std::string& _xmlfile);	
 		///
@@ -47,12 +47,14 @@ class all::sense::capture_cam_t : public i_device_driver
 		bool _open(core::detail::video_mode_t,const std::string &);
 
 		///
-		std::auto_ptr<all::sense::opencv_grabber_t> _impl; 
-		///
-    std::auto_ptr<all::core::uint8_t> _buffer;
+    boost::shared_ptr<all::sense::opencv_grabber_t> _impl; 
+    ///
+    all::core::uint8_sarr _buffer;
+
+    boost::shared_ptr<boost::thread> thread_ptr;
 		///
 		bool camera_mode;
-        ///
+    ///
     int cam_;
     ///
     std::string  video_name_;

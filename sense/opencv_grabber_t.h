@@ -35,16 +35,17 @@ public:
 	///
   bool get_color_buffer(core::uint8_sarr);
   
-	///
-    int height() const { return m_h; }
-	///
-    int width() const { return m_w; }
-	///
-    int channels() const { return m_ch; }
-	///
-	std::size_t size() const { return m_byte_size; }
+  ///
+  int height() const { return m_h; }
+  ///
+  int width() const { return m_w; }
+  ///
+  int channels() const { return m_ch; }
+  ///
+  std::size_t size() const { return m_byte_size; }
 
 private:
+  ///
 	bool internal_open_();
 
 protected:
