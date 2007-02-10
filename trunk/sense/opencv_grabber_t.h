@@ -4,7 +4,7 @@
 #pragma comment(lib, "opencv_grabber_t.lib")
 //-------------------------------------------------------------------------++
 #include "alcor/core/core.h"
-#include "alcor/core/detail/grabber_mode_tags.hpp"
+//#include "alcor/core/detail/grabber_mode_tags.hpp"
 #include <cv.h>
 #include <highgui.h>
 //-------------------------------------------------------------------------++
@@ -27,9 +27,9 @@ public:
   virtual ~opencv_grabber_t();
 
 	///
-	bool open(core::detail::camera_mode_t, int);
+	bool open(core::camera_mode_t, int cam=-1);
 	///
-	bool open(core::detail::video_mode_t, const std::string&);
+	bool open(core::video_mode_t, const std::string&);
 	///
 	bool close();
 	///
@@ -56,6 +56,8 @@ protected:
   int m_h;
 	///Height of the images a grabber produces. 
 	int m_ch;
+  ///
+  int m_order;
 	///
 	int m_cam_id;
 	///
