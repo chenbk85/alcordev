@@ -20,7 +20,7 @@ class all::sense::capture_cam_t : public i_device_driver
 	{
 	public:
 		///
-        capture_cam_t(const std::string& xml = "xmlconf/grabber.xml");
+    capture_cam_t(const std::string& xml = "xmlconf/grabber.xml");
 		///
 		~capture_cam_t();
 		///
@@ -39,8 +39,8 @@ class all::sense::capture_cam_t : public i_device_driver
 		void cancel() {_running=false;};
 
 	private:	        
-        ///
-        void open_conf_(const std::string& _xmlfile);	
+    ///
+    void open_conf_(const std::string& _xmlfile);	
 		///
 		bool _open(core::detail::camera_mode_t,int in_cam = -1);
 		///
@@ -55,11 +55,11 @@ class all::sense::capture_cam_t : public i_device_driver
         ///
     int cam_;
     ///
-    std::string video_name_;
+    std::string  video_name_;
 		std::string  info_obj_tag;
 		std::string  mem_obj_tag; 
 		///
-		bool _running;
+		volatile bool _running;
 	};
 //-------------------------------------------------------------------------++
 #endif //capture_cam_t_H_INCLUDED

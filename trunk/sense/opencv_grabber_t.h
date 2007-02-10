@@ -5,6 +5,8 @@
 //-------------------------------------------------------------------------++
 #include "alcor/core/core.h"
 #include "alcor/core/detail/grabber_mode_tags.hpp"
+#include <cv.h>
+#include <highgui.h>
 //-------------------------------------------------------------------------++
 namespace all {
     namespace sense {
@@ -31,7 +33,7 @@ public:
 	///
 	bool close();
 	///
-  bool get_color_buffer(core::uint8_ptr);
+  bool get_color_buffer(core::uint8_sarr);
   
 	///
     int height() const { return m_h; }
@@ -59,8 +61,13 @@ protected:
 	unsigned int snap;
 	///
 	std::size_t m_byte_size;
-    ///Opaque OpenCV structure for image capture.
-    void * m_capture;
+  ///
+  all::core::uint8_sarr image_sptr;
+  ///
+  IplImage* m_ipl_image;
+
+  ///Opaque OpenCV structure for image capture.
+  void * m_capture;
 
 };
 
