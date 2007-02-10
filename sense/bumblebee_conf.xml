@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<bumblebee>
-    <rows>240</rows>
-    <cols>320</cols>
-    <triclops>triclops.ini</triclops>
-    <digiclops>digiclops.ini</digiclops>
-    <unit_number>5160167</unit_number>
-</bumblebee>
