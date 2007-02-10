@@ -9,7 +9,6 @@
 #include <vector>
 //-------------------------------------------------------------------------++
 #include <boost/shared_array.hpp>
-
 //-------------------------------------------------------------------------++
 namespace all { 
 	namespace core {
@@ -40,6 +39,15 @@ static const gray_t gray_tag = gray_t();
   static const left_img_t   left_img    = left_img_t ();
   static const right_img_t  right_img   = right_img_t ();
   static const depth_img_t  depth_img   = depth_img_t ();
+
+//-------------------------------------------------------------------------++
+struct video_mode_t {};
+struct camera_mode_t {};
+
+static const core::detail::video_mode_t   open_video  = 
+										core::detail::video_mode_t();
+static const core::detail::camera_mode_t  open_camera = 
+										core::detail::camera_mode_t();
 //---------------------------------------------------------------------------+
 template<class T>
   class constants 

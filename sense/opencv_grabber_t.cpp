@@ -1,5 +1,4 @@
-#include <cv.h>
-#include <highgui.h>
+
 //-------------------------------------------------------------------------++
 #include <iostream>
 #include <cstdio>
@@ -19,6 +18,7 @@ all::sense::opencv_grabber_t::opencv_grabber_t(int cam)
 		,	m_cam_id(cam)
 		,	m_capture(0) 
 		,	snap(0)
+    ,m_ipl_image(0)
 		{    
 		cout<< "Welcome to opencv_grabber" << endl <<"Using OpenCV version "
 		<< CV_VERSION 
@@ -83,6 +83,12 @@ bool all::sense::opencv_grabber_t::internal_open_()
 	m_ch = _iplFrame->nChannels;
 	m_byte_size = _iplFrame->imageSize;
 
+  image_sptr.reset(new core::uint8_t[m_w*m_h*m_ch] );
+
+	m_ipl_image = cvCreateImage(  cvSize(m_w,m_h), 
+					                      _iplFrame->depth, 
+					                      m_ch);
+
     ////// Ignore capture properties 
     cout << "Capture properties "
 			<< m_w 
@@ -107,6 +113,11 @@ bool all::sense::opencv_grabber_t::internal_open_()
 //-------------------------------------------------------------------------++
 ///
 bool all::sense::opencv_grabber_t::close() {
+
+    //
+
+    if(m_ipl_image)  cvReleaseImage(&m_ipl_image);
+
     // Release the capture object, the pointer should be set null
     if (0 != m_capture) cvReleaseCapture((CvCapture**)(&m_capture));
     if (0 != m_capture) {
@@ -116,7 +127,7 @@ bool all::sense::opencv_grabber_t::close() {
 //-------------------------------------------------------------------------++
 ///
 bool all::sense::opencv_grabber_t::get_color_buffer
-  (all::core::uint8_ptr in_user_buffer) 
+(all::core::uint8_sarr user_buffer) 
 	{
 
     // Must have a capture object
@@ -126,7 +137,7 @@ bool all::sense::opencv_grabber_t::get_color_buffer
     }
 
 	IplImage* iplFrame = 0;
-	IplImage* iplImage = 0;
+	//IplImage* iplImage = 0;
 
     //// Grab and retrieve a frame, OpenCV owns the returned image
     iplFrame = cvQueryFrame((CvCapture*)m_capture);
@@ -134,24 +145,23 @@ bool all::sense::opencv_grabber_t::get_color_buffer
     if (0 == iplFrame) {
          return false;
     }
-
-	iplImage = cvCreateImage( cvSize(iplFrame->width,iplFrame->height), 
-					iplFrame->depth, 
-					iplFrame->nChannels);
 	
-	cvConvertImage(iplFrame, iplImage, CV_CVTIMG_FLIP);
+	cvConvertImage(iplFrame, m_ipl_image, CV_CVTIMG_FLIP);
 
-	cvConvertImage(iplImage, iplImage, CV_CVTIMG_SWAP_RB);
+	cvConvertImage(m_ipl_image, m_ipl_image, CV_CVTIMG_SWAP_RB);
+
+  //
+  user_buffer.reset((core::uint8_ptr)m_ipl_image->imageData);
 
 /////
 //   cvCvtPixToPlane( const CvArr* src, CvArr* dst0, NULL,
 //             NULL, NULL);
 
-	memcpy(in_user_buffer
-		,(unsigned char*)iplImage->imageData 
-		 ,  m_byte_size);
+  //memcpy(user_buffer.get()
+		//,(unsigned char*)m_ipl_image->imageData 
+		// ,  m_byte_size);
 	
-	cvReleaseImage(&iplImage);
+	//cvReleaseImage(&iplImage);
     //// That's it
     return true;
 

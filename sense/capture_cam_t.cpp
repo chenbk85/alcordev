@@ -121,9 +121,9 @@ void all::sense::capture_cam_t::run_thread()
 		//////////////////////////////////////////////////////////////
 		core::ipc_serializable_t<core::image_info_t> image_info(core::open_write,info_obj_tag);
 		//
-        image_info.get_ref().height			= _impl->height();
-        image_info.get_ref().width			= _impl->width();
-        image_info.get_ref().channels		= _impl->channels();
+        image_info.get_ref().height			  = _impl->height();
+        image_info.get_ref().width			  = _impl->width();
+        image_info.get_ref().channels		  = _impl->channels();
         image_info.get_ref().memory_size	= _impl->size();
         //////////////////////////////////////////////////////////////
         //////now allocate the image in memory
