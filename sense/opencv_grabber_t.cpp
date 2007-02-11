@@ -87,7 +87,7 @@ bool all::sense::opencv_grabber_t::internal_open_()
 
   image_sptr.reset(new core::uint8_t[m_w*m_h*m_ch] );
 
-	m_ipl_image = cvCreateImage(  cvSize(m_w,m_h), 
+	m_ipl_image = cvCreateImage(  cvSize(m_w, m_h), 
 					                      _iplFrame->depth, 
 					                      m_ch);
 
