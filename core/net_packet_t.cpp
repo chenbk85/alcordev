@@ -25,6 +25,8 @@ bool net_packet_header_t::build_header_from_packet() {
 	//update next_id for next packet
 	net_packet_header_t::next_id = (net_packet_header_t::next_id + 1) % MAX_ID;
 	
+	m_header.clear();
+
 	try {
 		m_header += boost::lexical_cast <std::string> (m_packet_id);
 		m_header += FIELD_SEPARATOR;
