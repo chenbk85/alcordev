@@ -40,7 +40,7 @@ void tcp_pkt_sender_t::handle_write(const boost::system::error_code& error, std:
 		printf("packet sent\n%i bytes", bytes_transferred);
 	}
 	else {
-		printf("Error in tcp_pkt_sender_t::handle_write:\n %s", error.message());
+    printf("Error in tcp_pkt_sender_t::handle_write:\n %s", error.message().c_str());
 		if (m_error_callback) 
 			m_error_callback(error);
 	}
