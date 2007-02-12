@@ -73,7 +73,7 @@ public:
 
 };
 
-shrimp_gateway_impl::shrimp_gateway_impl(const char* ini_file): m_io_timer(COM_TIMEOUT,&m_timer_status, 0)
+shrimp_gateway_impl::shrimp_gateway_impl(const char* ini_file): m_io_timer(COM_TIMEOUT, &m_timer_status, 0)
 {
 	if (m_ini_config.Load(ini_file)) {
 		m_com_port = m_ini_config.GetStringAsChar("shrimp:port", "COM5");

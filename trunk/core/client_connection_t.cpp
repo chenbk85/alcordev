@@ -60,10 +60,12 @@ void client_connection_t::read_packet_error_cb(const boost::system::error_code& 
 	else if (error == boost::asio::error::eof) {
 		printf("Lost connection with client %s...\n", m_remote_addr.hostname.c_str());
 		m_client_manager_ref.stop_client(shared_from_this());
+		//m_socket.io_service().post(boost::bind(&detail::client_manager_t::stop_client, &m_client_manager_ref, shared_from_this()));
 	}
 	else {
 		printf("Error in connection with client %s: %s\n Disconnecting client...\n", m_remote_addr.hostname.c_str(), error.message().c_str());
 		m_client_manager_ref.stop_client(shared_from_this());
+		//m_socket.io_service().post(boost::bind(&detail::client_manager_t::stop_client, &m_client_manager_ref, shared_from_this()));
 	}
 }
 
@@ -79,10 +81,9 @@ void client_connection_t::handle_shutdown() {
 void client_connection_t::stop() {
 	
 	stop_all_req();
-
 	m_tcp_receiver.stop_listen();
 
-	m_socket.shutdown(boost::asio::ip::tcp::socket::shutdown_both);
+	//m_socket.shutdown(boost::asio::ip::tcp::socket::shutdown_both);
 	m_socket.close();
 }
 
@@ -91,10 +92,11 @@ void client_connection_t::send_packet(net_packet_ptr_t packet) {
 }
 
 void client_connection_t::add_req_timer(std::string request, boost::shared_ptr <boost::asio::deadline_timer> timer) {
-	m_req_list[request] = timer;
+	m_req_list.insert(std::make_pair(request, timer));//[request] = timer;
 }
 
 void client_connection_t::rem_req_timer(std::string request) {
+
 	std::map <std::string, boost::shared_ptr<boost::asio::deadline_timer> >::iterator req_it = m_req_list.find(request);
 	
 	if (req_it != m_req_list.end()) {
@@ -104,11 +106,21 @@ void client_connection_t::rem_req_timer(std::string request) {
 }
 
 void client_connection_t::stop_all_req() {
-	for (std::map<std::string, boost::shared_ptr<boost::asio::deadline_timer> >::iterator req_it = m_req_list.begin();
-							   req_it != m_req_list.end(); ++req_it) {
+	int map_size = m_req_list.size();
+	std::map<std::string, boost::shared_ptr<boost::asio::deadline_timer> >::iterator req_it = m_req_list.begin();
+
+	for (int i = 0; i < m_req_list.size(); i++) {
 		rem_req_timer(req_it->first);
+		req_it++;
 	}
-	
+
+
+	//for (std::map<std::string, boost::shared_ptr<boost::asio::deadline_timer> >::iterator req_it = m_req_list.begin();
+	//						   req_it != m_req_list.end(); ++req_it) {
+	//	printf("request %s\n", req_it->first.c_str());
+	//	rem_req_timer(req_it->first);
+	//}
+	//printf("done\n");
 }
 
 
