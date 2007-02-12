@@ -1,7 +1,7 @@
 #include <iostream>
 #include <bitset>
-#include <alcor.extern/wx/ctb/serport.h>
-#include <alcor.extern/wx/ctb/timer.h>
+#include <alcor.extern/wxctb/serport.h>
+#include <alcor.extern/wxctb/timer.h>
 #include <alcor/core/iniWrapper.h>
 #include <alcor/core/core.h>
 #include "shrimp_command_t.hpp"
