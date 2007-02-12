@@ -6,25 +6,28 @@
 #include "alcor/core/core.h"
 #include "alcor/math/rpy_angle_t.h"
 ///////////////////////////////////////////////////////////////////
-#include "alcor.extern/xsens/MTComm.h"
+class CMTComm;
 ///////////////////////////////////////////////////////////////////
 namespace all { namespace  sense{
 ///////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////
-class MTi_driver_t
-{
-public:
   ///
-  MTi_driver_t(){};
-  ///
-  bool open(std::string& comport);
-  ///
-  bool euler(all::math::rpy_angle_t& rpy);
-  
-private:
-  boost::shared_ptr<CMTComm> mtcomm;
-  int output_Mode;
-};
+  class MTi_driver_t
+  {
+  public:
+    ///
+    MTi_driver_t();
+    ///
+    bool open(std::string& configfile);
+    //
+    void reset(int);
+    ///
+    bool euler(all::math::rpy_angle_t& rpy);
+    
+  private:
+    boost::shared_ptr<CMTComm> mtcomm;
+    int output_Mode;
+  };
 ///////////////////////////////////////////////////////////////////
 }}//namespace all::sense
 ///////////////////////////////////////////////////////////////////
