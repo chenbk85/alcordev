@@ -90,6 +90,8 @@ private:
 	detail::tcp_pkt_sender_t m_tcp_sender;
 	detail::tcp_pkt_receiver_t m_tcp_receiver;
 
+	boost::shared_ptr <boost::thread> m_execution_thread;
+
 	typedef boost::function <void (net_packet_ptr_t)> in_packet_handler_t;
 
 	std::map <net_packet_type, in_packet_handler_t > m_packet_handler_list;

@@ -31,19 +31,21 @@ void client_base_t::run() {
 }
 
 void client_base_t::run_async() {
-	boost::shared_ptr<boost::thread> client_thread;
-	client_thread.reset(new boost::thread(boost::bind(&client_base_t::run, this)));
+	try_connect();
+	m_execution_thread.reset(new boost::thread(boost::bind(&boost::asio::io_service::run, &m_io_service)));
 }
 
 
 void client_base_t::stop() {
 
 	if (m_state == STATE_CONNECTED) {
-
+		m_state = STATE_DISCONNECTED;
 		send_command("disconnect");
-
-		m_io_service.post(boost::bind(&client_base_t::handle_stop, this));
 	}
+	m_state = STATE_DISCONNECTED;
+	m_io_service.post(boost::bind(&client_base_t::handle_stop, this));
+	m_execution_thread->join();
+
 }
 
 void client_base_t::set_server_addr(all::core::ip_address_t server_address) {
@@ -83,13 +85,11 @@ void client_base_t::handle_resolve(const boost::system::error_code& error, boost
 }
 
 void client_base_t::handle_stop() {
-	
+
 	m_tcp_receiver.stop_listen();
 
 	m_tcp_socket.shutdown(boost::asio::ip::tcp::socket::shutdown_both);
 	m_tcp_socket.close();
-
-	m_state = STATE_DISCONNECTED;
 
 	//m_io_service.interrupt();
 }
@@ -174,22 +174,24 @@ void client_base_t::in_packet_handler (net_packet_ptr_t packet) {
 }
 
 void client_base_t::in_packet_error_cb(const boost::system::error_code& error) {
-	if (error == boost::asio::error::no_data) {
-		printf("Bad packet received\n");
+	if (m_state == STATE_CONNECTED) {
+		if (error == boost::asio::error::no_data) {
+			printf("Bad packet received\n");
+		}
+		else if (error == boost::asio::error::eof) {
+			printf("Lost connection with server...reconnecting\n");
+			m_state = STATE_LOST_CONNECTION;
+			m_tcp_socket.close();
+			try_connect();
+		}
+		else {
+			printf("Error with server connection: %s\n Resetting...\n", error.message().c_str());
+			m_state = STATE_LOST_CONNECTION;
+			m_tcp_socket.close();
+			try_connect();
+		}
 	}
-	else if (error == boost::asio::error::eof) {
-		printf("Lost connection with server...reconnecting\n");
-		m_state = STATE_LOST_CONNECTION;
-		m_tcp_socket.close();
-		try_connect();
-	}
-	else {
-		printf("Error with server connection: %s\n Resetting...\n", error.message().c_str());
-		m_state = STATE_LOST_CONNECTION;
-		m_tcp_socket.close();
-		try_connect();
-	}
-}
+}	
 
 void client_base_t::command_packet_handler (net_packet_ptr_t packet) {
 	std::string command = packet->get_command();

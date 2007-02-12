@@ -18,6 +18,8 @@ class shrimp_server_t : public server_base_t {
 public:
 	shrimp_server_t(char* ini_file = "config/shrimp_server.ini");
 
+	void stop();
+
 private:
 
 	void set_robot_on(client_connection_ptr_t, net_packet_ptr_t);

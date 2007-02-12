@@ -23,9 +23,33 @@ server_base_t::server_base_t():
 
 }
 
+//server_base_t::~server_base_t() {
+//	m_io_service.post(boost::bind(&server_base_t::stop, this));
+//}
+
+
 void server_base_t::run() {
+	start_listen();
+	m_io_service.run();
+}
+
+void server_base_t::run_async() {
+	start_listen();
+	m_execution_thread.reset(new boost::thread(boost::bind(&boost::asio::io_service::run, &m_io_service)));
+}
+
+void server_base_t::stop() {
 	
-	printf("Server started: listening on port %i\n", m_addr.port);
+	//safe to call from any thread
+	m_io_service.post(boost::bind(&server_base_t::handle_stop, this));
+	m_execution_thread->join();
+}
+
+void server_base_t::set_port(int port) {
+	m_addr.port = port;
+}
+
+void server_base_t::start_listen() {
 
 	//costruct a tcp endpoint
 	boost::asio::ip::tcp::endpoint server_endpoint (boost::asio::ip::tcp::v4(), m_addr.port);
@@ -41,29 +65,15 @@ void server_base_t::run() {
 	//start listening for new connection
 	m_client_acceptor.listen();
 
+	printf("Server started: listening on port %i\n", m_addr.port);
+
 	m_client_acceptor.async_accept(m_new_client_connection_ptr->get_socket(),
 							boost::bind(&server_base_t::handle_accept,
 							this,
 							boost::asio::placeholders::error));
 
-	m_io_service.run();
 }
 
-void server_base_t::run_async() {
-	//create a new thread and run server in this new thread
-	thread_t server_thread;
-	server_thread.reset(new boost::thread(boost::bind(&server_base_t::run, this)));
-}
-
-void server_base_t::stop() {
-	
-	//safe to call from any thread
-	m_io_service.post(boost::bind(&server_base_t::handle_stop, this));
-}
-
-void server_base_t::set_port(int port) {
-	m_addr.port = port;
-}
 
 void server_base_t::add_command_handler(std::string command, boost::function <void (client_connection_ptr_t, net_packet_ptr_t) > callback) {
 	//m_command_list.insert(make_pair(command, callback));
@@ -164,14 +174,16 @@ void server_base_t::handle_accept(const boost::system::error_code& error) {
 	
 	//something wrong...check
 	else if (error.value() != 995) {
-		printf("Error accepting new connection: %s\n", error.message());
+		printf("Error accepting new connection: %s\n", error.message().c_str());
 	}
 }
 
 void server_base_t::handle_stop() {
 	printf("Server shutting down...warning clients\n");
+	
 	m_client_acceptor.close();
 	m_client_manager.stop_all_client();
+
 }
 
 void server_base_t::send_command_packet(std::string command, client_connection_ptr_t client , net_packet_ptr_t packet) {

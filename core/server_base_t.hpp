@@ -20,6 +20,8 @@ public:
 	
 	server_base_t();
 
+	//virtual ~server_base_t();
+
 	//run server
 	void run();
 	
@@ -46,6 +48,8 @@ public:
 
 private:
 	
+	void start_listen();
+
 	//handler for new client connection 
 	void handle_accept(const boost::system::error_code&);
 
@@ -79,7 +83,8 @@ private:
 	all::core::ip_address_t m_addr;
 
 	//for run_async
-	typedef boost::shared_ptr< boost::thread > thread_t;
+	typedef boost::shared_ptr< boost::thread > thread_spr;
+	thread_spr m_execution_thread;
 
 	//manage clients currently connected on the server
 	detail::client_manager_t m_client_manager;
