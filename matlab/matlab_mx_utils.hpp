@@ -10,29 +10,30 @@ struct buffer2array
 {
 
 //---------------------------------------------------------------------++
-static mxArray* create_from_planar(typename T::const_ptr _src
+static mxArray* create_from_planar(typename matlab::traits<T>::const_ptr _src
 				,matlab::row_major_t//src data ordering
 				,int _height
 				,int _width
 				,int _channels=3)
 {
- ///
-mwSize dims[] = {_height, _width, _channels};
-///
-int ndimensions = ( (_channels > 2 ) ? (3) : (2) );
-///
-mxArray* mxresult = mxCreateNumericArray(ndimensions, dims, T::tag, mxREAL);
-///
-T::ptr start_pr = static_cast<T::ptr>(mxGetData(mxresult));
+   ///
+  mwSize dims[] = {_height, _width, _channels};
+  ///
+  int ndimensions = ( (_channels > 2 ) ? (3) : (2) );
+  ///
+  mxArray* mxresult = mxCreateNumericArray(ndimensions, dims, matlab::traits<T>::tag, mxREAL);
+  ///
+  matlab::traits<T>::ptr start_pr = 
+      static_cast<matlab::traits<T>::ptr>(mxGetData(mxresult));
 //fill using start_pr ...
     //
-	int kb = 0;
-    //
-    int row_inc = _width;
-    //
-	int planar_inc = _height*_width;
+  int kb = 0;
+  //
+  int row_inc = _width;
+  //
+  int planar_inc = _height*_width;
 
-	int column_inc=0;	
+  int column_inc=0;	
 
 	///channel's stride ..
     //TODO: remove it from here?
@@ -93,7 +94,7 @@ T::ptr start_pr = static_cast<T::ptr>(mxGetData(mxresult));
 //}
 //---------------------------------------------------------------------++
 ///
-static mxArray* create_from_interleaved(typename T::const_ptr _src
+static mxArray* create_from_interleaved(typename matlab::traits<T>::const_ptr _src
 					,matlab::row_major_t//src ordering
 					,const int& _height
 					,const int& _width
@@ -104,9 +105,10 @@ static mxArray* create_from_interleaved(typename T::const_ptr _src
     ///TODO: mmmh  
 	int ndimensions =( (_channels > 2 ) ? (3) : (2) );
     //
-	mxArray* mxresult = mxCreateNumericArray(ndimensions, dims, T::tag, mxREAL);
+	mxArray* mxresult = mxCreateNumericArray(ndimensions, dims, matlab::traits<T>::tag, mxREAL);
     //
-	T::ptr start_pr = static_cast<T::ptr>(mxGetData(mxresult));
+	matlab::traits<T>::ptr start_pr = 
+      static_cast<matlab::traits<T>::ptr>(mxGetData(mxresult));
     //
 	int kb = 0;
     //
