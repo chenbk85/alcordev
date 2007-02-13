@@ -274,7 +274,7 @@ inline core::single_sarr bumblebee_driver_impl::get_depthmap_()
    handle_digiclops_error( "digiclopsExtractTriclopsInput()", de );
 
    // preprocessing the images
-   te = triclopsPreprocess( triclops_context_, &stereo_input_ );
+   te = triclopsRectify( triclops_context_, &stereo_input_ );
 	handle_triclops_error( "triclopsPreprocess()", te );
    // stereo processing
    te = triclopsStereo( triclops_context_ ) ;

@@ -81,13 +81,8 @@ all::math::rpy_angle_t   MTi_driver_t::get_euler()
   if(impl->mtcomm.readDataMessage(impl->data, impl->datalen) == MTRV_OK)
   {
 		impl->mtcomm.getValue(VALUE_SAMPLECNT, impl->samplecounter, impl->data, BID_MASTER);
-
 	  // Output: Euler
     impl->mtcomm.getValue(VALUE_ORIENT_EULER, impl->fdata, impl->data, detail::MTi_driver_impl::SENSOR_BID);
-		//printf("%6.1f\t%6.1f\t%6.1f\n",
-		//		impl->fdata[0],
-		//		impl->fdata[1], 
-		//		impl->fdata[2]);
 
     math::rpy_angle_t rpy;
     rpy.roll.set_deg(impl->fdata[0]);
