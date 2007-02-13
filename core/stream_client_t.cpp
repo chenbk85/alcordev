@@ -72,6 +72,9 @@ void stream_client_t::start_receive() {
 
 void stream_client_t::stop_receive() {
 	//m_stream_service.post(boost::bind(&boost::asio::io_service::interrupt, &m_stream_service));
+	printf("Stopping stream...\n");
+	m_udp_socket.close();
+	m_stream_thread->join();
 }
 
 

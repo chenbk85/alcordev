@@ -46,6 +46,7 @@ void stream_server_t::stop_streaming() {
 	m_stream_manager.stop_streaming();
 	//m_stream_service.post(boost::bind(&boost::asio::io_service::interrupt, &m_stream_service));
 	m_udp_socket.close();
+	m_stream_thread->join();
 }
 
 void stream_server_t::set_frame_rate_cb(client_connection_ptr_t client, net_packet_ptr_t packet) {

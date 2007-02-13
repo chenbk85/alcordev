@@ -97,9 +97,11 @@ void out_stream_manager_t::next_frame_handler(const boost::system::error_code& e
 
 		if (m_curr_data) 
 			delete[] m_curr_data;
-			
+		
+		printf("getting data\n");
 		m_curr_data_size = m_get_data_cb(&m_curr_data);
-			
+		printf("got data\n");
+
 		printf("data_size: %i\n", m_curr_data_size);
 		
 		m_send_data_thread.reset(new boost::thread(boost::bind(&out_stream_manager_t::send_data, this)));

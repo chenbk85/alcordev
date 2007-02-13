@@ -20,6 +20,8 @@ public:
 
 	void send_packet(net_packet_ptr_t);
 
+	void send_packet_blk(net_packet_ptr_t);
+
 	void handle_write(const boost::system::error_code&, std::size_t);
 
 private:
