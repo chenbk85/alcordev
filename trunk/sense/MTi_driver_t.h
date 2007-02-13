@@ -33,7 +33,8 @@ namespace detail
   public:
     ///
     MTi_driver_t();
-
+    ///
+    ~MTi_driver_t();
     ///
     bool open(std::string& configfile);
 
