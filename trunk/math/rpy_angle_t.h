@@ -12,12 +12,16 @@ public:
 	rpy_angle_t();
 	///
 	rpy_angle_t(const rpy_angle_t&);
+	///
+	rpy_angle_t(const angle& r, const angle& p ,const angle& y);
 
   angle roll;
   angle pitch;
   angle yaw;
 	///	
 	rpy_angle_t& operator=( const rpy_angle_t& );
+  ///
+  void print ();
 
 private:
 	///
@@ -29,6 +33,13 @@ private:
 inline rpy_angle_t::rpy_angle_t()//:
 //roll(0),pitch(0),yaw(0) 
 {
+}
+///////////////////////////////////////////////////////////////////////////++
+inline rpy_angle_t::rpy_angle_t(const angle& r, const angle& p ,const angle& y)
+{
+  roll = r;
+  pitch = p;
+  yaw = y;
 }
 ///////////////////////////////////////////////////////////////////////////++
 inline rpy_angle_t::rpy_angle_t(const rpy_angle_t & other)
@@ -51,15 +62,15 @@ inline void rpy_angle_t::swap_(rpy_angle_t& other)
   std::swap(pitch, other.pitch);
   std::swap(yaw,	other.yaw );
 }
-
+///////////////////////////////////////////////////////////////////////////++
+///
+inline  void rpy_angle_t::print ()
+{
+  printf("Roll: %3.2f Pitch: %3.2f Yaw: %3.2\n",roll.deg(), pitch.deg(), yaw.deg() );
+}
 ///////////////////////////////////////////////////////////////////////////++
 inline std::ostream& operator<<(std::ostream& os, const rpy_angle_t& temp)
 {	
-	//boost::format fmrpy("\nRoll:  %3.2f\nPitch: %3.2f\nYaw:   %3.2f\nElapsed:%d\n");
-	//		os << fmrpy		% temp.roll 
-	//						% temp.pitch 
-	//						% temp.yaw 
-	//						% temp.elapsed;
   os << "Roll: " << temp.roll << "Pitch: " << temp.pitch << "Yaw: " << temp.yaw;
 	return os;
 }
