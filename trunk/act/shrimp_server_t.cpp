@@ -21,9 +21,11 @@ shrimp_server_t::shrimp_server_t(char* ini_file) : m_shrimp(ini_file) {
 
 	add_command_handler("getData", boost::bind(&shrimp_server_t::send_shrimp_data, this, _1, _2));
 
-	m_shrimp.connect();
-
-	m_shrimp.set_robot_on();
+	if (m_shrimp.connect()) {
+		m_shrimp.set_robot_on();
+	}
+	else
+		printf("Error connecting to robot\n");
 }
 
 void shrimp_server_t::stop() {
