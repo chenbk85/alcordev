@@ -14,8 +14,8 @@ namespace detail
   struct MTi_driver_impl;
 } 
 ///////////////////////////////////////////////////////////////////ù
-  namespace tags
-  {
+namespace tags
+{
   struct heading_reset_t{};
   struct global_reset_t{};
   struct object_reset_t{};
@@ -25,7 +25,7 @@ namespace detail
   global_reset_t global_reset = global_reset_t();
   object_reset_t object_reset = object_reset_t();
   align_reset_t align_reset   = align_reset_t();
-  }
+}
 ///////////////////////////////////////////////////////////////////
   ///
   class MTi_driver_t
@@ -48,7 +48,7 @@ namespace detail
     void reset(tags::align_reset_t);
 
     ///
-    all::math::rpy_angle_t&  
+    all::math::rpy_angle_t  
         get_euler();
     
   private:
