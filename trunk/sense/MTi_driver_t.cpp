@@ -19,7 +19,9 @@ bool MTi_driver_t::open(std::string& configfile)
 {
   //
   iniWrapper mticonfig(configfile);
-  char* port = mticonfig.GetStringAsChar("config:comport","COM10");
+  int port = mticonfig.GetInt("config:comport",10);
+  //
+  printf("Search MTi on port: %d\n", port);
   //
   if (impl->mtcomm.openPort(port)!= MTRV_OK)
   {    
@@ -30,7 +32,7 @@ bool MTi_driver_t::open(std::string& configfile)
   // Put MTi/MTx in Config State
   if(impl->mtcomm.writeMessage(MID_GOTOCONFIG) != MTRV_OK)
   {
-    printf("No device connected\n");
+    printf("writeMessage(MID_GOTOCONFIG): No device connected\n");
     return false;
   }
 
@@ -88,6 +90,8 @@ all::math::rpy_angle_t   MTi_driver_t::get_euler()
     rpy.roll.set_deg(impl->fdata[0]);
     rpy.pitch.set_deg(impl->fdata[1]);
     rpy.yaw.set_deg (impl->fdata[2]);
+
+    rpy.print();
     return rpy;
   }
 

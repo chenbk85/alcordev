@@ -66,12 +66,12 @@ inline void rpy_angle_t::swap_(rpy_angle_t& other)
 ///
 inline  void rpy_angle_t::print ()
 {
-  printf("Roll: %3.2f Pitch: %3.2f Yaw: %3.2\n",roll.deg(), pitch.deg(), yaw.deg() );
+  printf("Roll: %3.2f Pitch: %3.2f Yaw: %3.2f\n",roll.deg(), pitch.deg(), yaw.deg() );
 }
 ///////////////////////////////////////////////////////////////////////////++
 inline std::ostream& operator<<(std::ostream& os, const rpy_angle_t& temp)
 {	
-  os << "Roll: " << temp.roll << "Pitch: " << temp.pitch << "Yaw: " << temp.yaw;
+  os << "Roll: " << temp.roll.deg() << "Pitch: " << temp.pitch.deg() << "Yaw: " << temp.yaw.deg();
 	return os;
 }
 ///////////////////////////////////////////////////////////////////////////++
