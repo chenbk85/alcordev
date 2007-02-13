@@ -60,6 +60,7 @@ inline std::ostream& operator<<(std::ostream& os, const rpy_angle_t& temp)
 	//						% temp.pitch 
 	//						% temp.yaw 
 	//						% temp.elapsed;
+  os << "Roll: " << temp.roll << "Pitch: " << temp.pitch << "Yaw: " << temp.yaw;
 	return os;
 }
 ///////////////////////////////////////////////////////////////////////////++
