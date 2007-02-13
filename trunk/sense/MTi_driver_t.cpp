@@ -76,7 +76,7 @@ void MTi_driver_t::reset(tags::align_reset_t)
 }
 //-----------------------------------------------------------------
 //
-all::math::rpy_angle_t&   MTi_driver_t::get_euler()
+all::math::rpy_angle_t   MTi_driver_t::get_euler()
 {
   if(impl->mtcomm.readDataMessage(impl->data, impl->datalen) == MTRV_OK)
   {
@@ -84,11 +84,16 @@ all::math::rpy_angle_t&   MTi_driver_t::get_euler()
 
 	  // Output: Euler
     impl->mtcomm.getValue(VALUE_ORIENT_EULER, impl->fdata, impl->data, detail::MTi_driver_impl::SENSOR_BID);
-		printf("%6.1f\t%6.1f\t%6.1f\n",
-				impl->fdata[0],
-				impl->fdata[1], 
-				impl->fdata[2]);
+		//printf("%6.1f\t%6.1f\t%6.1f\n",
+		//		impl->fdata[0],
+		//		impl->fdata[1], 
+		//		impl->fdata[2]);
 
+    math::rpy_angle_t rpy;
+    rpy.roll.set_deg(impl->fdata[0]);
+    rpy.pitch.set_deg(impl->fdata[1]);
+    rpy.yaw.set_deg (impl->fdata[2]);
+    return rpy;
   }
 
 }
