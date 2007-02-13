@@ -21,10 +21,10 @@ namespace tags
   struct object_reset_t{};
   struct align_reset_t{};
 
-  heading_reset_t heading_reset = heading_reset_t(); 
-  global_reset_t global_reset = global_reset_t();
-  object_reset_t object_reset = object_reset_t();
-  align_reset_t align_reset   = align_reset_t();
+  static heading_reset_t heading_reset = heading_reset_t(); 
+  static global_reset_t global_reset = global_reset_t();
+  static object_reset_t object_reset = object_reset_t();
+  static align_reset_t align_reset   = align_reset_t();
 }
 ///////////////////////////////////////////////////////////////////
   ///
