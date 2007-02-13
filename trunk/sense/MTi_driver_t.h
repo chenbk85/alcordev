@@ -6,10 +6,26 @@
 #include "alcor/core/core.h"
 #include "alcor/math/rpy_angle_t.h"
 ///////////////////////////////////////////////////////////////////
-class CMTComm;
-///////////////////////////////////////////////////////////////////
 namespace all { namespace  sense{
-///////////////////////////////////////////////////////////////////
+
+  ///////////////////////////////////////////////////////////////////
+namespace detail
+{
+  struct MTi_driver_impl;
+} 
+///////////////////////////////////////////////////////////////////ù
+  namespace tags
+  {
+  struct heading_reset_t{};
+  struct global_reset_t{};
+  struct object_reset_t{};
+  struct align_reset_t{};
+
+  heading_reset_t heading_reset = heading_reset_t(); 
+  global_reset_t global_reset = global_reset_t();
+  object_reset_t object_reset = object_reset_t();
+  align_reset_t align_reset   = align_reset_t();
+  }
 ///////////////////////////////////////////////////////////////////
   ///
   class MTi_driver_t
@@ -17,16 +33,26 @@ namespace all { namespace  sense{
   public:
     ///
     MTi_driver_t();
+
     ///
     bool open(std::string& configfile);
+
     //
-    void reset(int);
+    void reset(tags::heading_reset_t);
+    //
+    void reset(tags::global_reset_t);
+    //
+    void reset(tags::object_reset_t);
+    //
+    void reset(tags::align_reset_t);
+
     ///
-    bool euler(all::math::rpy_angle_t& rpy);
+    all::math::rpy_angle_t&  
+        get_euler();
     
   private:
-    boost::shared_ptr<CMTComm> mtcomm;
-    int output_Mode;
+    boost::shared_ptr<detail::MTi_driver_impl> impl;
+
   };
 ///////////////////////////////////////////////////////////////////
 }}//namespace all::sense
