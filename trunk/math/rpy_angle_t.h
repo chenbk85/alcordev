@@ -30,8 +30,7 @@ private:
 };
 
 ///////////////////////////////////////////////////////////////////////////++
-inline rpy_angle_t::rpy_angle_t()//:
-//roll(0),pitch(0),yaw(0) 
+inline rpy_angle_t::rpy_angle_t(
 {
 }
 ///////////////////////////////////////////////////////////////////////////++
@@ -44,9 +43,9 @@ inline rpy_angle_t::rpy_angle_t(const angle& r, const angle& p ,const angle& y)
 ///////////////////////////////////////////////////////////////////////////++
 inline rpy_angle_t::rpy_angle_t(const rpy_angle_t & other)
 {
-  roll = other.roll;
+  roll  = other.roll;
   pitch = other.pitch;
-  yaw=other.yaw;
+  yaw   = other.yaw;
 }
 ///////////////////////////////////////////////////////////////////////////++
 inline rpy_angle_t& rpy_angle_t::operator=( const rpy_angle_t& other )

@@ -91,7 +91,7 @@ all::math::rpy_angle_t   MTi_driver_t::get_euler()
     rpy.pitch.set_deg(impl->fdata[1]);
     rpy.yaw.set_deg (impl->fdata[2]);
 
-    rpy.print();
+    //rpy.print();
     return rpy;
   }
 
