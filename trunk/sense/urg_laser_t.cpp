@@ -5,11 +5,11 @@
 namespace all {
 	namespace sense {
 
-urg_laser_t::urg_laser_t(): pimpl(0) {
+urg_laser_t::urg_laser_t(char* ini_file) {
+	pimpl.reset(new detail::urg_laser_impl(ini_file));
 }
 
 bool urg_laser_t::connect() {
-	pimpl.reset(new detail::urg_laser_impl());
 	return pimpl->connect();
 }
 

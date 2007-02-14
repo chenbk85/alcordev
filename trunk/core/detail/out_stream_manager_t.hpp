@@ -18,6 +18,7 @@ public:
 	static const int MAX_FRAME_NUMBER = 999;
 	
 	out_stream_manager_t(boost::asio::ip::udp::socket&);
+	~out_stream_manager_t();
 
 	void set_packet_size(int);
 	void set_frame_rate(int);

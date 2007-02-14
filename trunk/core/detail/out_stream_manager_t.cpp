@@ -14,6 +14,11 @@ out_stream_manager_t::out_stream_manager_t(boost::asio::ip::udp::socket& socket)
 	m_curr_data = NULL;
 }
 
+out_stream_manager_t::~out_stream_manager_t() {
+	if (m_curr_data) 
+		delete [] m_curr_data;
+}
+
 void out_stream_manager_t::set_packet_size(int packet_size) {
 	m_packet_size = packet_size;
 	max_packet_data_size = packet_size - stream_packet_t::HEADER_LENGTH;
@@ -98,9 +103,7 @@ void out_stream_manager_t::next_frame_handler(const boost::system::error_code& e
 		if (m_curr_data) 
 			delete[] m_curr_data;
 		
-		printf("getting data\n");
 		m_curr_data_size = m_get_data_cb(&m_curr_data);
-		printf("got data\n");
 
 		printf("data_size: %i\n", m_curr_data_size);
 		
@@ -110,6 +113,11 @@ void out_stream_manager_t::next_frame_handler(const boost::system::error_code& e
 		m_timer.async_wait(boost::bind(&out_stream_manager_t::next_frame_handler, this,
 									   boost::asio::placeholders::error));
 
+	}
+	else if (error == boost::asio::error::operation_aborted) {
+		printf("closing socket\n");
+		m_socket.close();
+		printf("socket closed\n");
 	}
 }
 
