@@ -32,7 +32,7 @@ stream_server_t::stream_server_t(stream_source_t& stream_source, char* ini_file)
 
 
 void stream_server_t::start_streaming() {
-	m_stream_service.reset();
+	//m_stream_service.reset();
 	
 	m_udp_socket.open(boost::asio::ip::udp::v4());
 
@@ -43,9 +43,18 @@ void stream_server_t::start_streaming() {
 }
 
 void stream_server_t::stop_streaming() {
-	m_stream_manager.stop_streaming();
-	//m_stream_service.post(boost::bind(&boost::asio::io_service::interrupt, &m_stream_service));
-	m_udp_socket.close();
+	//m_stream_manager.stop_streaming();
+	m_stream_service.post(boost::bind(&detail::out_stream_manager_t::stop_streaming, &m_stream_manager));
+	//m_udp_socket.close();
+	//m_stream_service.post(boost::bind(&boost::asio::ip::udp::socket::close, &m_udp_socket));
+
+	//try {
+	//	m_udp_socket.close();
+	//}
+	//catch (boost::system::error_code e) {
+	//	printf("error closing socket: %s\n", e.message().c_str()); 
+	//}
+
 	m_stream_thread->join();
 }
 

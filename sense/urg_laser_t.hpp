@@ -23,7 +23,7 @@ public:
 	static all::math::angle step2angle(int);
 	static int angle2step(all::math::angle);
 
-	urg_laser_t();
+	urg_laser_t(char* ini_file = "config\urg_driver.ini");
 	
 	bool connect();
 	void disconnect();

@@ -133,10 +133,14 @@ void client_base_t::send_command(std::string command) {
 }
 
 void client_base_t::send_command(std::string command, net_packet_ptr_t packet) {
-	packet->set_packet_type(COMMAND_PACKET);
-	packet->set_command(command);
-	packet->finalize_packet();
-	m_tcp_sender.send_packet(packet);
+	if (m_state == STATE_CONNECTED) {
+		packet->set_packet_type(COMMAND_PACKET);
+		packet->set_command(command);
+		packet->finalize_packet();
+		m_tcp_sender.send_packet(packet);
+	}
+	else
+		printf("operation aborted: not connected to the server\n");
 }
 
 void client_base_t::send_request(std::string request, int req_freq) {
@@ -145,12 +149,15 @@ void client_base_t::send_request(std::string request, int req_freq) {
 }
 
 void client_base_t::send_request(std::string request, net_packet_ptr_t packet, int req_freq) {
-	packet->set_packet_type(REQUEST_PACKET);
-	packet->set_command(request);
-	packet->set_req_freq(req_freq);
-	packet->finalize_packet();
-	m_tcp_sender.send_packet(packet);
-
+	if (m_state == STATE_CONNECTED) {
+		packet->set_packet_type(REQUEST_PACKET);
+		packet->set_command(request);
+		packet->set_req_freq(req_freq);
+		packet->finalize_packet();
+		m_tcp_sender.send_packet(packet);
+	}
+	else
+		printf("operation aborted: not connected to the server\n");
 }
 
 void client_base_t::stop_request(std::string request) {

@@ -1,10 +1,11 @@
 #include <alcor.extern/wxctb/serport.h>
 #include <alcor.extern/wxctb/timer.h>
-#include <string>
-#include <iostream>
-#include <sstream>
+//#include <string>
+//#include <iostream>
+//#include <sstream>
 #include <vector>
 
+#include <alcor/core/iniWrapper.h>
 #include <alcor/core/core.h>
 
 #include "../urg_scan_data_t.hpp"
@@ -26,9 +27,6 @@ public:
 
 	static const char URG_D_MODE = 'D';
 	static const char URG_S_MODE = 'S';
-	
-	//static double step2deg(int);
-	//static int deg2step(double);
 
 	struct urg_reply_t {
 		std::string command;
@@ -37,7 +35,7 @@ public:
 	};
 
 public:
-	urg_laser_impl(char* ini_file = "config/urg_config.ini");
+	urg_laser_impl(char*);
 	~urg_laser_impl();
 
 public:
@@ -67,6 +65,8 @@ public:
 
 	wxSerialPort m_urg;
 
+	iniWrapper m_ini_config;
+
 	urg_reply_t m_last_reply;
 
 	timer m_io_timer;
@@ -83,17 +83,14 @@ public:
 const std::string urg_laser_impl::URG_CMD_OK = "00";
 const std::string urg_laser_impl::URG_DATA_OK = "99";
 
-//double urg_laser_impl::step2deg(int step) {
-//	return (double(360)/double(1024))*(step - 384);
-//}
-//
-//int urg_laser_impl::deg2step(double deg) {
-//	return static_cast<int> ((double(1024)/double(360))*deg)+384;
-//}
-
 
 urg_laser_impl::urg_laser_impl(char* ini_file):m_io_timer(READ_WRITE_TIMEOUT, &m_timer_status, NULL) {
-	m_urg_port = wxCOM6;
+	if (m_ini_config.Load(ini_file)) {
+		m_urg_port = m_ini_config.GetStringAsChar("urg:port", "COM5");
+	}
+	else
+		m_urg_port = wxCOM6;
+	
 	m_scan_mode = URG_D_MODE;
 	is_on = false;
 
