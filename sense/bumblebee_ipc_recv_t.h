@@ -1,7 +1,7 @@
 #ifndef bumblebee_ipc_recv_t_H_INCLUDED
 #define bumblebee_ipc_recv_t_H_INCLUDED
 //-------------------------------------------------------------------------++
-#pragma comment(lib, "ipc_bumblebee_recv_t.lib")
+//#pragma comment(lib, "bumblebee_ipc_recv_t.lib")
 //-------------------------------------------------------------------------++
 #include "../core/core.h"
 //-------------------------------------------------------------------------++
