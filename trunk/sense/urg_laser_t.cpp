@@ -17,6 +17,10 @@ void urg_laser_t::disconnect() {
 	pimpl->disconnect();
 }
 
+void urg_laser_t::set_line_ready_cb(boost::function <void (urg_scan_data_ptr)> line_ready_cb) {
+	pimpl->m_line_ready_cb = line_ready_cb;
+}
+
 urg_scan_data_ptr urg_laser_t::do_scan(int start, int end, int cc) {
 	return pimpl->do_scan(start, end, cc);
 }
