@@ -14,7 +14,7 @@ self.rows   = 0;
 self.cols   = 0;
 
 % Call the Bumblebee Gateway
-self.cnx = ipc_bee_mex(self.CREATE); 
+self.cnx = mexIpcBee(self.CREATE); 
 
 % 
 obj = class(self, 'ipcBee');
