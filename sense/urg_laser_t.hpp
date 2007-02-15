@@ -5,6 +5,7 @@
 #include <vector>
 #include <boost/shared_array.hpp>
 #include <boost/shared_ptr.hpp>
+#include <boost/function.hpp>
 
 #include <alcor/math/angle.h>
 
@@ -23,10 +24,12 @@ public:
 	static all::math::angle step2angle(int);
 	static int angle2step(all::math::angle);
 
-	urg_laser_t(char* ini_file = "config\urg_driver.ini");
+	urg_laser_t(char* ini_file = "config/urg_driver.ini");
 	
 	bool connect();
 	void disconnect();
+
+	void set_line_ready_cb(boost::function <void (urg_scan_data_ptr)>);
 
 	void set_d_mode();
 	void set_s_mode();

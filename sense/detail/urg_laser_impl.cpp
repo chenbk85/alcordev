@@ -1,9 +1,8 @@
 #include <alcor.extern/wxctb/serport.h>
 #include <alcor.extern/wxctb/timer.h>
-//#include <string>
-//#include <iostream>
-//#include <sstream>
+
 #include <vector>
+#include <boost/function.hpp>
 
 #include <alcor/core/iniWrapper.h>
 #include <alcor/core/core.h>
@@ -78,6 +77,8 @@ public:
 
 	bool is_on;
 
+	boost::function <void (urg_scan_data_ptr)> m_line_ready_cb;
+
 };
 
 const std::string urg_laser_impl::URG_CMD_OK = "00";
@@ -88,9 +89,10 @@ urg_laser_impl::urg_laser_impl(char* ini_file):m_io_timer(READ_WRITE_TIMEOUT, &m
 	if (m_ini_config.Load(ini_file)) {
 		m_urg_port = m_ini_config.GetStringAsChar("urg:port", "COM5");
 	}
-	else
+	else {
+		printf("Unable to open configuration file %s\n", ini_file);
 		m_urg_port = wxCOM6;
-	
+	}
 	m_scan_mode = URG_D_MODE;
 	is_on = false;
 
@@ -102,12 +104,15 @@ urg_laser_impl::~urg_laser_impl() {
 
 bool urg_laser_impl::connect() {
 	if ( m_urg.Open(m_urg_port.c_str()) != -1) {
+		printf("URG connected on port %s\n", m_urg_port.c_str());
 		scip2_mode();
 		laser_on();
 		return true;
 	}
-	else
+	else {
+		printf ("Unable to open port %s\n", m_urg_port.c_str());
 		return false;
+	}
 }
 
 void urg_laser_impl::disconnect() {
@@ -163,12 +168,11 @@ urg_scan_data_ptr urg_laser_impl::do_scan(int start_step, int end_step, int cc) 
 
 	if (m_last_reply.status == URG_CMD_OK) {
 
-		m_scan_vec.reset(new urg_scan_data_ptr);
+		m_scan_vec.reset(new urg_scan_data_ptr(new urg_scan_data_t()));
 
 		m_scan_vec[0]->start_step = start_step;
 		m_scan_vec[0]->end_step = end_step;
 		m_scan_vec[0]->cc = cc;
-
 		decode_scan(m_scan_vec[0]);
 
 		return m_scan_vec[0];
@@ -200,11 +204,16 @@ boost::shared_array <urg_scan_data_ptr> urg_laser_impl::do_multiple_scan(int sta
 
 			if (m_last_reply.status == URG_DATA_OK) {
 
+				m_scan_vec[i].reset(new urg_scan_data_t());
+
 				m_scan_vec[i]->start_step = start_step;
 				m_scan_vec[i]->end_step = end_step;
 				m_scan_vec[i]->cc = cc;
 
 				decode_scan(m_scan_vec[i]);
+
+				if (m_line_ready_cb)
+					m_line_ready_cb(m_scan_vec[i]);
 
 			}
 		}
@@ -247,6 +256,7 @@ void urg_laser_impl::read_reply() {
 		m_last_reply.status = (reply.substr(pos+1,2));
 		pos = reply.find('\n',pos+1);
 		m_last_reply.data = reply.substr(pos+1, reply.length());
+
 	}
 
 }
@@ -286,6 +296,7 @@ void urg_laser_impl::decode_scan(urg_scan_data_ptr scan) {
 	
 	std::string::iterator end_iterator = m_last_reply.data.end() - 3;
 
+	int i = 128;
 	while (data_iterator < end_iterator) {
 		scan->scan_points.push_back(decode_sequence(data_iterator, n_char));
 	}
