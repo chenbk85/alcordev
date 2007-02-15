@@ -6,32 +6,46 @@ using namespace all;
 //--------------------------------------------------------------------++
 #define OBJ_HANDLE_ prhs[0]
 //--------------------------------------------------------------------++
-#define RGB_IMAGE_BUF_ plhs[0]
-#define XYZ_IMAGE_BUF_ plhs[1]
+#define L_RGB_IMAGE_BUF_  plhs[0]
+#define R_RGB_IMAGE_BUF_  plhs[1]
+#define XYZ_IMAGE_BUF_    plhs[2]
 //--------------------------------------------------------------------++
-void bee_cam_grab_color_and_depth( int nlhs 
+void bee_grab_all( int nlhs 
 					,mxArray *plhs[]
 					,int nrhs
 					,const mxArray 
 					*prhs[])
 	{
-	//printf("Opening ....\n")
 	sense::bumblebee_ipc_recv_t& bee = 
 		get_object<sense::bumblebee_ipc_recv_t>(OBJ_HANDLE_);
 
   bee.lock();
-  
-  boost::shared_array<core::uint8_t> buf_ 
+  printf("IN ACQ\n");
+
+ //printf("LEFT\n");
+  boost::shared_array<core::uint8_t> lbuf_ 
+    =	bee.get_color_buffer(core::left_img);
+
+ //printf("RIGHT\n");
+  boost::shared_array<core::uint8_t> rbuf_ 
       =	bee.get_color_buffer(core::right_img);
 
-  core::single_sarr xyz_sptr 
+ //printf("ZED\n");
+ boost::shared_array<core::single_t> xyz_sptr 
     = bee.get_depth_buffer();
 
+  //printf("OUT ACQ\n");
   bee.unlock();
 
   ///
-  RGB_IMAGE_BUF_ =  matlab::buffer2array< core::uint8_t >::create_from_planar(
-           buf_.get()
+  L_RGB_IMAGE_BUF_ =  matlab::buffer2array< core::uint8_t >::create_from_planar(
+           lbuf_.get()
+	        ,matlab::row_major
+	        ,bee.height()
+	        ,bee.width());
+  ///
+  R_RGB_IMAGE_BUF_ =  matlab::buffer2array< core::uint8_t >::create_from_planar(
+           rbuf_.get()
 	        ,matlab::row_major
 	        ,bee.height()
 	        ,bee.width());

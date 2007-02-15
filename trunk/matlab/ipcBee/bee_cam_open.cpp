@@ -18,6 +18,7 @@ void bee_cam_open( int nlhs
   {
     printf("OK\n");
     printf("Bumblebee RGB IPC stream succesfully opened!\n");
+    printf("Rows: %d Cols: %d\n", mybee.height(), mybee.width());
   }
   else
   {

@@ -8,6 +8,7 @@ self.OPEN           = 1;
 self.CLOSE          = 2;
 self.GRABCOLOR      = 3;
 self.GRABRGBXYZ		= 4;
+self.GRABALL        = 5;
 %
 self.rows   = 0;
 %

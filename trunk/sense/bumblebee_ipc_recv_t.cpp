@@ -106,7 +106,7 @@ all::core::single_sarr
   all::sense::bumblebee_ipc_recv_t::get_depth_buffer(bool shared)
 {
   all::core::single_sarr temp =
-    impl->get_depth_(temp);
+    impl->get_depth_();
   return temp;
 }
 ////-------------------------------------------------------------------++

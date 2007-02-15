@@ -5,8 +5,8 @@ namespace all { namespace core {
 template <typename T>
 inline ipc_serializable_t<T>::ipc_serializable_t(core::detail::open_t, const std::string& _memtag)
 	:data_(0)
-	,mutex_tag_("__mutex_tag")
-	,memory_tag_("__memory_tag")
+	,mutex_tag_("__mutex")
+	,memory_tag_("__memory")
 	{
 	open_ipc_channel_write_(_memtag);
 	}
@@ -62,7 +62,7 @@ inline bool ipc_serializable_t<T>::open_ipc_channel_write_(const std::string& in
 		data_.reset( new (obj_addr) value_type );
 
 		///
-		mutex_.reset( new named_mutex(open_or_create, mutex_name.c_str()) );
+		//mutex_.reset( new named_mutex(open_or_create, mutex_name.c_str()) );
 
 		}//try block
 
@@ -98,7 +98,7 @@ inline bool ipc_serializable_t<T>::open_ipc_channel_read_(const std::string& in_
 		);
 
 		///
-		mutex_.reset( new named_mutex(open_only, mutex_name.c_str()) );
+		//mutex_.reset( new named_mutex(open_only, mutex_name.c_str()) );
 
 		//Get the address of the mapped region
 		//std::cout << "Get the address of the mapped region" << std::endl;

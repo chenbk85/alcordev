@@ -18,13 +18,13 @@ using namespace boost::interprocess;
 #include "detail/memory_tags.hpp"
 //-----------------------------------------------------------------------++
 ///
-#define ENTER_CRITICAL(_OBJ_REF_)\
-{\
-boost::interprocess::scoped_lock<boost::interprocess::named_mutex> \
-lock( *(_OBJ_REF_.mutex_.get()));
-//-----------------------------------------------------------------------++
-///
-#define LEAVE_CRITICAL	}
+//#define ENTER_CRITICAL(_OBJ_REF_)\
+//{\
+//boost::interprocess::scoped_lock<boost::interprocess::named_mutex> \
+//lock( *(_OBJ_REF_.mutex_.get()));
+////-----------------------------------------------------------------------++
+/////
+//#define LEAVE_CRITICAL	}
 //-----------------------------------------------------------------------++
 //-----------------------------------------------------------------------++
 namespace all { namespace core {
