@@ -203,7 +203,7 @@ struct bumblebee_ipc_recv_impl
       return right_image_sptr;
     }
 
-    all::core::single_sarr get_depth_(all::core::single_sarr arr)
+    all::core::single_sarr get_depth_()
     {
 		  try 
       {

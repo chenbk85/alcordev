@@ -10,13 +10,16 @@ extern void bee_cam_create( int nlhs, mxArray *plhs[], int nrhs, const mxArray
 extern void bee_cam_open( int nlhs, mxArray *plhs[], int nrhs, const mxArray 
  *prhs[]); 
 ////--------------------------------------------------------------------++
-void bee_cam_close( int nlhs, mxArray *plhs[], int nrhs, const mxArray 
+extern void bee_cam_close( int nlhs, mxArray *plhs[], int nrhs, const mxArray 
  *prhs[]); 
 //--------------------------------------------------------------------++
-void bee_cam_grab_color( int nlhs, mxArray *plhs[], int nrhs, const mxArray 
+extern void bee_cam_grab_color( int nlhs, mxArray *plhs[], int nrhs, const mxArray 
  *prhs[]); 
 //--------------------------------------------------------------------++
-void bee_cam_grab_color_and_depth( int nlhs, mxArray *plhs[], int nrhs, 
+extern void bee_cam_grab_color_and_depth( int nlhs, mxArray *plhs[], int nrhs, 
+								  const mxArray *prhs[]); 
+//--------------------------------------------------------------------++
+extern void bee_grab_all( int nlhs, mxArray *plhs[], int nrhs, 
 								  const mxArray *prhs[]); 
 //--------------------------------------------------------------------++
 typedef boost::function<void (int nlhs, 
@@ -65,6 +68,8 @@ static void init_function_table()
 		function_table->push_back(&bee_cam_grab_color);
 		//self.GRABRGBXYZ       = 4;
 		function_table->push_back(&bee_cam_grab_color_and_depth);
+		//self.GRABALL       = 5;
+		function_table->push_back(&bee_grab_all);
 
 		myStaticDataInitialized = 1;
 		myFuncTableSize = static_cast<int> (function_table->size());
