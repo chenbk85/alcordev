@@ -43,7 +43,7 @@ public:
 
 	//interface command
 	urg_scan_data_ptr do_scan(int, int, int);
-	boost::shared_array <urg_scan_data_ptr> do_multiple_scan(int, int, int, int, int);
+	urg_multi_scan_t do_multiple_scan(int, int, int, int, int);
 	
 	void set_d_mode();
 	void set_s_mode();
@@ -71,7 +71,7 @@ public:
 	timer m_io_timer;
 	int m_timer_status;
 
-	boost::shared_array <urg_scan_data_ptr> m_scan_vec;
+	urg_multi_scan_t m_last_scan;
 
 	char m_scan_mode;
 
@@ -168,18 +168,19 @@ urg_scan_data_ptr urg_laser_impl::do_scan(int start_step, int end_step, int cc) 
 
 	if (m_last_reply.status == URG_CMD_OK) {
 
-		m_scan_vec.reset(new urg_scan_data_ptr(new urg_scan_data_t()));
+		m_last_scan.scan_vec.reset(new urg_scan_data_ptr(new urg_scan_data_t()));
+		m_last_scan.n_scan = 1;
 
-		m_scan_vec[0]->start_step = start_step;
-		m_scan_vec[0]->end_step = end_step;
-		m_scan_vec[0]->cc = cc;
-		decode_scan(m_scan_vec[0]);
+		m_last_scan.scan_vec[0]->start_step = start_step;
+		m_last_scan.scan_vec[0]->end_step = end_step;
+		m_last_scan.scan_vec[0]->cc = cc;
+		decode_scan(m_last_scan.scan_vec[0]);
 
-		return m_scan_vec[0];
+		return m_last_scan.scan_vec[0];
 	}
 }
 
-boost::shared_array <urg_scan_data_ptr> urg_laser_impl::do_multiple_scan(int start_step, int end_step, int cc, int n_scan, int interval) {
+urg_multi_scan_t urg_laser_impl::do_multiple_scan(int start_step, int end_step, int cc, int n_scan, int interval) {
 	
 	if (!is_on)
 		laser_on();
@@ -197,27 +198,30 @@ boost::shared_array <urg_scan_data_ptr> urg_laser_impl::do_multiple_scan(int sta
 
 	if (m_last_reply.status == URG_CMD_OK) {
         
-		m_scan_vec.reset (new urg_scan_data_ptr[n_scan]);
+		m_last_scan.scan_vec.reset (new urg_scan_data_ptr[n_scan]);
+		m_last_scan.n_scan = n_scan;
 
 		for (int i=0; i < n_scan; i++) {
 			read_reply();
 
 			if (m_last_reply.status == URG_DATA_OK) {
 
-				m_scan_vec[i].reset(new urg_scan_data_t());
+				m_last_scan.scan_vec[i].reset(new urg_scan_data_t());
 
-				m_scan_vec[i]->start_step = start_step;
-				m_scan_vec[i]->end_step = end_step;
-				m_scan_vec[i]->cc = cc;
+				m_last_scan.scan_vec[i]->start_step = start_step;
+				m_last_scan.scan_vec[i]->end_step = end_step;
+				m_last_scan.scan_vec[i]->cc = cc;
 
-				decode_scan(m_scan_vec[i]);
+				decode_scan(m_last_scan.scan_vec[i]);
 
 				if (m_line_ready_cb)
-					m_line_ready_cb(m_scan_vec[i]);
+					m_line_ready_cb(m_last_scan.scan_vec[i]);
 
 			}
+			else
+				m_last_scan.scan_vec[i].reset();
 		}
-		return m_scan_vec;
+		return m_last_scan;
 	}
 }
 	

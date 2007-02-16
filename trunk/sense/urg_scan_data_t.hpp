@@ -3,6 +3,7 @@
 
 #include <vector>
 #include <boost/shared_ptr.hpp>
+#include <boost/shared_array.hpp>
 #include <alcor/math/angle.h>
 
 namespace all {
@@ -31,6 +32,12 @@ public:
 };
 
 typedef boost::shared_ptr <urg_scan_data_t> urg_scan_data_ptr;
+
+typedef struct {
+	boost::shared_array <urg_scan_data_ptr> scan_vec;
+	int n_scan;
+} urg_multi_scan_t;
+
 
 }} //namespaces
 
