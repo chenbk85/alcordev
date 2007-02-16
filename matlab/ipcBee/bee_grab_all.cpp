@@ -20,7 +20,7 @@ void bee_grab_all( int nlhs
 		get_object<sense::bumblebee_ipc_recv_t>(OBJ_HANDLE_);
 
   bee.lock();
-  printf("IN ACQ\n");
+  //printf("IN ACQ\n");
 
  //printf("LEFT\n");
   boost::shared_array<core::uint8_t> lbuf_ 

@@ -14,8 +14,8 @@ inline ipc_serializable_t<T>::ipc_serializable_t(core::detail::open_t, const std
 template <typename T>
 inline ipc_serializable_t<T>::ipc_serializable_t(core::detail::read_t, const std::string& _memtag)
 	:data_(0)
-	,mutex_tag_("__mutex_tag")
-	,memory_tag_("__memory_tag")
+	,mutex_tag_("__mutex")
+	,memory_tag_("__memory")
 	{
 	open_ipc_channel_read_(_memtag);
 	}
