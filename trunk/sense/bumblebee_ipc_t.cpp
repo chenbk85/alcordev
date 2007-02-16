@@ -142,7 +142,7 @@ void all::sense::bumblebee_ipc_t::run_thread()
       ///////////////////////////////////////////////////////////////////
      if (bee->grab())//acquisition
      {
-       ipc::scoped_lock<ipc::named_mutex> lock(mutex);
+       //ipc::scoped_lock<ipc::named_mutex> lock(mutex);
        //RIGHT
 		    {
         memcpy(right_rgb_addr, 
