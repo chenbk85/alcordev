@@ -38,12 +38,12 @@ public:
 	void laser_off();
 
 	urg_scan_data_ptr do_scan(int, int, int);
-	boost::shared_array <urg_scan_data_ptr> do_multiple_scan(int, int, int, int, int);
+	urg_multi_scan_t do_multiple_scan(int, int, int, int, int);
 
 	urg_scan_data_ptr do_scan(all::math::angle, all::math::angle, int);
-	boost::shared_array <urg_scan_data_ptr> do_multiple_scan(all::math::angle, all::math::angle, int, int, int);
+	urg_multi_scan_t do_multiple_scan(all::math::angle, all::math::angle, int, int, int);
 
-	boost::shared_array <urg_scan_data_ptr> get_scan_vector();
+	urg_multi_scan_t get_scan_vector();
 
 protected:
 	std::auto_ptr <detail::urg_laser_impl> pimpl;
