@@ -1,7 +1,6 @@
 #include "alcor/sense/bumblebee_driver_t.h"
 #include "alcor/sense/detail/bumblebee_driver_impl.cpp"
 //------------------------------------------------------------------+
-//#include "alcor/core/config_parser_t.h"
 #include "alcor/core/iniWrapper.h"
 //------------------------------------------------------------------+
 namespace all { namespace sense {
