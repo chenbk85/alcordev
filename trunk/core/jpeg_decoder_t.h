@@ -21,12 +21,15 @@ public:
   bool decode(  all::core::jpeg_data_t& , 
                 all::core::uint8_sarr, 
                 size_t lenght);  
+
   ///
   bool decode(  all::core::jpeg_data_t& , 
                 all::core::uint8_sarr, 
                 size_t lenght,
                 boost::crc_32_type::value_type  crc
-                );  
+                ); 
+
+
 private:  
   ///recover from error..
   void restore_();

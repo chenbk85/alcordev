@@ -39,7 +39,7 @@ bool jpeg_decoder_t:: decode(  all::core::jpeg_data_t& decoded,
   //verify crc first
   if(impl->verify_crc_(todecode,lenght,crc))
   {
-    printf("CRC test passed!\n");
+    //printf("CRC test passed!\n");
     try {
     decoded = impl->decode_(todecode, lenght);
     }
@@ -56,7 +56,7 @@ bool jpeg_decoder_t:: decode(  all::core::jpeg_data_t& decoded,
     }
     return true;
   }//verify_crc_
-      printf("CRC test failed!\n");
+    printf("CRC test failed!\n");
   //TODO:redundant ...  
   decoded.size    = -1;
   decoded.height  = -1;
