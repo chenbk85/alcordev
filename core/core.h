@@ -2,13 +2,14 @@
 #define core_H_INCLUDED
 //-------------------------------------------------------------------------++
 #include <boost/config.hpp>
+#include <boost/crc.hpp>  // for boost::crc_32_type
+//-------------------------------------------------------------------------++
+#include <boost/shared_array.hpp>
 //-------------------------------------------------------------------------++
 #include <string>
 #include <string>
 #include <sstream>
 #include <vector>
-//-------------------------------------------------------------------------++
-#include <boost/shared_array.hpp>
 //-------------------------------------------------------------------------++
 namespace all { 
 	namespace core {
@@ -178,6 +179,7 @@ struct jpeg_data_t{
   size_t                height;
   size_t                width;
   size_t                depth;
+  boost::crc_32_type::value_type    crc;
 };
 //---------------------------------------------------------------------------+
 template <class T>

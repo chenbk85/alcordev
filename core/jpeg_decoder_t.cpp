@@ -31,6 +31,41 @@ bool jpeg_decoder_t::decode(  all::core::jpeg_data_t& decoded,
 
 }
 //---------------------------------------------------------------------------
+bool jpeg_decoder_t:: decode(  all::core::jpeg_data_t& decoded, 
+                               all::core::uint8_sarr  todecode,
+                               size_t lenght,
+                               boost::crc_32_type::value_type  crc) 
+{
+  //verify crc first
+  if(impl->verify_crc_(todecode,lenght,crc))
+  {
+    printf("CRC test passed!\n");
+    try {
+    decoded = impl->decode_(todecode, lenght);
+    }
+    catch (std::runtime_error& e)
+    {  
+      printf(e.what());
+      restore_(); 
+      decoded.size    = -1;
+      decoded.height  = -1;
+      decoded.width   = -1;
+      decoded.depth   = -1;
+      return false;
+
+    }
+    return true;
+  }//verify_crc_
+      printf("CRC test failed!\n");
+  //TODO:redundant ...  
+  decoded.size    = -1;
+  decoded.height  = -1;
+  decoded.width   = -1;
+  decoded.depth   = -1;
+  return false;
+
+}
+//---------------------------------------------------------------------------
 void jpeg_decoder_t::restore_()
 {
   printf("\nRestoring Decoder......\n");
