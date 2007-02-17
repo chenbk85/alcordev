@@ -169,8 +169,8 @@ const char AUTHOR_INFORMATION[]  = "Andrea Carbone, Giorgio Ugazio, Stefano Marr
 
   typedef double double_t;
   typedef double_t* double_ptr;
-   typedef boost::shared_array<double_t> double_sptr;
-   typedef boost::shared_array<double_t> double_sarr;
+  typedef boost::shared_array<double_t> double_sptr;
+  typedef boost::shared_array<double_t> double_sarr;
 
 //---------------------------------------------------------------------------+
 struct jpeg_data_t{

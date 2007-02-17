@@ -31,6 +31,7 @@ namespace all { namespace sense {
 ///Inherited
 bool bumblebee_driver_t::close()
 {
+return true;
 }
 //------------------------------------------------------------------+
 long bumblebee_driver_t::serialnum() const
