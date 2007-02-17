@@ -16,6 +16,12 @@ namespace all { namespace core { namespace detail {
     ///
     all::core::jpeg_data_t decode_(core::uint8_sarr byte_stream, size_t byte_lenght);
     ///
+    bool verify_crc_(core::uint8_sarr byte_stream, 
+                    size_t byte_lenght,
+                    boost::crc_32_type::value_type  crc);
+    ///
+    boost::crc_32_type  crc_result;
+    ///
     int h_;
     ///
     int w_;
@@ -58,6 +64,15 @@ namespace all { namespace core { namespace detail {
     //
     return jpeg_data;
 
+  }
+  //########################################################################  
+  inline bool jpeg_decoder_impl::verify_crc_(core::uint8_sarr byte_stream, 
+                                            size_t byte_lenght,
+                                            boost::crc_32_type::value_type  crc)
+  {
+    printf("Verifying CRC %x\n", crc);
+    crc_result.process_bytes( byte_stream.get(), byte_lenght);
+    return (crc == crc_result.checksum() );
   }
 //########################################################################
 

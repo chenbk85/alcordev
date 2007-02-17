@@ -37,7 +37,8 @@ struct jpeg_encoder_impl
   void encode_interleaved_impl_ (core::jpeg_data_t& res, core::uint8_sarr, int quality);
   ///Assumes planar RGB
   void encode_planar_impl_ (core::jpeg_data_t& res, core::uint8_sarr, int quality);
-
+  ///
+  void calc_crc_(core::jpeg_data_t& jpegdata);
   ///
   jpeg_memory_dest_t jpeg_sink;
   ///
@@ -50,6 +51,8 @@ struct jpeg_encoder_impl
   int h_;
   ///
   int d_;
+  ///
+  boost::crc_32_type  crc_result;
 };
 //########################################################################
 //          jpeg_encoder_impl
@@ -63,8 +66,6 @@ inline jpeg_encoder_impl::jpeg_encoder_impl(int height, int width, int depth)
   jpeg_sink.init_(height, width, depth);
   encoder.setOutputStream(&jpeg_sink);
 
-  //change_ordering_sptr.reset( 
-  //  new all::core::change_ordering_cached(height, width, depth) );
 }
 //------------------------------------------------------------------------
 //
@@ -83,7 +84,8 @@ inline void jpeg_encoder_impl::encode_interleaved_impl_(core::jpeg_data_t& ret, 
   ret.height  =   h_;
   ret.width   =   w_;
   ret.depth   =   d_;
-
+  //crc
+  calc_crc_(ret);
 }
 //------------------------------------------------------------------------
 //
@@ -92,8 +94,6 @@ inline void jpeg_encoder_impl::encode_planar_impl_(core::jpeg_data_t& ret,
                                                    int quality)
 {
   jpeg_sink.datacount = 0;
-
-  //change_ordering_sptr->to_interleaved(arr);
 
   core::change_ordering::to_interleaved(arr, h_,w_,d_);
 
@@ -108,7 +108,15 @@ inline void jpeg_encoder_impl::encode_planar_impl_(core::jpeg_data_t& ret,
   ret.height  =   h_;
   ret.width   =   w_;
   ret.depth   =   d_;
-
+  //crc
+  calc_crc_(ret);
+}
+//------------------------------------------------------------------------
+//
+inline void jpeg_encoder_impl::calc_crc_(core::jpeg_data_t& jpegdata)
+{
+  crc_result.process_bytes( jpegdata.data.get(), jpegdata.size);
+  jpegdata.crc =crc_result.checksum(); 
 }
 //########################################################################
 //                        jpeg_memory_dest_t
