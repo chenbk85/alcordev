@@ -70,7 +70,7 @@ namespace all { namespace core { namespace detail {
                                             size_t byte_lenght,
                                             boost::crc_32_type::value_type  crc)
   {
-    printf("Verifying CRC %x\n", crc);
+    //printf("Verifying CRC %x\n", crc);
     crc_result.process_bytes( byte_stream.get(), byte_lenght);
     return (crc == crc_result.checksum() );
   }
