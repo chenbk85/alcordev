@@ -68,6 +68,9 @@ void in_stream_manager_t::in_packet_cb(stream_packet_ptr_t packet) {
 			m_last_frame_pos = ready_frame_pos;
 			
 			frame_buffer_pos = m_last_frame_pos;
+
+			m_frame_size[frame_buffer_pos] = 0;
+
 			m_frame_buffer_map[frame_buffer_pos] = frame_num;
 		}
 	}
