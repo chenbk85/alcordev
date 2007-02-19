@@ -827,11 +827,11 @@ namespace lti {
       }
 
       //MY MODIFIED
-      cout << "Setting HOLD Power Mode to H ....";
-      par.connectionToPTU.send("PMH ");
-      par.connectionToPTU.send("TMH ");
-      par.connectionToPTU.send("PHR ");
-      par.connectionToPTU.send("THR ");
+      //cout << "Setting HOLD Power Mode to H ....";
+      //par.connectionToPTU.send("PMH ");
+      //par.connectionToPTU.send("TMH ");
+      //par.connectionToPTU.send("PHR ");
+      //par.connectionToPTU.send("THR ");
       //else {
       //  cout << "FAILED" << endl;
       //}

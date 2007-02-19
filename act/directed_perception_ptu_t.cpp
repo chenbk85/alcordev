@@ -28,7 +28,7 @@ bool directed_perception_ptu_t::open(const std::string& ini)
   //
   int com = config.GetInt("ptu:port",8);  
   serial::parameters port_params;
-  port_params.receiveTimeout = 120;
+  port_params.receiveTimeout = 125;
 
   //Opening port
   printf("Opening Port %d\n", com);

@@ -11,6 +11,8 @@ namespace all {
 class ptu_server_data_t //: public core::i_serializable
 {
 public:
+  ptu_server_data_t():pan(0),tilt(0){}
+public:
 	void import(core::net_packet_ptr_t);
 	void pack(core::net_packet_ptr_t);
   double pan;
