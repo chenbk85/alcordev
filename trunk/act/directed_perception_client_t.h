@@ -3,11 +3,12 @@
 
 #include "alcor/core/client_base_t.hpp"
 #include "ptu_server_data_t.hpp"
+//#include "alcor/math/"
 
 namespace all {
 	namespace act {
 
-    class directed_perception_client_t : public core::client_base_t
+class directed_perception_client_t : public core::client_base_t
 
 {
 public:
@@ -17,6 +18,9 @@ public:
   void set_pantilt(float pan, float tilt);
   ///
   void reset();
+
+  ///
+  void get_pantilt(float& pan, float& tilt);
 
 private:
   ///

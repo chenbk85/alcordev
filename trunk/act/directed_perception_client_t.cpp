@@ -10,7 +10,7 @@ namespace all {
       if ( ini.Load(inifile.c_str()) ) 
       {
     		all::core::ip_address_t server_address;
-		    server_address.hostname = ini.GetStringAsChar("server:address", "127.0.0.1");
+		    server_address.hostname = ini.GetStringAsChar("server:hostname", "127.0.0.1");
 		    server_address.port = ini.GetInt("server:port", 99999);
 		    set_server_addr(server_address);
 	    }
@@ -19,7 +19,7 @@ namespace all {
       }
 
   	  add_command_handler
-        ("getserverdata", boost::bind(&directed_perception_client_t::update_ptu_data, this, _1));
+        ("updatedata", boost::bind(&directed_perception_client_t::update_ptu_data, this, _1));
 
 	    set_connect_callback(boost::bind(&directed_perception_client_t::connected_cb, this));
 
@@ -32,13 +32,13 @@ namespace all {
       act::ptu_server_data_t data;
       data.pan = (double)pan;data.tilt = (double)tilt;
       data.pack(packet);
-	    send_command("setSpeed", packet);
+	    send_command("pantilt", packet);
     }
 
       ///
     void directed_perception_client_t::reset()
     {
-    	send_command("reset");
+    	send_command("resetptu");
     }
 
 
@@ -50,6 +50,13 @@ namespace all {
     void directed_perception_client_t::connected_cb() 
     {
 	    send_request("getserverdata", 100);
+    }
+
+      ///
+    void directed_perception_client_t::get_pantilt(float& pan, float& tilt)
+    {
+      pan = ptu_data.pan;
+      tilt = ptu_data.tilt;
     }
 
   }}
