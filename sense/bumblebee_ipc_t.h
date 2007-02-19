@@ -24,7 +24,9 @@ class all::sense::bumblebee_ipc_t
     ///
 		~bumblebee_ipc_t();
     ///
-    bool open(std::string& config_file);
+    bool open();
+    ///
+    void assign_bumblebee(boost::shared_ptr<bumblebee_driver_t>);
 
 	public:
     ///
@@ -33,9 +35,8 @@ class all::sense::bumblebee_ipc_t
 	private:		
     ///
     void run_thread();
-		//Mutex to protect access to the queue
     ///
-    boost::scoped_ptr<bumblebee_driver_t> bee;
+    boost::shared_ptr<bumblebee_driver_t> bee;
     ///
     boost::scoped_ptr<boost::thread>      thisthread; 
     ///
