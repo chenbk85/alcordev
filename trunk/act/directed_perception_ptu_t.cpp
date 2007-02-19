@@ -2,13 +2,14 @@
 //impl
 #include "detail\lti\ltiDirectedPerceptionPTU.h"
 #include <boost\timer.hpp>
+
 #include "alcor/core/iniWrapper.h"
 //---------------------------------------------------------------------------
 namespace all { namespace act {
 //---------------------------------------------------------------------------
-directed_perception_ptu_t::directed_perception_ptu_t()
+  directed_perception_ptu_t::directed_perception_ptu_t()
 {
-  impl.reset(new lti::directedPerceptionPTU);
+  //impl.reset(new lti::directedPerceptionPTU);
 }
 //---------------------------------------------------------------------------
 bool directed_perception_ptu_t::open(const std::string& ini)
@@ -19,7 +20,10 @@ bool directed_perception_ptu_t::open(const std::string& ini)
   iniWrapper config;
 
   //
-  config.Load(ini.c_str());
+ if ( config.Load(ini.c_str()) )
+   printf("ini file: %s opened!\n",ini.c_str());
+ else
+  printf("ini file: %s NOT opened!\n",ini.c_str());
 
   //
   int com = config.GetInt("ptu:port",8);  
@@ -62,7 +66,10 @@ bool directed_perception_ptu_t::open(const std::string& ini)
   directedPerceptionPTU::parameters par;
   par.connectionToPTU.setParameters(port_params);
 
-  impl->setParameters(par);
+  //Create
+  impl.reset(new lti::directedPerceptionPTU(par) );
+
+  //impl->setParameters(par);
 
   if(impl->initialize())
     {
