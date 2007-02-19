@@ -13,7 +13,7 @@ class directed_perception_ptu_server_t : public core::server_base_t
 {
 public:
   ///
-  directed_perception_ptu_server_t(std::string& ini_file);
+  directed_perception_ptu_server_t(const std::string& ini_file);
   ///
   void assign_ptu(boost::shared_ptr<act::directed_perception_ptu_t>);
 
@@ -28,7 +28,7 @@ public:
 
 private:
   ///
-  boost::shared_ptr<act::directed_perception_ptu_t> ptu_sp;
+  act::directed_perception_sptr ptu_sp;
   ///
   act::ptu_server_data_t ptu_data;
 

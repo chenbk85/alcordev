@@ -4,7 +4,7 @@
 namespace all {
 	namespace act {
 
-directed_perception_ptu_server_t::directed_perception_ptu_server_t(std::string& ini_file)
+directed_perception_ptu_server_t::directed_perception_ptu_server_t(const std::string& ini_file)
 {
   iniWrapper ini;
   if ( ini.Load(ini_file.c_str()) ) 
@@ -22,7 +22,7 @@ directed_perception_ptu_server_t::directed_perception_ptu_server_t(std::string& 
 
 }
 
-void directed_perception_ptu_server_t::assign_ptu(boost::shared_ptr<act::directed_perception_ptu_t> ptu)
+void directed_perception_ptu_server_t::assign_ptu(act::directed_perception_sptr ptu)
 {
   ptu_sp = ptu;
 }
