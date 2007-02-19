@@ -50,13 +50,9 @@ protected:
    bool readPropertyFromCamera( Property* pproperty );
    bool writePropertyToCamera( const Property* pproperty );
 
-   //bool writePropertyToRegistry( HKEY key, const Property* pproperty );
-   //bool readPropertyFromRegistry( HKEY key, Property* pproperty );
 
    bool readAllProperties();
    bool writeAllProperties();
-
-   //bool getAutoRegistryKey( char* pszKey );
 
    bool getPropertyString( const Property* pproperty, char* pszString );
    bool scanPropertyString( Property* pproperty, const char* pszString );
@@ -162,7 +158,7 @@ inline bool bumblebee_driver_impl::init_digiclops_context_(DigiclopsSerialNumber
  bok = bok && handle_digiclops_error( "digiclopsSetImageResolution()", de );
 
 		//Framerate
-	de= digiclopsSetFrameRate(digiclops_context_, DIGICLOPS_FRAMERATE_050);
+	de= digiclopsSetFrameRate(digiclops_context_, DIGICLOPS_FRAMERATE_025);
 	bok = bok && handle_digiclops_error( "digiclopsSetFrameRate()", de );
 
 	de = digiclopsSetColorProcessing(digiclops_context_,  DIGICLOPS_EDGE_SENSING );
