@@ -24,18 +24,20 @@ directed_perception_ptu_server_t::directed_perception_ptu_server_t(const std::st
 
 void directed_perception_ptu_server_t::assign_ptu(act::directed_perception_sptr ptu)
 {
-  ptu_sp.reset(ptu.get());
+  ptu_sp = ptu;
 }
 
 void directed_perception_ptu_server_t::reset(client_connection_ptr_t, net_packet_ptr_t)
 {
+  printf("Reset\n");
   if(ptu_sp.get())
     ptu_sp->reset();
 }
 
 void directed_perception_ptu_server_t::pantilt(client_connection_ptr_t, net_packet_ptr_t packet)
 {
-  if(!!ptu_sp)
+  //printf("Set\n");
+  if(ptu_sp.get())
   {
       act::ptu_server_data_t clientdata;
       clientdata.import(packet);
@@ -45,12 +47,19 @@ void directed_perception_ptu_server_t::pantilt(client_connection_ptr_t, net_pack
 
 void directed_perception_ptu_server_t::send_pantilt_data(client_connection_ptr_t cl, net_packet_ptr_t packet)
 {
-  if(!!ptu_sp)
+  //printf("Update\n");
+  if(ptu_sp.get())
   {
-    ptu_sp->get_pantilt((float&)ptu_data.pan, (float&)ptu_data.tilt);
-    net_packet_ptr_t ans;
-    ptu_data.pack(ans);
-  	send_answer_packet("updatedata", cl, ans);
+    //printf("get_pantilt\n");
+    ptu_sp->get_current_pantilt((float&)ptu_data.pan, (float&)ptu_data.tilt);
+    ptu_data.pan = ptu_sp->get_pan();
+    ptu_data.tilt = ptu_sp->get_tilt();
+    //printf("get_pantilt\n");
+    packet.reset(new core::net_packet_t);
+    //printf(" ptu_data.pack(ans);\n");
+    ptu_data.pack(packet);
+    //printf(" send_answer_packet\n");
+    send_answer_packet("updatedata", cl, packet);
   }
 
 }

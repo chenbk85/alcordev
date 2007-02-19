@@ -30,7 +30,7 @@ inline void ptu_server_data_t::pack(core::net_packet_ptr_t packet)
 {
   packet->double_to_buf(pan);
   packet->double_to_buf(tilt);
-	packet->finalize_packet();
+	//packet->finalize_packet();
 }
 
 

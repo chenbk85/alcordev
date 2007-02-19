@@ -26,9 +26,14 @@ bool directed_perception_ptu_t::open(const std::string& ini)
   printf("ini file: %s NOT opened!\n",ini.c_str());
 
   //
-  int com = config.GetInt("ptu:port",8);  
+  int com = config.GetInt("ptu:port",8);
+
   serial::parameters port_params;
   port_params.receiveTimeout = 125;
+  port_params.stopBits = serial::parameters::One;
+  port_params.baudRate = serial::parameters::Baud9600;
+  port_params.parity = serial::parameters::No;
+  port_params.characterSize = serial::parameters::Cs8;
 
   //Opening port
   printf("Opening Port %d\n", com);
@@ -65,6 +70,7 @@ bool directed_perception_ptu_t::open(const std::string& ini)
   //
   directedPerceptionPTU::parameters par;
   par.connectionToPTU.setParameters(port_params);
+
 
   //Create
   impl.reset(new lti::directedPerceptionPTU(par) );
