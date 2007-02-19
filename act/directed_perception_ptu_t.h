@@ -32,7 +32,7 @@ class directed_perception_ptu_t
 public:
   directed_perception_ptu_t();
 
-  bool open();
+  bool open(const std::string& ini);
 
   bool set_angle_format(math::deg_t);
   bool set_angle_format(math::rad_t);

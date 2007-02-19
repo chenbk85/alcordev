@@ -2,7 +2,7 @@
 //impl
 #include "detail\lti\ltiDirectedPerceptionPTU.h"
 #include <boost\timer.hpp>
-#include "alcor\core\config_parser_t.h"
+#include "alcor/core/iniWrapper.h"
 //---------------------------------------------------------------------------
 namespace all { namespace act {
 //---------------------------------------------------------------------------
@@ -11,19 +11,20 @@ directed_perception_ptu_t::directed_perception_ptu_t()
   impl.reset(new lti::directedPerceptionPTU);
 }
 //---------------------------------------------------------------------------
-bool directed_perception_ptu_t::open()
+bool directed_perception_ptu_t::open(const std::string& ini)
 {
   using namespace lti;
 
-  core::config_parser_t config;
+  //core::config_parser_t config;
+  iniWrapper config;
 
   //
-  config.load(core::ini,"config/dpptu_conf.ini");
+  config.Load(ini.c_str());
 
   //
-  int com = config.as_int("ptu.port",8);  
+  int com = config.GetInt("ptu:port",8);  
   serial::parameters port_params;
-  port_params.receiveTimeout = 125;
+  port_params.receiveTimeout = 120;
 
   //Opening port
   printf("Opening Port %d\n", com);
@@ -54,8 +55,8 @@ bool directed_perception_ptu_t::open()
   }
 
   //
-  int panspeed  = config.as_int("ptu.panvelstep",1000);
-  int tiltspeed = config.as_int("ptu.titlvelstep",1000);
+  int panspeed  = config.GetInt("ptu:panvelstep",1000);
+  int tiltspeed = config.GetInt("ptu:titlvelstep",1000);
 
   //
   directedPerceptionPTU::parameters par;
