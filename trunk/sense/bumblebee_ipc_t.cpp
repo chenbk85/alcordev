@@ -14,15 +14,15 @@ all::sense::bumblebee_ipc_t::bumblebee_ipc_t():
 	{
 	}
 //-------------------------------------------------------------------++
-bool  all::sense::bumblebee_ipc_t::open(std::string& config_file)
+bool  all::sense::bumblebee_ipc_t::open()
 {
-  bee.reset(new     bumblebee_driver_t());
+  //bee.reset(new     bumblebee_driver_t());
 
-  printf( "\nOpening: %s\n\n", config_file.c_str() );
+  //printf( "\nOpening: %s\n\n", config_file.c_str() );
 
-  if( bee->open(config_file) )
-  {
-    printf("\nBumblebee camera: %s Opened!\n", bee->name().c_str());
+  //if( bee->open(config_file) )
+  //{
+  //  printf("\nBumblebee camera: %s Opened!\n", bee->name().c_str());
 
     printf("Starting Thread!\n");
     thisthread.reset(
@@ -34,20 +34,26 @@ bool  all::sense::bumblebee_ipc_t::open(std::string& config_file)
           )
       );
     return true;
-  }
-  else
-  {
-    printf("ERROR: Bumblebee camera Not Opened!\n");
-    return false;
-  }
+  //}
+  //else
+  //{
+  //  printf("ERROR: Bumblebee camera Not Opened!\n");
+  //  return false;
+  //}
   
 }     
 //-------------------------------------------------------------------++
 all::sense::bumblebee_ipc_t::~bumblebee_ipc_t()
 	{
 	_running = false;
-	Sleep(250);
+	Sleep(50);
 	}
+//-------------------------------------------------------------------++
+
+void all::sense::bumblebee_ipc_t::assign_bumblebee(boost::shared_ptr<bumblebee_driver_t> bptr)
+{
+bee = bptr;
+}
 ////-------------------------------------------------------------------++
 void all::sense::bumblebee_ipc_t::run_thread()
 	{
@@ -133,16 +139,19 @@ void all::sense::bumblebee_ipc_t::run_thread()
   const std::size_t    xyz_imag_size        =  xyz_region.get_size();
 	///////////////////////////////////////////////////////////////////////
   ipc::named_mutex mutex(ipc::open_or_create, shmutex.c_str());
+  printf("IPC Mutex: %s\n",shmutex.c_str());
   ///////////////////////////////////////////////////////////////////////
   cimg_library::CImgDisplay dispr(bee->ncols(), bee->nrows(), "Bumblebee ipc /Right");
   cimg_library::CImg<core::uint8_t> right;
    //in the thread_loop
 	while (_running)
 		{
+      //printf("Run\n");
       ///////////////////////////////////////////////////////////////////
      if (bee->grab())//acquisition
      {
-       ipc::scoped_lock<ipc::named_mutex> lock(mutex);
+       //ipc::scoped_lock<ipc::named_mutex> lock(mutex);
+       mutex.lock();
        //RIGHT
 		    {
         memcpy(right_rgb_addr, 
@@ -164,6 +173,8 @@ void all::sense::bumblebee_ipc_t::run_thread()
                 xyz_imag_size );
         }
 
+       mutex.unlock();
+
      }//grab
         //
         ///////////////////////////////////////////////////////////////////
@@ -171,8 +182,9 @@ void all::sense::bumblebee_ipc_t::run_thread()
 		Sleep(25);
 		}//_running ... out of thread loop...
 	///////////////////////////////////////////////////////////////////////
-  ipc::shared_memory_object::remove(right_rgb_name.c_str());
-  ipc::shared_memory_object::remove(xyz_name.c_str());
-  ipc::shared_memory_object::remove(left_rgb_name.c_str());
+    ipc::shared_memory_object::remove(right_rgb_name.c_str());
+    ipc::shared_memory_object::remove(xyz_name.c_str());
+    ipc::shared_memory_object::remove(left_rgb_name.c_str());
+ 
 	}
 //-------------------------------------------------------------------++
