@@ -84,7 +84,7 @@ void tcp_pkt_receiver_t::handle_read_data(const boost::system::error_code& error
 		net_packet_header_t header;
 
 		//try build packet header
-		if (!header.build_header_from_string(m_in_header_buffer)) {
+		if (!header.build_header_from_buffer(m_in_header_buffer)) {
 			
 			if (m_listen_f)
 				read_packet();
@@ -116,11 +116,11 @@ void tcp_pkt_receiver_t::handle_read_data(const boost::system::error_code& error
 		if (m_in_data_buffer != NULL)
 			delete [] m_in_data_buffer;
 		
-		m_in_data_buffer = new char[bytes_transferred];
+		m_in_data_buffer = new char[data_size];
 		is.read(m_in_data_buffer, data_size);
 		
 		//build packet
-		m_packet_ptr.reset(new net_packet_t(header, m_in_data_buffer));
+		m_packet_ptr.reset(new net_packet_t(header, m_in_data_buffer, data_size));
 		
 
 		//start waiting for next packet

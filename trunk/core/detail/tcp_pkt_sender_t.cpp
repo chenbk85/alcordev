@@ -17,9 +17,11 @@ void tcp_pkt_sender_t::set_error_callback(boost::function <void (const boost::sy
 void tcp_pkt_sender_t::send_packet(net_packet_ptr_t packet) {
 	
 	const net_packet_header_t packet_header = packet->get_header();
-	m_out_header_buffer = packet_header.get_header();
+	
+	all::core::uint8_sarr header_buffer = packet_header.get_header();
+	m_out_header_buffer.assign(reinterpret_cast <const char*> (header_buffer.get()), net_packet_header_t::HEADER_LENGTH);
 
-	m_out_data_buffer = packet->get_buffer();
+	m_out_data_buffer.assign(packet->get_buffer().get(), packet_header.get_packet_size());
 
 	printf("packet data: %s\n", m_out_data_buffer.c_str());
 
@@ -47,10 +49,13 @@ void tcp_pkt_sender_t::handle_write(const boost::system::error_code& error, std:
 }
 
 void tcp_pkt_sender_t::send_packet_blk(net_packet_ptr_t packet) {
+	
 	const net_packet_header_t packet_header = packet->get_header();
-	m_out_header_buffer = packet_header.get_header();
+	all::core::uint8_sarr header_buffer = packet_header.get_header();
+	
+	m_out_header_buffer.assign(reinterpret_cast <const char*> (header_buffer.get()), net_packet_header_t::HEADER_LENGTH);
 
-	m_out_data_buffer = packet->get_buffer();
+	m_out_data_buffer.assign(packet->get_buffer().get(), packet_header.get_packet_size());
 
 	printf("packet data: %s\n", m_out_data_buffer.c_str());
 
