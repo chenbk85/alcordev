@@ -2,8 +2,6 @@
 #define directed_perception_ptu_t_H_INCLUDED
 
 #pragma comment (lib, "directed_perception_ptu.lib")
-
-//#include <boost\shared_ptr.hpp>
 #include <boost\enable_shared_from_this.hpp>
 
 ///forward
@@ -72,3 +70,13 @@ private:
 }}
 
 #endif //directed_perception_ptu_t_H_INCLUDED
+
+
+//[ptu]
+//port=7
+//panvelstep=1000;
+//titlvelstep=1000;
+//minpan = -120;
+//maxpan = 120;
+//mintilt= -20;
+//maxtilt = 20;

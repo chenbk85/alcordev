@@ -3,7 +3,6 @@
 
 #include "alcor/core/client_base_t.hpp"
 #include "ptu_server_data_t.hpp"
-//#include "alcor/math/"
 
 namespace all {
 	namespace act {
