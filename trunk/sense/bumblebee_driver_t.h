@@ -7,12 +7,14 @@
 //---------------------------------------------------------------------------
 #include <boost/shared_ptr.hpp>
 //---------------------------------------------------------------------------
+#pragma comment (lib, "bumblebee_driver_t.lib")
+//---------------------------------------------------------------------------
 namespace all{ 
 	namespace sense {
 	///A Point Grey Bumblebee digital camera.
 	class bumblebee_driver_t;
 	class bumblebee_parameters_t;
-
+  typedef boost::shared_ptr<all::sense::bumblebee_driver_t> bumblebee_sptr;
   namespace detail{
   class bumblebee_driver_impl;
   }
@@ -88,5 +90,7 @@ protected:
   boost::shared_ptr<detail::bumblebee_driver_impl> impl;
   bumblebee_parameters_t params;
 	};
+
+
 //---------------------------------------------------------------------------
 #endif //bumblebee_t_H_INCLUDED

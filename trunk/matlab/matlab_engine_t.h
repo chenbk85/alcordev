@@ -4,7 +4,6 @@
 #pragma comment(lib, "matlab_engine_t.lib")
 //--------------------------------------------------------------------------+
 #include "alcor/matlab/matlab_mx_utils.hpp"
-//#include "alcor/matlab/matlab_image_t.h"
 //--------------------------------------------------------------------------+
 #include "engine.h"
 #include <string>

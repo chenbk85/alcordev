@@ -63,14 +63,9 @@ struct pinhole_t
      return static_cast<int>(focal * ::tan( core::dconstants::deg_to_rad(deg) ));
    };
 
-
-
   double focal;
   size_t nrows;
   size_t ncols;
-
-  //BOOST_STATIC_CONSTANT(size_t, nrows_m = static_cast<size_t>(nrows/2.0) );
-  //BOOST_STATIC_CONSTANT(size_t, ncols_m = static_cast<size_t>(ncols/2.0) );
 
 };
 
