@@ -12,8 +12,8 @@ struct buffer2array
 //---------------------------------------------------------------------++
 static mxArray* create_from_planar(typename matlab::traits<T>::const_ptr _src
 				,matlab::row_major_t//src data ordering
-				,int _height
-				,int _width
+				,size_t _height
+				,size_t _width
 				,int _channels=3)
 {
    ///
@@ -31,7 +31,7 @@ static mxArray* create_from_planar(typename matlab::traits<T>::const_ptr _src
   //
   int row_inc = _width;
   //
-  int planar_inc = _height*_width;
+  int planar_inc = (int)_height*(int)_width;
 
   int column_inc=0;	
 
@@ -96,9 +96,9 @@ static mxArray* create_from_planar(typename matlab::traits<T>::const_ptr _src
 ///
 static mxArray* create_from_interleaved(typename matlab::traits<T>::const_ptr _src
 					,matlab::row_major_t//src ordering
-					,const int& _height
-					,const int& _width
-					,const int& _channels=3)//depth==num of channels/component
+					,size_t _height
+					,size_t _width
+					,size_t _channels=3)//depth==num of channels/component
 {
     //
 	mwSize dims[] = {_height, _width, _channels};
