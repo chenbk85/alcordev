@@ -4,7 +4,6 @@
 #pragma comment(lib, "opencv_grabber_t.lib")
 //-------------------------------------------------------------------------++
 #include "alcor/core/core.h"
-//#include "alcor/core/detail/grabber_mode_tags.hpp"
 #include <cv.h>
 #include <highgui.h>
 //-------------------------------------------------------------------------++
@@ -30,10 +29,17 @@ public:
 	bool open(core::camera_mode_t, int cam=-1);
 	///
 	bool open(core::video_mode_t, const std::string&);
+
+  ///
+  bool is_interleaved() {return !m_data_order;};
+  ///
+  bool is_topleft()     {return !m_data_origin;};
 	///
 	bool close();
 	///
   bool get_color_buffer(core::uint8_sarr);
+  ///
+  IplImage* get_ipl_image();
   
   ///
   int height() const { return m_h; }
@@ -54,10 +60,12 @@ protected:
   int m_w;
   ///Height of the images a grabber produces. 
   int m_h;
-	///Height of the images a grabber produces. 
+	///Depth of the images a grabber produces. 
 	int m_ch;
   ///
-  int m_order;
+  int m_data_order;
+  ///
+  int m_data_origin;
 	///
 	int m_cam_id;
 	///
@@ -70,7 +78,7 @@ protected:
   IplImage* m_ipl_image;
 
   ///Opaque OpenCV structure for image capture.
-  void * m_capture;
+  CvCapture* m_capture;
 
 };
 
