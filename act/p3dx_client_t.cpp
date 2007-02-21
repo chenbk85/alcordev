@@ -37,6 +37,8 @@ class p3dx_client_imp :
 		void set_rot_vel(double);
     //TODO: aggiungere al server i servizi!!
     ///
+    void move(double distance);
+    ///
     void move_diff(const math::point2d&);
     ///
     void set_heading(const math::angle&);  
@@ -214,6 +216,14 @@ void p3dx_client_imp::set_local_dir (double delta_degree)
   cmd.doubleToBuf(delta_degree);
 	cmd.finalizePacket();
 	connection_handler.m_client.requestOnce("setlocaldir", &cmd);
+}
+//---------------------------------------------------------------------------
+void p3dx_client_imp::move(double distance)
+{
+	ArNetPacket cmd;
+  cmd.doubleToBuf(distance);
+	cmd.finalizePacket();
+	connection_handler.m_client.requestOnce("move", &cmd);
 }
 //---------------------------------------------------------------------------
 void p3dx_client_imp::move_diff(const math::point2d&)
