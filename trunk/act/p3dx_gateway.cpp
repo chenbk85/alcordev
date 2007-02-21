@@ -26,6 +26,7 @@ p3dx_gateway::p3dx_gateway():
       ,m_set_delta_heading_cb(this, &p3dx_gateway::set_delta_heading_imp)
       ,m_set_wandermode_cb(this, &p3dx_gateway::set_wandermode_imp)
       ,m_set_localdir_cb(this, &p3dx_gateway::set_localdir_imp)
+      ,m_move_cb(this, &p3dx_gateway::move_imp)
 {
 	//Mandatory init ..
 	Aria::init();
@@ -187,6 +188,9 @@ void p3dx_gateway::start_server()
 	m_server.addData("setlocaldir", "Set Local Dir Action", 
     &m_set_localdir_cb, "none", "Delta angle in degrees");
 
+	m_server.addData("move", "Move of a certain distance (meters)", 
+    &m_move_cb, "none", "Distance to travel in Meters");
+
 	m_server.runAsync();
 
 	}
@@ -263,6 +267,14 @@ void p3dx_gateway::set_localdir_imp (ArServerClient *, ArNetPacket* msg)
   //DEGREES
   double delta_deg = msg->bufToDouble();
   set_local_dir(delta_deg);
+}
+//---------------------------------------------------------------------------
+void p3dx_gateway::move_imp (ArServerClient *, ArNetPacket* msg)
+{
+  printf("Move\n");
+  //DEGREES
+  double move_meters = msg->bufToDouble();
+  move(move_meters);
 }
 //---------------------------------------------------------------------------
 p3dx_position_t const& p3dx_gateway::get_localized() const

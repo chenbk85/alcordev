@@ -160,6 +160,7 @@ private:
 	ArFunctor2C<p3dx_gateway, ArServerClient *, ArNetPacket *> m_set_delta_heading_cb;
 	ArFunctor2C<p3dx_gateway, ArServerClient *, ArNetPacket *> m_set_wandermode_cb;
 	ArFunctor2C<p3dx_gateway, ArServerClient *, ArNetPacket *> m_set_localdir_cb;
+	ArFunctor2C<p3dx_gateway, ArServerClient *, ArNetPacket *> m_move_cb;
 
 //[the remote callbacks]
 private:
@@ -172,6 +173,7 @@ private:
 	void set_delta_heading_imp (ArServerClient *, ArNetPacket *);
 	void set_wandermode_imp (ArServerClient *, ArNetPacket *);
 	void set_localdir_imp (ArServerClient *, ArNetPacket *);
+  void move_imp(ArServerClient *, ArNetPacket *);
 
 private:
 	///Localized

@@ -37,6 +37,8 @@ namespace all{
 		virtual void stop_robot()=0;
     //TODO: aggiungere i servizi!
     ///
+    virtual void move(double distance)=0;
+    ///
     virtual void move_diff(const math::point2d&) = 0;
 
     ///
