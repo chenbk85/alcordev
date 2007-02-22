@@ -58,17 +58,19 @@ inline void  change_ordering::to_interleaved(all::core::uint8_sarr& arr,
 inline  void change_ordering::to_planar(all::core::uint8_sarr& arr, 
                         size_t height, 
                         size_t width, 
-                        size_t depth)
+                        size_t depth=3)
     {
   size_t channel_stride  = height*width;
   size_t channel_stride2 = channel_stride*2;
 
   size_t row_stride     = width;
 
-  core::uint8_ptr temp = new core::uint8_t[height*width*depth];
+  //core::uint8_ptr temp = new core::uint8_t[height*width*depth];
+  core::uint8_sarr temp (new core::uint8_t[height*width*depth]);
 
-  size_t comp_index_pl    = 0;
-  size_t comp_index_il    = 0;
+
+  size_t comp_index_pln    = 0;
+  size_t comp_index_ilv    = 0;
 //#pragma omp parallel   
 //  {
 
@@ -79,20 +81,20 @@ inline  void change_ordering::to_planar(all::core::uint8_sarr& arr,
     {
       //printf("R: %d C: %d\n",row-1,col-1);
     //
-    comp_index_pl = ((row-1)*row_stride) + (col-1);
-    comp_index_il = comp_index_pl*3;
+    comp_index_pln = ((row-1)*row_stride) + (col-1);
+    comp_index_ilv = comp_index_pln*3;
 
     //R
-    temp[comp_index_pl]                    = arr[comp_index_il];
+    temp[comp_index_pln]                    = arr[comp_index_ilv];
     //G
-    temp[comp_index_pl + channel_stride]   = arr[comp_index_il + 1];
+    temp[comp_index_pln + channel_stride]   = arr[comp_index_ilv + 1];
     //B
-    temp[comp_index_pl + channel_stride2]  = arr[comp_index_il + 2];
+    temp[comp_index_pln + channel_stride2]  = arr[comp_index_ilv + 2];
     }
   }
 
   //}//parallel
-  arr.reset(temp);
+  arr=(temp);
     }
 //-------------------------------------------------------------------
 }}//namespace all::core
