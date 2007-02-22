@@ -166,7 +166,7 @@ bool all::sense::opencv_grabber_t::get_color_buffer
 
   if (is_interleaved() )
   {
-    core::change_ordering::to_planar(user_buffer, m_h,m_w, m_ch);
+    core::change_ordering::to_planar(user_buffer, m_h, m_w, m_ch);
   }
 
   //// That's it
