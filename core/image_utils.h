@@ -8,18 +8,18 @@ namespace all { namespace core {
 //-------------------------------------------------------------------
 struct change_ordering
 {
-  static void  to_interleaved(all::core::uint8_sarr arr, 
+  static void  to_interleaved(all::core::uint8_sarr& arr, 
                         size_t height, 
                         size_t width, 
                         size_t depth);
 
-  static void to_planar(all::core::uint8_sarr arr, 
+  static void to_planar(all::core::uint8_sarr& arr, 
                         size_t height, 
                         size_t width, 
                         size_t depth);
 };
 //-------------------------------------------------------------------
-inline void  change_ordering::to_interleaved(all::core::uint8_sarr arr, 
+inline void  change_ordering::to_interleaved(all::core::uint8_sarr& arr, 
                         size_t height, 
                         size_t width, 
                         size_t depth)
@@ -55,7 +55,7 @@ inline void  change_ordering::to_interleaved(all::core::uint8_sarr arr,
 
   }
 //-------------------------------------------------------------------
-inline  void change_ordering::to_planar(all::core::uint8_sarr arr, 
+inline  void change_ordering::to_planar(all::core::uint8_sarr& arr, 
                         size_t height, 
                         size_t width, 
                         size_t depth)
