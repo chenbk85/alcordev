@@ -115,7 +115,8 @@ inline void jpeg_encoder_impl::encode_planar_impl_(core::jpeg_data_t& ret,
 //
 inline void jpeg_encoder_impl::calc_crc_(core::jpeg_data_t& jpegdata)
 {
-  crc_result.process_bytes( jpegdata.data.get(), jpegdata.size);
+  crc_result.reset();
+	crc_result.process_bytes( jpegdata.data.get(), jpegdata.size);
   jpegdata.crc =crc_result.checksum(); 
 }
 //########################################################################
