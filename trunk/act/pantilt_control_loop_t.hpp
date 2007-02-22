@@ -4,8 +4,11 @@
 #include "alcor/core/core.h"
 #include "alcor/act/directed_perception_ptu_t.h"
 #include "alcor/core/slam_data_adapter_i.h"
-#include <boost\shared_ptr.hpp>
-#include <boost\thread.hpp>
+//#include <windows.h>
+#include <boost/shared_ptr.hpp>
+#include <boost/thread/thread.hpp>
+//---------------------------------------------------------------------------
+#include <boost\bind.hpp>
 //---------------------------------------------------------------------------
 namespace all { namespace act {
   //---------------------------------------------------------------------------
@@ -14,10 +17,12 @@ namespace all { namespace act {
 class pantilt_control_loop_t
 {
 public:
-  pantilt_control_loop_t(  
-    boost::shared_ptr<directed_perception_ptu_t>,
-    boost::shared_ptr<core::slam_data_adapter_i>);
-  ~pantilt_control_loop_t();
+  pantilt_control_loop_t();
+  ~pantilt_control_loop_t();    
+
+  void set_ptu(boost::shared_ptr<directed_perception_ptu_t>);
+  void set_slam(boost::shared_ptr<core::slam_data_adapter_i>);
+
   typedef enum {
     idle,
     enabled
@@ -57,16 +62,13 @@ private:
 //---------------------------------------------------------------------------
 }}//namespaces
 //
-#include <windows.h>
-//---------------------------------------------------------------------------
-#include <boost\bind.hpp>
+
 //---------------------------------------------------------------------------
 namespace all{ namespace act{
 
-inline pantilt_control_loop_t::pantilt_control_loop_t(boost::shared_ptr<directed_perception_ptu_t> iptu,
-                                               boost::shared_ptr<core::slam_data_adapter_i> islam):
-ptu_(iptu),
-slam_(islam),
+inline pantilt_control_loop_t::pantilt_control_loop_t():
+//ptu_(iptu),
+//slam_(islam),
 running_(true),
 state_(idle),
 reference_(0)
@@ -80,6 +82,16 @@ reference_(0)
     , this) 
     )
     );
+}
+//---------------------------------------------------------------------------
+inline void pantilt_control_loop_t::set_ptu(boost::shared_ptr<directed_perception_ptu_t> ptu)
+{
+  ptu_ = ptu;
+}
+//---------------------------------------------------------------------------
+inline void pantilt_control_loop_t::set_slam(boost::shared_ptr<core::slam_data_adapter_i> slam)
+{
+  slam_ = slam;
 }
 //---------------------------------------------------------------------------
 inline pantilt_control_loop_t::~pantilt_control_loop_t()
@@ -114,12 +126,15 @@ inline double pantilt_control_loop_t::get_polar_reference(math::rad_t) const
 //---------------------------------------------------------------------------
 inline void pantilt_control_loop_t::adjust_()
 {
+  if(slam_ && ptu_)
+  {
   printf("adjust\n");
   double theta_rob = slam_->get_current_rot(math::deg_tag);
   printf("reference: %f\n", reference_);
   double pan_setpoint =  reference_ - theta_rob;
   printf("theta_rob: %f \n",theta_rob);
-  ptu_->set_pan(pan_setpoint, 0.2);
+  ptu_->set_pan(static_cast<float>(pan_setpoint), 0.2f);
+  }
 }
 //---------------------------------------------------------------------------
 inline void pantilt_control_loop_t::run_loop()
@@ -130,11 +145,11 @@ inline void pantilt_control_loop_t::run_loop()
     {
       case enabled:
         adjust_();
-        Sleep(100);
+        //Sleep(100);
         break;
 
       case idle:
-        Sleep(250);
+        //Sleep(250);
         break;
 
       default:

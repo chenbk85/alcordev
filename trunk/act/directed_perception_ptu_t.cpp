@@ -184,13 +184,13 @@ bool directed_perception_ptu_t::get_pantilt(float& pan_, float& tilt_) const
   return ans;
 }
 //---------------------------------------------------------------------------
-bool directed_perception_ptu_t::get_current_pantilt(float& pan, float& tilt) const
+bool directed_perception_ptu_t::get_current_pantilt(float& pan_, float& tilt_) const
 {  
-  bool ans = impl->getCurrentPanTilt(pan, tilt);
+  bool ans = impl->getCurrentPanTilt(pan_, tilt_);
   if(ans)
   {
-  ptangle_.pan = pan;
-  ptangle_.tilt = tilt;
+  ptangle_.pan = pan_;
+  ptangle_.tilt = tilt_;
   }
   return ans;
 }
@@ -203,6 +203,11 @@ double directed_perception_ptu_t::get_pan() const
 double directed_perception_ptu_t::get_tilt() const
 {
     return ptangle_.tilt;
+}
+//---------------------------------------------------------------------------
+core::pantilt_angle_t directed_perception_ptu_t::get_fast_pantilt() const
+{
+return ptangle_;
 }
 //---------------------------------------------------------------------------
 bool directed_perception_ptu_t::await_command_completion()
