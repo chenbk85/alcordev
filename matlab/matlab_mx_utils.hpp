@@ -21,7 +21,10 @@ static mxArray* create_from_planar(typename matlab::traits<T>::const_ptr _src
   ///
   int ndimensions = ( (_channels > 2 ) ? (3) : (2) );
   ///
-  mxArray* mxresult = mxCreateNumericArray(ndimensions, dims, matlab::traits<T>::tag, mxREAL);
+  mxArray* mxresult = mxCreateNumericArray(ndimensions, 
+                                            dims, 
+                                            matlab::traits<T>::tag, 
+                                            mxREAL);
   ///
   matlab::traits<T>::ptr start_pr = 
       static_cast<matlab::traits<T>::ptr>(mxGetData(mxresult));
@@ -29,7 +32,7 @@ static mxArray* create_from_planar(typename matlab::traits<T>::const_ptr _src
     //
   int kb = 0;
   //
-  int row_inc = _width;
+  int row_inc = static_cast<int>(_width);
   //
   int planar_inc = (int)_height*(int)_width;
 
@@ -58,10 +61,9 @@ static mxArray* create_from_planar(typename matlab::traits<T>::const_ptr _src
 			kb= (row_inc*(rowi-1)) + column_inc;
             //TODO: check this code ...          
       //printf("loop n: %d\n", idx);
-			for(int ich = _channels-1 ; ich >= 0; --ich)
+			for(int ich = _channels ; ich; --ich)
 				{
-
-				start_pr[idx + _channel_stride[ich]] = _src[kb+_channel_stride[ich]];
+				start_pr[idx + _channel_stride[ich-1]] = _src[kb+_channel_stride[ich-1]];
 				}
 			}
 		}  

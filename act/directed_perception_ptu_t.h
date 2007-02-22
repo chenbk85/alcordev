@@ -52,8 +52,10 @@ public:
 
   ///just a quick guess
   double get_pan() const;
-  ///just a quiack guess
+  ///just a quicck guess
   double get_tilt() const;
+  ///
+  core::pantilt_angle_t get_fast_pantilt() const;
 
 	bool await_command_completion();
 
