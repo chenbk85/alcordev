@@ -150,12 +150,24 @@ bool all::sense::opencv_grabber_t::get_color_buffer
        return false;
   }
 
-	  //printf("acquired\n");
-  cvConvertImage(iplFrame, m_ipl_image, CV_CVTIMG_FLIP);
+  if(!m_data_origin)
+  {
+    m_ipl_image = cvCloneImage(iplFrame);
+  }
+  else
+  {
+    cvConvertImage(iplFrame, m_ipl_image, CV_CVTIMG_FLIP);
+  }
+
 
   memcpy(user_buffer.get()
-	,(unsigned char*)m_ipl_image->imageDataOrigin
+	,(unsigned char*)m_ipl_image->imageData
 	 ,  m_byte_size);
+
+  if (is_interleaved() )
+  {
+    core::change_ordering::to_planar(user_buffer, m_h,m_w, m_ch);
+  }
 
   //// That's it
   return true;
