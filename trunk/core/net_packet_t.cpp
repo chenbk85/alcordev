@@ -164,29 +164,29 @@ void net_packet_t::string_to_buf(std::string s) {
 	std::size_t byte_to_write = s.size() + 1;
 	while ((m_data_size + byte_to_write) > m_data_buffer_size)
 		resize_data_buffer();
-	memcpy(m_write_ptr, s.c_str(), byte_to_write);
-	m_write_ptr+=byte_to_write;
+	strcpy(m_write_ptr, s.c_str());
+	m_write_ptr += byte_to_write;
 	m_data_size += byte_to_write;
 }
 
 int net_packet_t::buf_to_int() {
 	int i;
 	memcpy(&i, m_read_ptr, sizeof(int));
-	m_read_ptr+=sizeof(int);
+	m_read_ptr += sizeof(int);
 	return i;
 }
 
 double net_packet_t::buf_to_double() {
 	double d;
 	memcpy(&d, m_read_ptr, sizeof(double));
-	m_read_ptr+=sizeof(double);
+	m_read_ptr += sizeof(double);
 	return d;
 }
 
 std::string net_packet_t::buf_to_string() {
 	
 	std::string s(m_read_ptr);
-	m_read_ptr+= s.size() + 1;
+	m_read_ptr += s.size() + 1;
 	return s;
 
 }
