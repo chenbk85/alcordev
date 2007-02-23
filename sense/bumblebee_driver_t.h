@@ -47,12 +47,16 @@ public:
 
 };
 
+typedef boost::shared_ptr<all::sense::bumblebee_driver_t> bumblebee_driver_ptr;
 //---------------------------------------------------------------------------
 class all::sense::bumblebee_driver_t : public i_device_driver
 	{
 public:
 	///Constructor.
 	bumblebee_driver_t();
+
+  ///
+  //boost::mutex mutex;
 
 	///Inherited
 	bool open(const std::string &);

@@ -3,6 +3,7 @@
 #include "alcor/core/image_info_t.h"
 #include "alcor/core/ipc_serializable_t.h"
 #include "alcor/core/iniWrapper.h"
+#include <boost/interprocess/sync/scoped_lock.hpp>
 ////-------------------------------------------------------------------++
 ///impl
 #include "detail/bumblebee_ipc_recv_impl.cpp"
@@ -73,7 +74,7 @@ bool all::sense::bumblebee_ipc_recv_t::open(const std::string & config)
 all::core::uint8_sarr  
   all::sense::bumblebee_ipc_recv_t::get_color_buffer(core::left_img_t ,  bool shared )
 {
-
+  //ipc::scoped_lock<ipc::named_mutex> lock(*impl->mutex_sptr.get());
   all::core::uint8_sarr return_sptr =
     impl->get_color_(all::core::left_img);  
 
@@ -98,6 +99,8 @@ all::core::uint8_sarr
 all::core::uint8_sarr  
   all::sense::bumblebee_ipc_recv_t::get_color_buffer(core::right_img_t , bool shared)
 {
+  //ipc::scoped_lock<ipc::named_mutex> lock(*impl->mutex_sptr.get());
+
   all::core::uint8_sarr temp =
     impl->get_color_(all::core::right_img) ;
   return temp;
