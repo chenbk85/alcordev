@@ -8,14 +8,15 @@ namespace all { namespace core {
 {
   impl.reset(new detail::jpeg_decoder_impl);
 }
+//---------------------------------------------------------------------------
   ///
-void jpeg_decoder_t::set_ordering(core::interleaved_t)
+void jpeg_decoder_t::set_output_ordering(core::interleaved_t)
 {
 toplanar_=false;
 }
 //---------------------------------------------------------------------------
 ///
-void jpeg_decoder_t::set_ordering(core::planar_t)
+void jpeg_decoder_t::set_output_ordering(core::planar_t)
 {
 toplanar_ = true;
 }
