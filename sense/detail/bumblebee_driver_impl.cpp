@@ -72,7 +72,8 @@ public:
   bumblebee_driver_impl()
   {};
 
-  bool init_digiclops_context_(DigiclopsSerialNumber, std::string& digiclopsfile);
+  bool init_digiclops_context_(DigiclopsSerialNumber, std::string& digiclopsfile
+                              ,int framerate);
   bool init_triclops_context_(std::string& triclopsfile);
 
   bool init_grabbing_();
@@ -135,7 +136,9 @@ public:
 //###########################################################################
 ////-------------------------------------------------------------------
 //-------------------------------------------------------------------
-inline bool bumblebee_driver_impl::init_digiclops_context_(DigiclopsSerialNumber serial_num, std::string& digiclopsfile)
+inline bool bumblebee_driver_impl::init_digiclops_context_(
+  DigiclopsSerialNumber serial_num, std::string& digiclopsfile
+  ,int framerate)
 {
   //
   bool bok = true;
@@ -157,8 +160,29 @@ inline bool bumblebee_driver_impl::init_digiclops_context_(DigiclopsSerialNumber
 	de = digiclopsSetImageResolution( digiclops_context_,  DIGICLOPS_FULL);
  bok = bok && handle_digiclops_error( "digiclopsSetImageResolution()", de );
 
+ DigiclopsFrameRate drate = DIGICLOPS_FRAMERATE_050;
+
+ switch(framerate)
+ {
+ case 12:
+   drate= DIGICLOPS_FRAMERATE_012;
+   break;
+ case 25:
+   drate =DIGICLOPS_FRAMERATE_025;
+   break;
+ case 50:
+    drate =DIGICLOPS_FRAMERATE_050;
+   break;
+ case 100:
+    drate =DIGICLOPS_FRAMERATE_100;
+   break;
+ default:
+    //drate =DIGICLOPS_FRAMERATE_025;
+   break;
+ }
+
 		//Framerate
-	de= digiclopsSetFrameRate(digiclops_context_, DIGICLOPS_FRAMERATE_025);
+	de= digiclopsSetFrameRate(digiclops_context_, drate);
 	bok = bok && handle_digiclops_error( "digiclopsSetFrameRate()", de );
 
 	de = digiclopsSetColorProcessing(digiclops_context_,  DIGICLOPS_EDGE_SENSING );
