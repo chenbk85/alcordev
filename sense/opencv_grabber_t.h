@@ -37,7 +37,7 @@ public:
 	///
 	bool close();
 	///
-  bool get_color_buffer(core::uint8_sarr);
+  bool get_color_buffer(core::uint8_sarr&);
   ///
   IplImage* get_ipl_image();
   

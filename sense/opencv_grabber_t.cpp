@@ -132,7 +132,7 @@ bool all::sense::opencv_grabber_t::close()
 //-------------------------------------------------------------------------++
 ///
 bool all::sense::opencv_grabber_t::get_color_buffer
-(all::core::uint8_sarr user_buffer) 
+(all::core::uint8_sarr& user_buffer) 
 	{
 
     // Must have a capture object
@@ -159,6 +159,7 @@ bool all::sense::opencv_grabber_t::get_color_buffer
     cvConvertImage(iplFrame, m_ipl_image, CV_CVTIMG_FLIP);
   }
 
+	cvConvertImage(m_ipl_image, m_ipl_image, CV_CVTIMG_SWAP_RB);
 
   memcpy(user_buffer.get()
 	,(unsigned char*)m_ipl_image->imageData
@@ -166,6 +167,7 @@ bool all::sense::opencv_grabber_t::get_color_buffer
 
   if (is_interleaved() )
   {
+    //printf("to planar\n");
     core::change_ordering::to_planar(user_buffer, m_h, m_w, m_ch);
   }
 
@@ -178,7 +180,7 @@ IplImage* all::sense::opencv_grabber_t::get_ipl_image()
     // Must have a capture object
     if (0 == m_capture) {
 		cout << "!**Not a valid Capture Object!" << endl;
-        return false;
+        return 0;
     }
 
 	IplImage* iplFrame = 0;
@@ -197,7 +199,7 @@ IplImage* all::sense::opencv_grabber_t::get_ipl_image()
       cvConvertImage(iplFrame, m_ipl_image, CV_CVTIMG_FLIP);
     }
   }
-	//cvConvertImage(m_ipl_image, m_ipl_image, CV_CVTIMG_SWAP_RB);
+	cvConvertImage(m_ipl_image, m_ipl_image, CV_CVTIMG_SWAP_RB);
   return m_ipl_image;
 }
   ///
