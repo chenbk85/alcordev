@@ -15,7 +15,7 @@ MTi_driver_t::~MTi_driver_t()
     impl->mtcomm.close();
 }
 //-----------------------------------------------------------------
-bool MTi_driver_t::open(std::string& configfile)
+bool MTi_driver_t::open(const std::string& configfile)
 {
   //
   iniWrapper mticonfig(configfile);
