@@ -1,5 +1,13 @@
 #ifndef bumblebee_driver_t_H_INCLUDED
 #define bumblebee_driver_t_H_INCLUDED
+//BumblebeeB.ini
+//[config]
+//name=aristarco
+//unitnumber=5160167
+//digiclopsini=config\digiclopsB.ini
+//triclopsini=config\triclopsB.cal
+//framerate=50;valori 12 25 50 100 
+
 //---------------------------------------------------------------------------
 #include "alcor/sense/i_device_driver.h"
 //---------------------------------------------------------------------------
@@ -35,6 +43,9 @@ public:
 
 	///Parameters
 	unsigned int  _unit_number;
+
+  //
+  int _framerate;
 
   ///
   std::string   _digiclopsini;

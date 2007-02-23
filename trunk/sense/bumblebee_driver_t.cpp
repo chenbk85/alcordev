@@ -17,7 +17,8 @@ namespace all { namespace sense {
 
   params.load(confname);
 
-  bIsOk   = bIsOk && impl->init_digiclops_context_(params._unit_number, params._digiclopsini);
+  bIsOk   = bIsOk && impl->init_digiclops_context_(   params._unit_number, params._digiclopsini
+                                                    , params._framerate);
   bIsOk   = bIsOk && impl->init_triclops_context_(params._triclopsini);
   bIsOk   = bIsOk && impl->init_grabbing_();
 
@@ -145,6 +146,9 @@ bool bumblebee_parameters_t::load(const std::string& confname)
   int tmp_unit_number = config.GetInt("config:unitnumber", 6213002);
   _unit_number = static_cast<int>(tmp_unit_number);
   printf ("config:unitnumber = %d\n", _unit_number );
+
+  _framerate = config.GetInt("config:framerate", 50);
+  printf ("config:framerate = %d\n", _framerate);
 
   temp = config.GetStringAsChar("config:digiclopsini", "digiclopsA.ini");
   _digiclopsini.assign(temp);
