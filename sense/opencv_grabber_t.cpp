@@ -165,7 +165,7 @@ bool all::sense::opencv_grabber_t::get_color_buffer
 	,(unsigned char*)m_ipl_image->imageData
 	 ,  m_byte_size);
 
-  if (is_interleaved() )
+  if (ipl_is_interleaved() )
   {
     //printf("to planar\n");
     core::change_ordering::to_planar(user_buffer, m_h, m_w, m_ch);
@@ -203,5 +203,10 @@ IplImage* all::sense::opencv_grabber_t::get_ipl_image()
   return m_ipl_image;
 }
   ///
+//-------------------------------------------------------------------------++
+///
+void all::sense::opencv_grabber_t::log_to_disk(const std::string& avifile)
+{
 
+}
 //-------------------------------------------------------------------------++
