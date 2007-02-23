@@ -18,9 +18,9 @@ public:
   jpeg_decoder_t();
 
   ///
-  void set_ordering(core::interleaved_t);
+  void set_output_ordering(core::interleaved_t);
   ///
-  void set_ordering(core::planar_t);
+  void set_output_ordering(core::planar_t);
 
   ///
   bool decode(  all::core::jpeg_data_t& , 
