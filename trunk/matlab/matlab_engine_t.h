@@ -27,7 +27,7 @@ public:
 public:
 	///Access to a named double variable from Workspace.
 	double get_scalar_double(const char*);
-
+  int    get_scalar_int(const char*);
 public:
 	///Writes a named variable into workspace
 	void put_scalar(const char*, int);
