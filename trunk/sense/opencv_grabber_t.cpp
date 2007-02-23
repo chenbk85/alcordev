@@ -1,4 +1,3 @@
-
 //-------------------------------------------------------------------------++
 #include <iostream>
 #include <cstdio>
@@ -38,7 +37,6 @@ bool all::sense::opencv_grabber_t::open(core::camera_mode_t, int in_cam)
 	{
   // Release any previously allocated resources, just in case
   close();
-
   m_cam_id = in_cam;
 
   // Try to open a capture object for the first camera
@@ -81,10 +79,13 @@ bool all::sense::opencv_grabber_t::internal_open_()
 	m_w     = _iplFrame->width;
 	m_h     = _iplFrame->height;
 	m_ch    = _iplFrame->nChannels;
+
+  //
   m_data_order = _iplFrame->dataOrder;
   m_data_origin= _iplFrame->origin;
 	m_byte_size = _iplFrame->imageSize;
 
+  //
   image_sptr.reset(new core::uint8_t[m_w*m_h*m_ch] );
 
 	m_ipl_image = cvCreateImage(  cvSize(m_w, m_h), 

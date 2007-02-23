@@ -68,6 +68,11 @@ void all::sense::bumblebee_ipc_t::run_thread()
   std::string xyz_name        = camname + "_IPC_bumblebee_xyz";
   std::string shmutex         = camname + "_IPC_bumblebee_mutex";
 //////////////////////////////////////////////////////////////////////
+  ipc::shared_memory_object::remove(right_rgb_name.c_str());
+  ipc::shared_memory_object::remove(xyz_name.c_str());
+  ipc::shared_memory_object::remove(left_rgb_name.c_str());
+  ipc::named_mutex::remove(shmutex.c_str());
+//////////////////////////////////////////////////////////////////////
   //RGB INFO
   core::ipc_serializable_t<core::image_info_t> image_info(core::open_write,
                                                           info_name);
@@ -139,7 +144,7 @@ void all::sense::bumblebee_ipc_t::run_thread()
   const std::size_t    xyz_imag_size        =  xyz_region.get_size();
 	///////////////////////////////////////////////////////////////////////
   ipc::named_mutex mutex(ipc::open_or_create, shmutex.c_str());
-  printf("IPC Mutex: %s\n",shmutex.c_str());
+  //printf("IPC Mutex: %s\n",shmutex.c_str());
   ///////////////////////////////////////////////////////////////////////
   cimg_library::CImgDisplay dispr(bee->ncols(), bee->nrows(), "Bumblebee ipc /Right");
   cimg_library::CImg<core::uint8_t> right;
@@ -150,8 +155,8 @@ void all::sense::bumblebee_ipc_t::run_thread()
       ///////////////////////////////////////////////////////////////////
      if (bee->grab())//acquisition
      {
-       //ipc::scoped_lock<ipc::named_mutex> lock(mutex);
-       mutex.lock();
+       ipc::scoped_lock<ipc::named_mutex> lock(mutex);
+       //boost::scoped_lock< > lock(mutex);
        //RIGHT
 		    {
         memcpy(right_rgb_addr, 
@@ -173,7 +178,7 @@ void all::sense::bumblebee_ipc_t::run_thread()
                 xyz_imag_size );
         }
 
-       mutex.unlock();
+       //mutex.unlock();
 
      }//grab
         //
@@ -185,6 +190,7 @@ void all::sense::bumblebee_ipc_t::run_thread()
     ipc::shared_memory_object::remove(right_rgb_name.c_str());
     ipc::shared_memory_object::remove(xyz_name.c_str());
     ipc::shared_memory_object::remove(left_rgb_name.c_str());
- 
+    ipc::named_mutex::remove(shmutex.c_str());
+    thisthread->join();
 	}
 //-------------------------------------------------------------------++
