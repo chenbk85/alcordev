@@ -12,7 +12,6 @@ namespace all {
         class opencv_grabber_t;
     }
 }
-
 //-------------------------------------------------------------------------++
 ///
 class all::sense::opencv_grabber_t 
@@ -31,9 +30,10 @@ public:
 	bool open(core::video_mode_t, const std::string&);
 
   ///
-  bool is_interleaved() {return !m_data_order;};
+  void log_to_disk(const std::string& avifile);
+
   ///
-  bool is_topleft()     {return !m_data_origin;};
+  bool ipl_is_interleaved() {return !m_data_order;};
 	///
 	bool close();
 	///
