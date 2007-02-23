@@ -14,7 +14,9 @@ namespace all { namespace core { namespace detail {
     ///
     jpeg::Decompress decoder_;
     ///
-    all::core::jpeg_data_t decode_(core::uint8_sarr byte_stream, size_t byte_lenght);
+    all::core::jpeg_data_t decode_( core::uint8_sarr byte_stream
+                                  , size_t byte_lenght
+                                  , bool toplanar = true);
     ///
     bool verify_crc_(core::uint8_sarr byte_stream, 
                     size_t byte_lenght,
@@ -29,7 +31,9 @@ namespace all { namespace core { namespace detail {
     int d_;
   };
 //########################################################################
-  inline all::core::jpeg_data_t jpeg_decoder_impl::decode_(core::uint8_sarr byte_stream, size_t byte_lenght)
+  inline all::core::jpeg_data_t jpeg_decoder_impl::decode_( core::uint8_sarr byte_stream
+                                                          , size_t byte_lenght
+                                                          , bool toplanar)
   {
     //
     std::string temp(reinterpret_cast<char*>(byte_stream.get()), byte_lenght);
@@ -44,7 +48,7 @@ namespace all { namespace core { namespace detail {
     //
     decoder_.readImage(jarr.get());
 
-    if (d_>1)
+    if (d_>1 && toplanar)
     {
           //CONVERT TO PLANAR
           core::change_ordering::to_planar(jarr, h_, w_, d_);
