@@ -122,6 +122,29 @@ double matlab_engine_t::get_scalar_double(const char* var)
 	return val;
 }
 //---------------------------------------------------------------------------
+int matlab_engine_t::get_scalar_int(const char* var)
+{
+	double val = 0;
+
+	mxArray* mval = engGetVariable(m_eng, var);
+
+	if(mval != NULL)
+	{
+		memcpy((void*)&val, (void*)mxGetPr(mval), sizeof(val));
+		mxDestroyArray(mval);
+
+	}
+	else
+	{
+		//char* res;
+		//sprintf(res,"Var %s does not exist in workspace!\n", var);
+		printf("Var %s does not exist in workspace!\n", var);
+		//throw alcor::err::WorkspaceError();
+	}
+
+	return static_cast<int>(val);
+}
+//---------------------------------------------------------------------------
 void matlab_engine_t::clear(char* varName)
 {
 	string cmd = "clear";
