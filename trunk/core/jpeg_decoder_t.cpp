@@ -4,9 +4,20 @@
 //---------------------------------------------------------------------------
 namespace all { namespace core {
 //---------------------------------------------------------------------------
-jpeg_decoder_t::jpeg_decoder_t()
+  jpeg_decoder_t::jpeg_decoder_t():toplanar_(true)
 {
   impl.reset(new detail::jpeg_decoder_impl);
+}
+  ///
+void jpeg_decoder_t::set_ordering(core::interleaved_t)
+{
+toplanar_=false;
+}
+//---------------------------------------------------------------------------
+///
+void jpeg_decoder_t::set_ordering(core::planar_t)
+{
+toplanar_ = true;
 }
 //---------------------------------------------------------------------------
 bool jpeg_decoder_t::decode(  all::core::jpeg_data_t& decoded,
@@ -14,7 +25,7 @@ bool jpeg_decoder_t::decode(  all::core::jpeg_data_t& decoded,
                               size_t                  lenght)  
 {
   try {
-  decoded = impl->decode_(todecode, lenght);
+  decoded = impl->decode_(todecode, lenght, toplanar_);
   }
   catch (std::runtime_error& e)
   {  
@@ -41,7 +52,7 @@ bool jpeg_decoder_t:: decode(  all::core::jpeg_data_t& decoded,
   {
     //printf("CRC test passed!\n");
     try {
-    decoded = impl->decode_(todecode, lenght);
+    decoded = impl->decode_(todecode, lenght, toplanar_);
     }
     catch (std::runtime_error& e)
     {  

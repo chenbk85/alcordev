@@ -18,6 +18,11 @@ public:
   jpeg_decoder_t();
 
   ///
+  void set_ordering(core::interleaved_t);
+  ///
+  void set_ordering(core::planar_t);
+
+  ///
   bool decode(  all::core::jpeg_data_t& , 
                 all::core::uint8_sarr, 
                 size_t lenght);  
@@ -35,6 +40,8 @@ private:
   void restore_();
   ///
   boost::shared_ptr<detail::jpeg_decoder_impl> impl;
+  ///
+  bool toplanar_;
 };
 //...................................................................
 }}//all::core
