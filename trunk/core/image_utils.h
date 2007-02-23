@@ -94,7 +94,8 @@ inline  void change_ordering::to_planar(all::core::uint8_sarr& arr,
   }
 
   //}//parallel
-  arr=(temp);
+  //arr.reset(temp.get());
+  arr = temp;
     }
 //-------------------------------------------------------------------
 }}//namespace all::core
