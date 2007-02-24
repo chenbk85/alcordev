@@ -144,7 +144,7 @@ public:
     width_ = width;
     channels_ = PIXEL::nchannels;
 
-    allocate_(height, width);
+    allocate_(height_, width_);
   }
 
   ///
@@ -164,6 +164,10 @@ public:
             * PIXEL::bytes_per_channel //size
             );
   }
+  
+  size_t height()   const {return height_;}
+  size_t width()    const {return width_;}
+  size_t channels() const {return channels_;}
 
   ///
   PIXEL::value_type
@@ -174,29 +178,6 @@ public:
       +( ch*PIXEL::channel_stride() ) ];
   }
 
-  /////
-  //PIXEL::value_type
-  //  pixel
-  //{
-
-  //}
-  /////
-  //image_of(size_t height , size_t width, PIXEL::ptr p)
-  //{
-  //  //
-  //  height_   = height; 
-  //  width_    = width;
-  //  channels_ = PIXEL::nchannels;
-  //  //
-  //  allocate_(height_, width_);
-  //  //
-  //  memcpy(
-  //          data_.get(),//Dst
-  //          p, //Src
-  //          height_ * width_ * channels_
-  //          * PIXEL::bytes_per_channel //size
-  //          );
-  //}
 
 private:
   ///
