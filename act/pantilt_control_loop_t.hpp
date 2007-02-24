@@ -59,12 +59,12 @@ private:
   boost::shared_ptr<slam_data_adapter_i>        slam_;
 };
 
-//---------------------------------------------------------------------------
-}}//namespaces
+////---------------------------------------------------------------------------
+//}}//namespaces
+////
 //
-
-//---------------------------------------------------------------------------
-namespace all{ namespace act{
+////---------------------------------------------------------------------------
+//namespace all{ namespace act{
 
 inline pantilt_control_loop_t::pantilt_control_loop_t():
 //ptu_(iptu),
@@ -146,10 +146,11 @@ inline void pantilt_control_loop_t::run_loop()
       case enabled:
         adjust_();
         //Sleep(100);
+        BOOST_SLEEP(100);
         break;
 
       case idle:
-        //Sleep(250);
+        BOOST_SLEEP(100);
         break;
 
       default:
