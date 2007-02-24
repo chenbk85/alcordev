@@ -5,6 +5,8 @@
 #include <boost/crc.hpp>  // for boost::crc_32_type
 //-------------------------------------------------------------------------++
 #include <boost/shared_array.hpp>
+#include <boost/thread/thread.hpp>
+#include <boost/thread/xtime.hpp>
 //-------------------------------------------------------------------------++
 #include <string>
 #include <string>
@@ -238,7 +240,6 @@ public:
   BOOST_STATIC_CONSTANT(std::size_t, size=sizeof(single_t));
 };
 //-------------------------------------------------------------------------++
-//-------------------------------------------------------------------------++
 template< >
 class traits<double_t>
 {
@@ -250,9 +251,18 @@ public:
   static unsigned num_bits() {return 8*sizeof(double_t);}
   BOOST_STATIC_CONSTANT(std::size_t, size=sizeof(double_t));
 };
-
-
 //-------------------------------------------------------------------------++
+//-------------------------------------------------------------------------++
+inline void BOOST_SLEEP(unsigned int _millisecs_)
+{
+   boost::xtime xt; 
+   unsigned int secs = static_cast<unsigned int>(_millisecs_*0.001);  
+   unsigned int nsecs = (1000000*_millisecs_)-(secs*1000000000);
+   boost::xtime_get(&xt, boost::TIME_UTC);
+   xt.sec += secs;
+   xt.nsec += nsecs;
+   boost::thread::sleep(xt);
+}
 //-------------------------------------------------------------------------++
 ///
 struct ip_address_t
