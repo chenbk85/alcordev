@@ -52,13 +52,13 @@ bool all::sense::opencv_grabber_t::open(core::camera_mode_t, int in_cam)
 //-------------------------------------------------------------------------++
 bool all::sense::opencv_grabber_t::open(core::video_mode_t, const std::string& in_file)
 	{
-        // Try to open a capture object for the file
-        m_capture = cvCaptureFromAVI(in_file.c_str());
-        if (0 == m_capture) {
-            std::printf("Unable to open file '%s' for capture!\n",
-                   in_file.c_str());
-            return false;
-        }
+    // Try to open a capture object for the file
+    m_capture = cvCaptureFromAVI(in_file.c_str());
+    if (0 == m_capture) {
+        std::printf("Unable to open file '%s' for capture!\n",
+               in_file.c_str());
+        return false;
+    }
 		return internal_open_();
 	}
 //-------------------------------------------------------------------------++
@@ -168,7 +168,6 @@ bool all::sense::opencv_grabber_t::get_color_buffer
 
   if (ipl_is_interleaved() )
   {
-    //printf("to planar\n");
     core::change_ordering::to_planar(user_buffer, m_h, m_w, m_ch);
   }
 
