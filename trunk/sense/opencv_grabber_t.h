@@ -18,7 +18,7 @@ class all::sense::opencv_grabber_t
 {
 public:
 
-///
+  ///
   opencv_grabber_t(int cam = -1); 
 
   // Destroy an OpenCV image grabber.

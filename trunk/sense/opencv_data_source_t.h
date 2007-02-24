@@ -13,7 +13,7 @@ public:
 	
 	void set_quality(unsigned int);
 
-	virtual int get_data(all::core::uint8_ptr*);
+	int get_data(all::core::uint8_ptr*);
 
 private:
 	boost::shared_ptr<all::core::jpeg_encoder_t>     m_encoder;
