@@ -182,12 +182,16 @@ bool all::sense::opencv_grabber_t::get_color_buffer
 	,(unsigned char*)m_ipl_image->imageData
 	 ,  m_byte_size);
 
-  if(!wantsinterleaved)
-  {
-    if (ipl_is_interleaved() )
-    {
+
+  if (ipl_is_interleaved() )
+  { 
+    if(!wantsinterleaved)
       core::change_ordering::to_planar(user_buffer, m_h, m_w, m_ch);
-    }
+  }
+  else
+  {
+    if(wantsinterleaved)
+      core::change_ordering::to_interleaved(user_buffer, m_h, m_w, m_ch);
   }
 
   //// That's it
