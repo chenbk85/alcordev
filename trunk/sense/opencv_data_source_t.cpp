@@ -2,20 +2,22 @@
 #include <cstddef>
 namespace all{ namespace sense {
 
-  opencv_data_source_t::opencv_data_source_t() :	m_jpeg_quality (100)
+opencv_data_source_t::opencv_data_source_t() :	m_jpeg_quality (100)
 {
 
 }
 
 void opencv_data_source_t::init_()
 {
+  printf("opencv_data_source_t::Init\n");
   m_cam.reset(new sense::opencv_grabber_t);
 
   if(m_cam->open(core::open_camera))
   {
     //
     m_cam->set_output_ordering(core::interleaved_tag);
-
+    //E' opzionale ... ma così evito al grabber di 
+    //inizializzare ogni volta il buffer
     image.reset( new core::uint8_t[m_cam->size()] );
 
     m_encoder.reset(new core::jpeg_encoder_t);
