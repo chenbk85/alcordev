@@ -13,6 +13,7 @@ all::sense::opencv_grabber_t::opencv_grabber_t(int cam)
 		:	m_w(0)
 		,	m_h(0)
 		,	m_ch(0)
+    , wantsinterleaved(true)
 		,	m_byte_size(0)
 		,	m_cam_id(cam)
 		,	m_capture(0) 
@@ -61,6 +62,18 @@ bool all::sense::opencv_grabber_t::open(core::video_mode_t, const std::string& i
     }
 		return internal_open_();
 	}
+//-------------------------------------------------------------------------++
+///
+void all::sense::opencv_grabber_t::set_output_ordering(core::interleaved_t)
+{
+  wantsinterleaved = true;
+}
+//-------------------------------------------------------------------------++
+///
+void all::sense::opencv_grabber_t::set_output_ordering(core::planar_t)
+{
+  wantsinterleaved = false;
+}
 //-------------------------------------------------------------------------++
 bool all::sense::opencv_grabber_t::internal_open_()
 	{
@@ -166,9 +179,12 @@ bool all::sense::opencv_grabber_t::get_color_buffer
 	,(unsigned char*)m_ipl_image->imageData
 	 ,  m_byte_size);
 
-  if (ipl_is_interleaved() )
+  if(!wantsinterleaved)
   {
-    core::change_ordering::to_planar(user_buffer, m_h, m_w, m_ch);
+    if (ipl_is_interleaved() )
+    {
+      core::change_ordering::to_planar(user_buffer, m_h, m_w, m_ch);
+    }
   }
 
   //// That's it

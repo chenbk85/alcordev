@@ -30,6 +30,11 @@ public:
 	bool open(core::video_mode_t, const std::string&);
 
   ///
+  void set_output_ordering(core::interleaved_t);
+  ///
+  void set_output_ordering(core::planar_t);
+
+  ///
   void log_to_disk(const std::string& avifile);
 
   ///
@@ -62,6 +67,8 @@ protected:
   int m_h;
 	///Depth of the images a grabber produces. 
 	int m_ch;
+  ///
+  bool wantsinterleaved;
   ///
   int m_data_order;
   ///
