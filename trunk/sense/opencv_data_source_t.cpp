@@ -2,7 +2,7 @@
 
 namespace all{ namespace sense {
 
-opencv_data_source_t::opencv_data_source_t() 
+  opencv_data_source_t::opencv_data_source_t() :	m_jpeg_quality (100)
 {
 
 }
@@ -33,7 +33,7 @@ void opencv_data_source_t::init_()
       break;
     }
   }
-	m_jpeg_quality = 100;
+
 }
 
 void opencv_data_source_t::set_quality(unsigned int quality) 
@@ -48,7 +48,7 @@ int opencv_data_source_t::get_data(all::core::uint8_ptr* data)
 
   //Se non lo faccio qui .. opencv rifiuta di funzionare.
   //Deve stare nel thread principale.
-  if(!m_cam|!m_encoder) init_();
+  if(!m_cam || !m_encoder) init_();
 
 	//        
   //printf("get_color_buffer\n");
