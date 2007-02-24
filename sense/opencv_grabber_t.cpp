@@ -175,6 +175,9 @@ bool all::sense::opencv_grabber_t::get_color_buffer
 
 	cvConvertImage(m_ipl_image, m_ipl_image, CV_CVTIMG_SWAP_RB);
 
+  if(!user_buffer) 
+    user_buffer.reset(new core::uint8_t[m_byte_size]);
+
   memcpy(user_buffer.get()
 	,(unsigned char*)m_ipl_image->imageData
 	 ,  m_byte_size);
