@@ -10,8 +10,10 @@
 namespace all {
     namespace sense {
         class opencv_grabber_t;
+        typedef boost::shared_ptr<opencv_grabber_t> opencv_grabber_ptr;
     }
 }
+
 //-------------------------------------------------------------------------++
 ///
 class all::sense::opencv_grabber_t 
