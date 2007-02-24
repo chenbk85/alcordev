@@ -1,83 +1,75 @@
 //---------------------------------------------------------------------------
-#include "i_connection_handler_t.h"
-#include "alcor/core/config_parser_t.h"
+#include "i_connection_handler.h"
 //---------------------------------------------------------------------------
-namespace all{
-	namespace core{
+namespace alcor{
+	namespace interfaces{
 //---------------------------------------------------------------------------
-    i_connection_handler_t::i_connection_handler_t(core::i_service_handler* _parent 
-                                                , const std::string& _inifile)
-
-		:m_state( netLinkDown::Instance() )
-    ,  running(true)
-    ,  parent(_parent)
-
+i_connection_handler::i_connection_handler(char* _inifile):
+		m_state( netLinkDown::Instance() )
 {
-  //Aria::init();
-
 	printf("Opening ini config.\n");
 
-  config_parser_t config;
-  config.load(core::ini,_inifile);
+  if (m_config_ini.Load(_inifile))
+		{
+		printf("Gathering address and port.\n");
 
-	printf("Gathering address and port.\n");
+		//m_addr.hostname = "localhost";
+		m_addr.hostname = m_config_ini.GetStringAsChar("server:hostname","localhost");
+		m_addr.port	= m_config_ini.GetInt("server:port",99999);	
 
-  m_addr.hostname = config.as_string("server.hostname","localhost");
-  m_addr.port	    = config.as_int("server.port",11111);	
+		printf("Host: %s:",m_addr.hostname );
+		printf("Port: %d.\n",m_addr.port );
 
-  printf("Connection Handler\n");
-  printf("Host: %s:",m_addr.hostname.c_str() );
-	printf("Port: %d.\n",m_addr.port );
-
-  connection_thr.reset(
-    new boost::thread 
-    (
-    boost::bind(
-    &i_connection_handler_t::run_thread
-    , this) 
-    )
-    );
+		}
+	else
+	{
+		//file is non existent ...
+		m_addr.hostname	= "localhost";
+		m_addr.port		= 99999;
+	}
 
 }
 //---------------------------------------------------------------------------
-void i_connection_handler_t::change_state(i_connection_state_t* s)
+void i_connection_handler::changeState(i_connection_state* s)
 {
     m_state = s;
 }
 //---------------------------------------------------------------------------
-net_state_t i_connection_handler_t::this_state() const
+tStateId i_connection_handler::thisState()
 {
 	return (m_state->m_id);
 }
 //---------------------------------------------------------------------------
-void i_connection_handler_t::run_thread()
+void* i_connection_handler::runThread(void*)
 {
-	printf("Client Thread Created!\n");;
-	while( running )
+	cout << "Client Thread Created!" << endl;
+	while( this->ArASyncTask::getRunning() )
 	{
-	m_state->handle( dynamic_cast<i_connection_handler_t*>(this) );
-		Sleep(100);
+	m_state->handle( dynamic_cast<i_connection_handler*>(this) );
+		ArUtil::sleep(50);
 	}
+	return NULL;
 }
 
 //---------------------------------------------------------------------------
-//###########################################################################
 //---------------------------------------------------------------------------
-i_connection_state_t::i_connection_state_t(net_state_t _sid):
+//---------------------------------------------------------------------------
+i_connection_state::i_connection_state(tStateId _sid):
 	m_id(_sid)
 {
 }
 //---------------------------------------------------------------------------
-void i_connection_state_t::change_state(i_connection_handler_t* cxt, i_connection_state_t* is)
+void i_connection_state::changeState
+				(i_connection_handler* cxt, i_connection_state* is)
 {
-	cxt->change_state(is);
+	cxt->changeState(is);
 }
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
 netEstablished* netEstablished::m_instance = 0;
 //---------------------------------------------------------------------------
 netEstablished::netEstablished():
-			i_connection_state_t(eEstablished)
+			i_connection_state(alcor::def::eEstablished)
 {
 }
 //---------------------------------------------------------------------------
@@ -89,24 +81,24 @@ netEstablished* netEstablished::Instance()
 	return m_instance;
 }
 //---------------------------------------------------------------------------
-void netEstablished::handle(i_connection_handler_t* cxt)
+void netEstablished::handle(i_connection_handler* cxt)
 {
-  cxt->parent->register_to();
+	cxt->register_to();
 
 	cxt->m_client.logDataList();
 
 	cxt->m_client.runAsync();
 
-	printf("Established ----> ActiveOpen\n");
+	cout << "Established ----> ActiveOpen" << endl;
 
-	change_state(cxt,netActiveOpen::Instance());
+	changeState(cxt,netActiveOpen::Instance());
 }
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
 netActiveOpen* netActiveOpen::m_instance = 0;
 //---------------------------------------------------------------------------
 netActiveOpen::netActiveOpen():
-			i_connection_state_t(eActiveOpen)
+			i_connection_state(alcor::def::eActiveOpen)
 {
 }
 //---------------------------------------------------------------------------
@@ -118,22 +110,21 @@ netActiveOpen* netActiveOpen::Instance()
 	return m_instance;
 }
 //---------------------------------------------------------------------------
-void netActiveOpen::handle(i_connection_handler_t* cxt)
+void netActiveOpen::handle(i_connection_handler* cxt)
 {
-
-	if( !(cxt->m_client.isConnected())  )
-  {
-		printf("ActiveOpen ----->LinkDown\n");
-    cxt->parent->lost_connection(); 
-		change_state(cxt, netLinkDown::Instance());
+	if( !(cxt->m_client.isConnected())  ){
+		cout << "ActiveOpen ----->LinkDown" << endl;
+		cxt->lost_connection();
+		changeState(cxt, netLinkDown::Instance());
 	}
+
 }
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
 netLinkDown* netLinkDown::m_instance = 0;
 //---------------------------------------------------------------------------
 netLinkDown::netLinkDown():
-		i_connection_state_t(eLinkDown)
+		i_connection_state(alcor::def::eLinkDown)
 {
 }
 //---------------------------------------------------------------------------
@@ -145,18 +136,19 @@ netLinkDown* netLinkDown::Instance()
 	return m_instance;
 }
 //---------------------------------------------------------------------------
-void netLinkDown::handle(i_connection_handler_t* cxt)
+void netLinkDown::handle(i_connection_handler* cxt)
 {
-	printf("netLinkDown\n");
-  if(cxt->m_client.blockingConnect(cxt->m_addr.hostname.c_str(), cxt->m_addr.port) )
+	cout << "netLinkDown" << endl;
+	if(cxt->m_client.blockingConnect(cxt->m_addr.hostname, cxt->m_addr.port) )
 	{
-		printf("LinkDown ----> Established\n");
-    printf("On : %s:%d",cxt->m_addr.hostname.c_str(), cxt->m_addr.port );
-		change_state(cxt,netEstablished::Instance());
+		cout << "LinkDown ----> Established" << endl;
+		changeState(cxt,netEstablished::Instance());
 	}
 	else
-    printf("Server offline on address: %s : port %d\n", 
-    cxt->m_addr.hostname.c_str(),cxt->m_addr.port); 
+		cout << "Server offline on address: " 
+		<< cxt->m_addr.hostname << ":"
+			<< cxt->m_addr.port 
+		<< endl;
 }
 //---------------------------------------------------------------------------
 }
