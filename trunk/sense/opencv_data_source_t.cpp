@@ -12,11 +12,8 @@ void opencv_data_source_t::init_()
 
   printf("opencv_data_source_t::Init::IN\n");
   m_cam.reset(new sense::opencv_grabber_t);
-  //devono essere fatti prima dell'open .. ora ... TODO: da corrggere
-  m_cam->set_output_ordering(core::interleaved_tag);
-  m_cam->set_graylevel_output();
 
-  if(m_cam->open(core::open_camera))
+  if(m_cam->open(std::string("config/cmoscam.ini") ) )
   {
     //
 

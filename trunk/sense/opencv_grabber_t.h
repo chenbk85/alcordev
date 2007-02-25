@@ -16,7 +16,13 @@ namespace all {
         typedef boost::shared_ptr<opencv_grabber_t> opencv_grabber_ptr;
     }
 }
-
+//------------------------- INI -------------------------------------------++
+//[config]
+//camera=1;camera o videofile?
+//videofile=somevideo.avi;
+//graylevel=1;0-> originale da telecamera 1->scala di grigio
+//camid=-1;misterioso .. è il numero della telecamera ..
+//interleaved=1;1 per avere il buffer immagine ilv
 //-------------------------------------------------------------------------++
 ///
 class all::sense::opencv_grabber_t 
@@ -29,19 +35,8 @@ public:
   // Destroy an OpenCV image grabber.
   virtual ~opencv_grabber_t();
 
-	///
-	bool open(core::camera_mode_t, int cam=-1);
-	///
-	bool open(core::video_mode_t, const std::string&);
-
   ///
-  void set_output_ordering(core::interleaved_t);
-  ///
-  void set_output_ordering(core::planar_t);
-  ///
-  //void set_output_format(core::rgb_t);
-  ///
-  void set_graylevel_output();
+  bool open(const std::string& inifile);
 
   ///
   void log_to_disk(const std::string& avifile);
@@ -68,6 +63,10 @@ public:
   std::size_t size() const { return m_byte_size; }
 
 private:
+	///
+	bool open_(core::camera_mode_t, int cam=-1);
+	///
+	bool open_(core::video_mode_t, const std::string&);
   ///
 	bool internal_open_();
 
