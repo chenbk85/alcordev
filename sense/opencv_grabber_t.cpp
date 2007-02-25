@@ -6,6 +6,7 @@ using std::endl;
 //-------------------------------------------------------------------------++
 #include "alcor/sense/opencv_grabber_t.h"
 #include "alcor/core/image_utils.h"
+#include "alcor/core/iniWrapper.h"
 //-------------------------------------------------------------------------++
 #include <boost\bind.hpp>
 //-------------------------------------------------------------------------++
@@ -31,7 +32,6 @@ all::sense::opencv_grabber_t::opencv_grabber_t(int cam)
 		<< endl; 
 
     //default
-    set_output_ordering(core::planar_tag);
     get_color_buffer = boost::bind(&all::sense::opencv_grabber_t::get_color_buffer_original_,
                                  this,
                                  _1);
@@ -44,7 +44,40 @@ all::sense::opencv_grabber_t::~opencv_grabber_t()
 	}
 //-------------------------------------------------------------------------++
 ///
-bool all::sense::opencv_grabber_t::open(core::camera_mode_t, int in_cam) 
+bool all::sense::opencv_grabber_t::open(const std::string& inifile)
+{
+  iniWrapper ini;
+  if (!ini.Load(inifile.c_str()) )return false;
+  
+  bwantsgray = (ini.GetBool("config:graylevel",0) == 1);
+  bwantsinterleaved = (ini.GetBool("config:interleaved",1)== 1);
+  m_cam_id = ini.GetInt("config:camid", -1);
+
+  if(bwantsgray)
+  {
+    get_color_buffer = boost::bind(&all::sense::opencv_grabber_t::get_color_buffer_gray_,
+                                   this,
+                                   _1);
+  }
+
+  int grabmode = ini.GetInt("config:camera",1);
+
+  if(grabmode)
+  {
+    ///camera
+    return open_(core::open_camera, m_cam_id);
+  }
+  else
+  {
+    std::string vidname=ini.GetString("config:videofile");
+  ///filevideo
+    return open_(core::open_video, vidname);
+  }
+
+}
+//-------------------------------------------------------------------------++
+///
+bool all::sense::opencv_grabber_t::open_(core::camera_mode_t, int in_cam) 
 	{
   // Release any previously allocated resources, just in case
   close();
@@ -52,8 +85,9 @@ bool all::sense::opencv_grabber_t::open(core::camera_mode_t, int in_cam)
 
   // Try to open a capture object for the first camera
   m_capture = cvCreateCameraCapture(m_cam_id);
-  if (0 == m_capture) {
-      cout <<"Unable to open camera for capture!\n" ;
+  if (0 == m_capture) 
+  {
+      cout <<"Unable to open camera " << m_cam_id << " for capture!\n" ;
       return false;
   }
 
@@ -61,7 +95,7 @@ bool all::sense::opencv_grabber_t::open(core::camera_mode_t, int in_cam)
 
 }
 //-------------------------------------------------------------------------++
-bool all::sense::opencv_grabber_t::open(core::video_mode_t, const std::string& in_file)
+bool all::sense::opencv_grabber_t::open_(core::video_mode_t, const std::string& in_file)
 	{
     // Try to open a capture object for the file
     m_capture = cvCaptureFromAVI(in_file.c_str());
@@ -72,36 +106,6 @@ bool all::sense::opencv_grabber_t::open(core::video_mode_t, const std::string& i
     }
 		return internal_open_();
 	}
-//-------------------------------------------------------------------------++
-///
-void all::sense::opencv_grabber_t::set_output_ordering(core::interleaved_t)
-{
-  bwantsinterleaved = true;
-}
-//-------------------------------------------------------------------------++
-///
-void all::sense::opencv_grabber_t::set_output_ordering(core::planar_t)
-{
-  bwantsinterleaved = false;
-}
-//-------------------------------------------------------------------------++
-/////
-//void all::sense::opencv_grabber_t::set_output_format(core::rgb_t)
-//{
-//  bwantsgray  = false;
-//  get_color_buffer = boost::bind(&all::sense::opencv_grabber_t::get_color_buffer_original_,
-//                                 this,
-//                                 _1);
-//}
-//-------------------------------------------------------------------------++
-///
-void all::sense::opencv_grabber_t::set_graylevel_output()
-{
-  bwantsgray  = true;
-  get_color_buffer = boost::bind(&all::sense::opencv_grabber_t::get_color_buffer_gray_,
-                                 this,
-                                 _1);
-}
 //-------------------------------------------------------------------------++
 bool all::sense::opencv_grabber_t::internal_open_()
 	{
