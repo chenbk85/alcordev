@@ -15,7 +15,7 @@ MTi_driver_t::~MTi_driver_t()
     impl->mtcomm.close();
 }
 //-----------------------------------------------------------------
-bool MTi_driver_t::open(const std::string& configfile)
+bool MTi_driver_t::open(std::string& configfile)
 {
   //
   iniWrapper mticonfig(configfile);
@@ -79,22 +79,19 @@ void MTi_driver_t::reset(tags::align_reset_t)
 //-----------------------------------------------------------------
 //
 all::math::rpy_angle_t   MTi_driver_t::get_euler()
-{
+{    
+  math::rpy_angle_t rpy;
   if(impl->mtcomm.readDataMessage(impl->data, impl->datalen) == MTRV_OK)
   {
 		impl->mtcomm.getValue(VALUE_SAMPLECNT, impl->samplecounter, impl->data, BID_MASTER);
 	  // Output: Euler
     impl->mtcomm.getValue(VALUE_ORIENT_EULER, impl->fdata, impl->data, detail::MTi_driver_impl::SENSOR_BID);
 
-    math::rpy_angle_t rpy;
     rpy.roll.set_deg(impl->fdata[0]);
     rpy.pitch.set_deg(impl->fdata[1]);
     rpy.yaw.set_deg (impl->fdata[2]);
-
-    //rpy.print();
-    return rpy;
   }
-
+    return rpy;
 }
 //-----------------------------------------------------------------
 }}//all::sense

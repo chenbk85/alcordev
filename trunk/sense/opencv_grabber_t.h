@@ -7,6 +7,9 @@
 #include <cv.h>
 #include <highgui.h>
 //-------------------------------------------------------------------------++
+#include <boost\shared_ptr.hpp>
+#include <boost\function.hpp>
+//-------------------------------------------------------------------------++
 namespace all {
     namespace sense {
         class opencv_grabber_t;
@@ -35,6 +38,10 @@ public:
   void set_output_ordering(core::interleaved_t);
   ///
   void set_output_ordering(core::planar_t);
+  ///
+  //void set_output_format(core::rgb_t);
+  ///
+  void set_graylevel_output();
 
   ///
   void log_to_disk(const std::string& avifile);
@@ -43,8 +50,11 @@ public:
   bool ipl_is_interleaved() {return !m_data_order;};
 	///
 	bool close();
-	///
-  bool get_color_buffer(core::uint8_sarr&);
+
+  ///
+  boost::function< bool (core::uint8_sarr&) > 
+    get_color_buffer; 
+
   ///
   IplImage* get_ipl_image();
   
@@ -61,7 +71,7 @@ private:
   ///
 	bool internal_open_();
 
-protected:
+private:
   
   ///Width of the images a grabber produces. 
   int m_w;
@@ -69,8 +79,17 @@ protected:
   int m_h;
 	///Depth of the images a grabber produces. 
 	int m_ch;
+
+	///
+  bool get_color_buffer_original_(core::uint8_sarr&);
   ///
-  bool wantsinterleaved;
+  bool get_color_buffer_gray_(core::uint8_sarr&);
+
+  ///
+  bool bwantsinterleaved;
+  ///
+  bool bwantsgray;
+
   ///
   int m_data_order;
   ///
@@ -85,6 +104,8 @@ protected:
   all::core::uint8_sarr image_sptr;
   ///
   IplImage* m_ipl_image;
+  ///
+  IplImage* m_ipl_image_gray;
 
   ///Opaque OpenCV structure for image capture.
   CvCapture* m_capture;

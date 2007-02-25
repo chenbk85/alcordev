@@ -6,7 +6,7 @@
 #include "alcor/core/core.h"
 #include "alcor/math/rpy_angle_t.h"
 ///////////////////////////////////////////////////////////////////
-#pragma comment (lib, "MTi_driver_t.lib")
+//#pragma comment (lib, "MTi_driver_t.lib")
 ///////////////////////////////////////////////////////////////////
 namespace all { namespace  sense{
 class mti_data_t
@@ -44,7 +44,7 @@ namespace tags
     ///
     ~MTi_driver_t();
     ///
-    bool open(const std::string& configfile);
+    bool open(std::string& configfile);
 
     //
     void reset(tags::heading_reset_t);

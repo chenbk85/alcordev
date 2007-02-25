@@ -33,7 +33,7 @@ public:
 	void	Remove(char* key); ///< delete the value for the specific directory and key
 
   //sembra non poter funzionare ...
-	//std::string		GetString(char* key);
+	std::string		GetString(char* key);
 
 	///Andrea::Overloaded Method to return a char*
 	char*	GetStringAsChar(char* key, char* not_def);

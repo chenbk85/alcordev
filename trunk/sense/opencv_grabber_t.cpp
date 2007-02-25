@@ -4,21 +4,24 @@
 using std::cout;
 using std::endl;
 //-------------------------------------------------------------------------++
-#include <alcor/sense/opencv_grabber_t.h>
+#include "alcor/sense/opencv_grabber_t.h"
 #include "alcor/core/image_utils.h"
 //-------------------------------------------------------------------------++
+#include <boost\bind.hpp>
 //-------------------------------------------------------------------------++
 ///
 all::sense::opencv_grabber_t::opencv_grabber_t(int cam)
 		:	m_w(0)
 		,	m_h(0)
 		,	m_ch(0)
-    , wantsinterleaved(true)
+    , bwantsinterleaved(false)
+    , bwantsgray(false)
 		,	m_byte_size(0)
 		,	m_cam_id(cam)
 		,	m_capture(0) 
 		,	snap(0)
     ,m_ipl_image(0)
+    ,m_ipl_image_gray(0)
 		{    
 		cout<< "Welcome to opencv_grabber" << endl <<"Using OpenCV version "
 		<< CV_VERSION 
@@ -26,6 +29,13 @@ all::sense::opencv_grabber_t::opencv_grabber_t(int cam)
 		<< CV_MINOR_VERSION << "."
 		<< CV_SUBMINOR_VERSION
 		<< endl; 
+
+    //default
+    set_output_ordering(core::planar_tag);
+    get_color_buffer = boost::bind(&all::sense::opencv_grabber_t::get_color_buffer_original_,
+                                 this,
+                                 _1);
+
 		};
 //-------------------------------------------------------------------------++
 all::sense::opencv_grabber_t::~opencv_grabber_t()
@@ -66,13 +76,31 @@ bool all::sense::opencv_grabber_t::open(core::video_mode_t, const std::string& i
 ///
 void all::sense::opencv_grabber_t::set_output_ordering(core::interleaved_t)
 {
-  wantsinterleaved = true;
+  bwantsinterleaved = true;
 }
 //-------------------------------------------------------------------------++
 ///
 void all::sense::opencv_grabber_t::set_output_ordering(core::planar_t)
 {
-  wantsinterleaved = false;
+  bwantsinterleaved = false;
+}
+//-------------------------------------------------------------------------++
+/////
+//void all::sense::opencv_grabber_t::set_output_format(core::rgb_t)
+//{
+//  bwantsgray  = false;
+//  get_color_buffer = boost::bind(&all::sense::opencv_grabber_t::get_color_buffer_original_,
+//                                 this,
+//                                 _1);
+//}
+//-------------------------------------------------------------------------++
+///
+void all::sense::opencv_grabber_t::set_graylevel_output()
+{
+  bwantsgray  = true;
+  get_color_buffer = boost::bind(&all::sense::opencv_grabber_t::get_color_buffer_gray_,
+                                 this,
+                                 _1);
 }
 //-------------------------------------------------------------------------++
 bool all::sense::opencv_grabber_t::internal_open_()
@@ -88,22 +116,30 @@ bool all::sense::opencv_grabber_t::internal_open_()
        return false;
   }
 
-	//
-	m_w     = _iplFrame->width;
-	m_h     = _iplFrame->height;
-	m_ch    = _iplFrame->nChannels;
+  m_w           = _iplFrame->width;
+  m_h           = _iplFrame->height;
+  m_data_order  = _iplFrame->dataOrder;
+  m_data_origin = _iplFrame->origin;
 
-  //
-  m_data_order = _iplFrame->dataOrder;
-  m_data_origin= _iplFrame->origin;
-	m_byte_size = _iplFrame->imageSize;
+  if(bwantsgray)
+  {
+    m_byte_size = m_w*m_h ;
+    m_ch    = 1;
+
+    m_ipl_image_gray  = cvCreateImage(  cvSize(m_w, m_h), 
+					                        IPL_DEPTH_8U, 
+					                        m_ch);
+  }
+  else
+  {	
+    m_byte_size = _iplFrame->imageSize;
+	  m_ch    = _iplFrame->nChannels;
+  }
 
   //
   image_sptr.reset(new core::uint8_t[m_w*m_h*m_ch] );
 
-	m_ipl_image = cvCreateImage(  cvSize(m_w, m_h), 
-					                      IPL_DEPTH_8U, 
-					                      m_ch);
+	m_ipl_image       = cvCloneImage(_iplFrame);
 
   ////// Ignore capture properties 
   cout << "Capture properties "
@@ -123,8 +159,10 @@ bool all::sense::opencv_grabber_t::internal_open_()
 		<< "       0 - top-left origin," << endl
     << "       1 - bottom-left origin (Windows bitmaps style)" << endl << endl
 
-    << "Image Size: " << _iplFrame->imageSize << endl
+    << "Original Image Size: " << _iplFrame->imageSize << endl
 		<< endl;
+
+  printf("channelSeq: %c\n", _iplFrame->channelSeq[0]);
 
     cout << "-->OpenCVGrabber opened\n";
     // Success!
@@ -136,6 +174,7 @@ bool all::sense::opencv_grabber_t::close()
 {
 
     if(m_ipl_image)  cvReleaseImage(&m_ipl_image);
+    if(m_ipl_image_gray)  cvReleaseImage(&m_ipl_image_gray);
 
     // Release the capture object, the pointer should be set null
     if (0 != m_capture) cvReleaseCapture((CvCapture**)(&m_capture));
@@ -145,10 +184,9 @@ bool all::sense::opencv_grabber_t::close()
 }
 //-------------------------------------------------------------------------++
 ///
-bool all::sense::opencv_grabber_t::get_color_buffer
-(all::core::uint8_sarr& user_buffer) 
-	{
-
+bool all::sense::opencv_grabber_t::
+get_color_buffer_original_(core::uint8_sarr& user_buffer)
+{
     // Must have a capture object
     if (0 == m_capture) {
 		cout << "!**Not a valid Capture Object!" << endl;
@@ -164,40 +202,89 @@ bool all::sense::opencv_grabber_t::get_color_buffer
        return false;
   }
 
-  if(!m_data_origin)
-  {
-    m_ipl_image = cvCloneImage(iplFrame);
+  if(m_data_origin)
+  {    
+    //printf("PRE_ cvConvertImage(m_ipl_image, m_ipl_image, CV_CVTIMG_FLIP);\n");
+    cvConvertImage(iplFrame, m_ipl_image, CV_CVTIMG_FLIP);
+    //printf("PRE_ cvConvertImage(m_ipl_image, m_ipl_image, CV_CVTIMG_FLIP);\n");
   }
   else
   {
-    cvConvertImage(iplFrame, m_ipl_image, CV_CVTIMG_FLIP);
+      m_ipl_image = cvCloneImage(iplFrame);
   }
 
-	cvConvertImage(m_ipl_image, m_ipl_image, CV_CVTIMG_SWAP_RB);
+    //if( std::strcmp(&iplFrame->channelSeq[0],"B") == 0 )
+  cvConvertImage(m_ipl_image, m_ipl_image, CV_CVTIMG_SWAP_RB);
 
   if(!user_buffer) 
     user_buffer.reset(new core::uint8_t[m_byte_size]);
 
+    //printf("PRE_ RGB _ memcpy(user_buffer.get()...);\n");
   memcpy(user_buffer.get()
-	,(unsigned char*)m_ipl_image->imageData
-	 ,  m_byte_size);
-
+  ,(unsigned char*)m_ipl_image->imageData
+   ,  m_byte_size);
 
   if (ipl_is_interleaved() )
   { 
-    if(!wantsinterleaved)
+    if(!bwantsinterleaved)
       core::change_ordering::to_planar(user_buffer, m_h, m_w, m_ch);
   }
   else
   {
-    if(wantsinterleaved)
+    if(bwantsinterleaved)
       core::change_ordering::to_interleaved(user_buffer, m_h, m_w, m_ch);
   }
 
-  //// That's it
   return true;
 }
+//-------------------------------------------------------------------------++
+///
+bool all::sense::opencv_grabber_t::
+  get_color_buffer_gray_(core::uint8_sarr& user_buffer)
+{
+  
+    // Must have a capture object
+    if (0 == m_capture) {
+		cout << "!**Not a valid Capture Object!" << endl;
+        return false;
+    }
 
+	IplImage* iplFrame = 0;
+
+  //// Grab and retrieve a frame, OpenCV owns the returned image
+  iplFrame = cvQueryFrame((CvCapture*)m_capture);
+
+  if (0 == iplFrame) {
+       return false;
+  }
+
+  if(m_data_origin)
+  {    
+    //printf("PRE_ cvConvertImage(m_ipl_image, m_ipl_image, CV_CVTIMG_FLIP);\n");
+    cvConvertImage(iplFrame, m_ipl_image, CV_CVTIMG_FLIP);
+    //printf("PRE_ cvConvertImage(m_ipl_image, m_ipl_image, CV_CVTIMG_FLIP);\n");
+  }
+  else
+  {
+      m_ipl_image = cvCloneImage(iplFrame);
+  }
+
+  cvCvtColor(m_ipl_image, m_ipl_image_gray, CV_BGR2GRAY); 
+
+  //printf("POST_cvCvtColor(iplFrame,m_ipl_image, CV_BGR2GRAY);\n");
+
+  if(!user_buffer) 
+    user_buffer.reset(new core::uint8_t[m_byte_size]);
+
+    //printf("PRE GRAY memcpy(user_buffer.get()...);\n");
+  memcpy(user_buffer.get()
+  ,(unsigned char*)m_ipl_image_gray->imageData
+   ,  m_byte_size);
+
+    //printf("POST memcpy(user_buffer.get()...);\n");
+  return true;
+}
+//-------------------------------------------------------------------------++
 IplImage* all::sense::opencv_grabber_t::get_ipl_image() 
 	{
     // Must have a capture object
