@@ -14,10 +14,10 @@ namespace all { namespace act {
     p3_odometry_adapter_t(act::p3dx_client_sptr);
 
   public:
-    ///(Not)Localized rotation angle in degrees.
-  double get_current_rot(math::deg_t);
-  ///(Not)Localized rotation angle in radians.
-  double get_current_rot(math::rad_t);
+      ///(Not)Localized rotation angle in degrees.
+    double get_current_rot(math::deg_t);
+    ///(Not)Localized rotation angle in radians.
+    double get_current_rot(math::rad_t);
 
   private:
     act::p3dx_client_sptr p3;
