@@ -42,7 +42,13 @@ public:
   void log_to_disk(const std::string& avifile);
 
   ///
-  bool ipl_is_interleaved() {return !m_data_order;};
+  bool iplimage_is_interleaved() {return !m_data_order;};
+
+  ///
+  bool image_is_interleaved() const {return bwantsinterleaved;};
+  ///
+  bool image_is_gray() const {return bwantsgray;};
+
 	///
 	bool close();
 

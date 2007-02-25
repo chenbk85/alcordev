@@ -228,7 +228,7 @@ get_color_buffer_original_(core::uint8_sarr& user_buffer)
   ,(unsigned char*)m_ipl_image->imageData
    ,  m_byte_size);
 
-  if (ipl_is_interleaved() )
+  if (iplimage_is_interleaved() )
   { 
     if(!bwantsinterleaved)
       core::change_ordering::to_planar(user_buffer, m_h, m_w, m_ch);
