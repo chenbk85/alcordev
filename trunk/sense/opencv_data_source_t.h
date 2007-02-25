@@ -10,10 +10,12 @@ class opencv_data_source_t : public all::core::stream_source_t
 {
 public:	
 	opencv_data_source_t();
-	
+	//
 	void set_quality(unsigned int);
-
+  //
 	int get_data(all::core::uint8_ptr*);
+  //
+
 
 private:
 	boost::shared_ptr<all::core::jpeg_encoder_t>     m_encoder;
