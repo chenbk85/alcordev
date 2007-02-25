@@ -19,7 +19,7 @@ client_base_t::client_base_t():
 	set_packet_handler(COMMAND_PACKET, boost::bind(&client_base_t::command_packet_handler, this, _1));
 	set_packet_handler(ANSWER_PACKET, boost::bind(&client_base_t::command_packet_handler, this, _1));
 
-	add_command_handler("shutdown", boost::bind(&client_base_t::shutdown_handler, this, _1));
+	//add_command_handler("shutdown", boost::bind(&client_base_t::shutdown_handler, this, _1));
 
 	m_state = STATE_DISCONNECTED;
 
@@ -37,14 +37,13 @@ void client_base_t::run_async() {
 
 
 void client_base_t::stop() {
-
-	if (m_state == STATE_CONNECTED) {
-		m_state = STATE_DISCONNECTED;
-		send_command("disconnect");
-	}
-	m_state = STATE_DISCONNECTED;
+	
 	m_io_service.post(boost::bind(&client_base_t::handle_stop, this));
+	
 	m_execution_thread->join();
+
+	m_io_service.reset();
+	printf("all done\n");
 
 }
 
@@ -86,12 +85,42 @@ void client_base_t::handle_resolve(const boost::system::error_code& error, boost
 
 void client_base_t::handle_stop() {
 
-	m_tcp_receiver.stop_listen();
+	printf("handle_stop\n");
 
-	m_tcp_socket.shutdown(boost::asio::ip::tcp::socket::shutdown_both);
+	if (m_state == STATE_CONNECTED) {
+
+		m_state = STATE_DISCONNECTED;
+
+		printf("stop listening\n");
+		m_tcp_receiver.stop_listen();
+
+		printf("disconnect cb\n");
+		if (m_disconnect_cb)
+			m_disconnect_cb();
+
+		printf("closing tcp socket\n");
+		m_tcp_socket.close();
+	}
+
+	m_state = STATE_DISCONNECTED;
+	
+	printf("stopping io service\n");
+	m_io_service.stop();
+
+}
+
+void client_base_t::handle_lost_connection() {
+	
+	printf("handle lost connection\n");
+	m_tcp_receiver.stop_listen();
+	
+	if (m_disconnect_cb) {
+		m_disconnect_cb();
+	}
+
 	m_tcp_socket.close();
 
-	//m_io_service.interrupt();
+	try_connect();
 }
 
 
@@ -188,14 +217,13 @@ void client_base_t::in_packet_error_cb(const boost::system::error_code& error) {
 		else if (error == boost::asio::error::eof) {
 			printf("Lost connection with server...reconnecting\n");
 			m_state = STATE_LOST_CONNECTION;
-			m_tcp_socket.close();
-			try_connect();
+			m_io_service.post(boost::bind(&client_base_t::handle_lost_connection, this));
 		}
 		else {
 			printf("Error with server connection: %s\n Resetting...\n", error.message().c_str());
 			m_state = STATE_LOST_CONNECTION;
-			m_tcp_socket.close();
-			try_connect();
+			m_io_service.post(boost::bind(&client_base_t::handle_lost_connection, this));
+			//handle_lost_connection();
 		}
 	}
 }	
@@ -223,13 +251,17 @@ void client_base_t::add_command_handler(std::string command, boost::function <vo
 	m_command_handler_list[command] = handler;
 }
 
-void client_base_t::shutdown_handler(net_packet_ptr_t packet) {
-	printf("Server shutting down...disconnecting\n");
-	handle_stop();
-}
+//void client_base_t::shutdown_handler(net_packet_ptr_t packet) {
+//	printf("Server shutting down...disconnecting\n");
+//	handle_stop();
+//}
 
 void client_base_t::set_connect_callback(boost::function <void (void)> connect_cb) {
 	m_connect_cb = connect_cb;
+}
+
+void client_base_t::set_disconnect_callback(boost::function <void (void)> disconnect_cb) {
+	m_disconnect_cb = disconnect_cb;
 }
 
 }} //namespaces

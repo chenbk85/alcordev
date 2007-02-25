@@ -19,6 +19,10 @@ stream_pkt_receiver_t::~stream_pkt_receiver_t() {
 
 void stream_pkt_receiver_t::set_packet_size(std::size_t packet_size) {
 	m_packet_size = packet_size;
+	
+	if (m_in_data_buffer)
+		delete[] m_in_data_buffer;
+
 	m_in_data_buffer = new char[m_packet_size];
 }
 

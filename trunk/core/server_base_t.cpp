@@ -43,6 +43,8 @@ void server_base_t::stop() {
 	//safe to call from any thread
 	m_io_service.post(boost::bind(&server_base_t::handle_stop, this));
 	m_execution_thread->join();
+
+	m_io_service.reset();
 }
 
 void server_base_t::set_port(int port) {
@@ -184,6 +186,8 @@ void server_base_t::handle_stop() {
 	m_client_acceptor.close();
 	m_client_manager.stop_all_client();
 
+	m_io_service.stop();
+
 }
 
 void server_base_t::send_command_packet(std::string command, client_connection_ptr_t client , net_packet_ptr_t packet) {
@@ -202,6 +206,14 @@ void server_base_t::send_answer_packet(std::string command, client_connection_pt
 
 void server_base_t::send_finalized_packet(client_connection_ptr_t client, net_packet_ptr_t packet) {
 	client->send_packet(packet);
+}
+
+void server_base_t::set_client_connect_cb(boost::function <void (client_connection_ptr_t)> connect_cb) {
+	m_client_manager.connect_cb = connect_cb;
+}
+
+void server_base_t::set_client_disconnect_cb(boost::function <void (int)> disconnect_cb) {
+	m_client_manager.disconnect_cb = disconnect_cb;
 }
 
 }} //namespaces

@@ -26,13 +26,13 @@ public:
 	client_base_t();
 
 	//run client and connect to the server
-	void run();
+	virtual void run();
 
 	//run client in it's own thread
-	void run_async();
+	virtual void run_async();
 
 	//stop client
-	void stop();
+	virtual void stop();
 
 	void set_server_addr(all::core::ip_address_t);
 
@@ -56,11 +56,14 @@ public:
 	void add_command_handler(std::string, boost::function <void (net_packet_ptr_t)> );
 
 	void set_connect_callback(boost::function <void(void)>);
+	void set_disconnect_callback(boost::function <void(void)>);
 	
 
 private:
 
 	void handle_stop();
+
+	void handle_lost_connection();
 
 	void try_connect();
 
@@ -74,7 +77,7 @@ private:
 	//
 	void command_packet_handler (net_packet_ptr_t);
 
-	void shutdown_handler(net_packet_ptr_t);
+	//void shutdown_handler(net_packet_ptr_t);
 
 
 private:
@@ -98,6 +101,7 @@ private:
 	std::map <std::string, in_packet_handler_t> m_command_handler_list;
 
 	boost::function < void (void)> m_connect_cb;
+	boost::function < void (void)> m_disconnect_cb;
 
 };
 

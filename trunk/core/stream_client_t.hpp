@@ -19,18 +19,22 @@ class stream_client_t : public client_base_t {
 public:
 	stream_client_t(stream_dest_t&, char* ini_file ="config/stream_client.ini");
 
-	//void set_multicast_address(all::core::ip_address_t);
-
 	void start_receive();
 	void stop_receive();
 
-	void get_server_setting();
-
-	void get_stream_setting_cb(net_packet_ptr_t);
-
 	void set_frame_rate(int);
 
-	//void new_frame_cb(boost::shared_array <all::core::uint8_t>, std::size_t);
+	virtual void stop();
+
+private:
+
+	void connect_cb();
+	void disconnect_cb();
+
+	void handle_disconnect();
+	void handle_stop_receive();
+
+	void get_stream_setting_cb(net_packet_ptr_t);
 
 private:
 	boost::asio::io_service m_stream_service;
@@ -45,6 +49,10 @@ private:
 	stream_dest_t& m_stream_dest; 
 
 	all::core::ip_address_t m_multicast_address;
+
+	boost::asio::ip::address m_asio_multicast_address;
+
+	volatile bool m_streaming;
 
 };
 

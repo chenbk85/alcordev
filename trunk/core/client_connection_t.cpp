@@ -59,13 +59,13 @@ void client_connection_t::read_packet_error_cb(const boost::system::error_code& 
 	}
 	else if (error == boost::asio::error::eof) {
 		printf("Lost connection with client %s...\n", m_remote_addr.hostname.c_str());
-		m_client_manager_ref.stop_client(shared_from_this());
-		//m_socket.io_service().post(boost::bind(&detail::client_manager_t::stop_client, &m_client_manager_ref, shared_from_this()));
+		//m_client_manager_ref.stop_client(shared_from_this());
+		m_socket.io_service().post(boost::bind(&detail::client_manager_t::stop_client, &m_client_manager_ref, shared_from_this()));
 	}
 	else {
 		printf("Error in connection with client %s: %s\n Disconnecting client...\n", m_remote_addr.hostname.c_str(), error.message().c_str());
-		m_client_manager_ref.stop_client(shared_from_this());
-		//m_socket.io_service().post(boost::bind(&detail::client_manager_t::stop_client, &m_client_manager_ref, shared_from_this()));
+		//m_client_manager_ref.stop_client(shared_from_this());
+		m_socket.io_service().post(boost::bind(&detail::client_manager_t::stop_client, &m_client_manager_ref, shared_from_this()));
 	}
 }
 
@@ -83,7 +83,6 @@ void client_connection_t::stop() {
 	stop_all_req();
 	m_tcp_receiver.stop_listen();
 
-	//m_socket.shutdown(boost::asio::ip::tcp::socket::shutdown_both);
 	m_socket.close();
 }
 

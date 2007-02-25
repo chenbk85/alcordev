@@ -82,8 +82,8 @@ void out_stream_manager_t::send_data() {
 		packet->set_data(data_pos, bytes_to_send);
 		packet->finalize_packet();
 
-		m_packet_sender.send_packet(packet);
-
+		//m_packet_sender.send_packet(packet);
+		m_packet_sender.async_send_packet(packet);
 		printf("send packet n %i, size %i\n", packet_number, bytes_to_send);
 		data_pos += bytes_to_send;
 		remaining_bytes -= bytes_to_send;
@@ -107,17 +107,13 @@ void out_stream_manager_t::next_frame_handler(const boost::system::error_code& e
 
 		printf("data_size: %i\n", m_curr_data_size);
 		
-		m_send_data_thread.reset(new boost::thread(boost::bind(&out_stream_manager_t::send_data, this)));
+		//m_send_data_thread.reset(new boost::thread(boost::bind(&out_stream_manager_t::send_data, this)));
+		send_data();
 
 		m_timer.expires_from_now(boost::posix_time::millisec(m_timer_freq));
 		m_timer.async_wait(boost::bind(&out_stream_manager_t::next_frame_handler, this,
 									   boost::asio::placeholders::error));
 
-	}
-	else if (error == boost::asio::error::operation_aborted) {
-		printf("closing socket\n");
-		m_socket.close();
-		printf("socket closed\n");
 	}
 }
 

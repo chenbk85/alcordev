@@ -28,34 +28,37 @@ stream_server_t::stream_server_t(stream_source_t& stream_source, char* ini_file)
 
 	add_command_handler("setFrameRate", boost::bind(&stream_server_t::set_frame_rate_cb, this, _1, _2));
 	add_command_handler("getStreamSetting", boost::bind(&stream_server_t::send_stream_setting_cb, this, _1, _2));
+
+	set_client_connect_cb(boost::bind(&stream_server_t::client_connect_cb, this, _1));
+	set_client_disconnect_cb(boost::bind(&stream_server_t::client_disconnect_cb, this, _1));
+
+	m_streaming = false;
 }
 
 
 void stream_server_t::start_streaming() {
 	//m_stream_service.reset();
 	
-	m_udp_socket.open(boost::asio::ip::udp::v4());
+	if (!m_streaming) {
+		
+		m_streaming = true;
+		
+		m_udp_socket.open(boost::asio::ip::udp::v4());
 
-	m_stream_manager.start_streaming();
-	
-	//m_stream_service.run();
-	m_stream_thread.reset(new boost::thread(boost::bind(&boost::asio::io_service::run, &m_stream_service)));
+		m_stream_manager.start_streaming();
+		
+		m_stream_thread.reset(new boost::thread(boost::bind(&boost::asio::io_service::run, &m_stream_service)));
+	}
 }
 
 void stream_server_t::stop_streaming() {
-	//m_stream_manager.stop_streaming();
-	m_stream_service.post(boost::bind(&detail::out_stream_manager_t::stop_streaming, &m_stream_manager));
-	//m_udp_socket.close();
-	//m_stream_service.post(boost::bind(&boost::asio::ip::udp::socket::close, &m_udp_socket));
 
-	//try {
-	//	m_udp_socket.close();
-	//}
-	//catch (boost::system::error_code e) {
-	//	printf("error closing socket: %s\n", e.message().c_str()); 
-	//}
+	if (m_streaming) {
+		m_stream_service.post(boost::bind(&stream_server_t::handle_stop_streaming, this));
+		m_stream_thread->join();
+		m_stream_service.reset();
+	}
 
-	m_stream_thread->join();
 }
 
 void stream_server_t::set_frame_rate_cb(client_connection_ptr_t client, net_packet_ptr_t packet) {
@@ -70,5 +73,29 @@ void stream_server_t::send_stream_setting_cb(client_connection_ptr_t client, net
 	packet->int_to_buf(m_stream_manager.get_packet_size());
 	send_answer_packet("getStreamSetting", client, packet);
 }
+
+void stream_server_t::handle_stop_streaming() {
+	m_streaming = false;
+	m_stream_manager.stop_streaming();
+	m_udp_socket.close();
+	m_stream_service.stop();
+}
+
+void stream_server_t::stop() {
+	stop_streaming();
+	server_base_t::stop();
+}
+
+void stream_server_t::client_connect_cb(client_connection_ptr_t client) {
+	if (!m_streaming)
+		start_streaming();
+}
+
+void stream_server_t::client_disconnect_cb(int num_client) {
+	if (num_client == 0) {
+		stop_streaming();
+	}
+}
+
 
 }} //namespaces

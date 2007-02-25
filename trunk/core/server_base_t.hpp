@@ -23,13 +23,13 @@ public:
 	//virtual ~server_base_t();
 
 	//run server
-	void run();
+	virtual void run();
 	
 	//run server in its own thread
-	void run_async();
+	virtual void run_async();
 
 	//stop the server
-	void stop();
+	virtual void stop();
 
 	void set_port(int);
 	
@@ -45,6 +45,8 @@ public:
 
 	void send_answer_packet(std::string, client_connection_ptr_t, net_packet_ptr_t);
 
+	void set_client_connect_cb(boost::function <void (client_connection_ptr_t)>);
+	void set_client_disconnect_cb(boost::function <void (int)>);
 
 private:
 	

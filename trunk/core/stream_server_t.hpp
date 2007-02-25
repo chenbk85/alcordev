@@ -23,7 +23,16 @@ public:
 
 	void set_frame_rate_cb(client_connection_ptr_t, net_packet_ptr_t);
 
+	virtual void stop();
+
+private:
+
 	void send_stream_setting_cb(client_connection_ptr_t, net_packet_ptr_t);
+
+	void handle_stop_streaming();
+
+	void client_connect_cb(client_connection_ptr_t);
+	void client_disconnect_cb(int);
 
 private:
 	
@@ -40,6 +49,8 @@ private:
 	all::core::ip_address_t m_multicast_address;
 
 	detail::out_stream_manager_t m_stream_manager;
+
+	volatile bool m_streaming;
 
 };
 
