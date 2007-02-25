@@ -24,6 +24,9 @@ public:
 
 	int get_num_client();
 
+	boost::function <void (client_connection_ptr_t)> connect_cb;
+	boost::function <void (int)> disconnect_cb;
+
 private:
 	//the client list
 	std::set <client_connection_ptr_t> m_client_list;

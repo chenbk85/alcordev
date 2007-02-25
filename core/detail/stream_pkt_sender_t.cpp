@@ -29,4 +29,27 @@ void stream_pkt_sender_t::send_packet(stream_packet_ptr_t packet) {
 	}
 }
 
+void stream_pkt_sender_t::async_send_packet(stream_packet_ptr_t packet) {
+	
+	std::string* out_data_buffer_ptr = new std::string(packet->get_buffer());
+	m_socket.async_send_to(boost::asio::buffer(*out_data_buffer_ptr), m_endpoint,
+						   boost::bind(&stream_pkt_sender_t::handle_send_packet, this, 
+									   boost::asio::placeholders::error, 
+									   boost::asio::placeholders::bytes_transferred,
+									   out_data_buffer_ptr));
+}
+
+void stream_pkt_sender_t::handle_send_packet(const boost::system::error_code& error, std::size_t bytes_transferred, std::string* buffer_ptr) {
+	if (!error) {
+		printf("async send ok\n");
+	}
+	else {
+		if (m_error_callback)
+			m_error_callback(error);
+	}
+	delete buffer_ptr;
+}
+
+	
+
 }}} //namespaces

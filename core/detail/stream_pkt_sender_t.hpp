@@ -21,6 +21,12 @@ public:
 
 	void send_packet(stream_packet_ptr_t);
 
+	void async_send_packet(stream_packet_ptr_t);
+
+private:
+
+	void handle_send_packet(const boost::system::error_code&, std::size_t, std::string*);
+
 private:
 	typedef boost::function <void (const boost::system::error_code&)> error_callback_t;
 	error_callback_t m_error_callback;
@@ -31,6 +37,7 @@ private:
 	boost::asio::ip::udp::endpoint m_endpoint;
 
 	std::string m_out_data_buffer;
+
 };
 
 }}} //namespaces
