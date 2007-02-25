@@ -5,6 +5,7 @@
 //---------------------------------------------------------------------------
 #include "alcor/core/config_parser_t.h"
 #include "alcor/core/core.h"
+#include "detail/ArActionFollowTarget.hpp"
 //---------------------------------------------------------------------------
 namespace all
 	{
@@ -12,7 +13,7 @@ namespace all
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
 p3dx_gateway::p3dx_gateway():
-			m_serial_port(5)
+			  m_serial_port(5)
   		,myConnectedCB(this, &p3dx_gateway::connected)
 			,m_error_disconnect_cb(this, &p3dx_gateway::on_error_cb)
 			//remote services
@@ -87,8 +88,6 @@ bool p3dx_gateway::serial_connect()
 		// connection to the robot		
     m_serialConn.setPort(comPort.c_str());
     
-    //SPOSTIAMOLO
-		//m_robot->setDeviceConnection(&m_serialConn);
 		if(!m_serialConn.openSimple() )
 		{
 			printf( "Doro SERIAL Connection failed on port %s !!\n",  
