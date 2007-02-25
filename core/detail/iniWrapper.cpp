@@ -78,9 +78,9 @@ void iniWrapper::Remove(char* key){
 	GetString return the string value in the specific entry of the dictionary.
 	\param key name of the entry in the directory of the ini file. Syntax directory:entry
 */
-//std::string iniWrapper::GetString(char* key){
-//	return wrImpl->GetString(key);
-//};
+std::string iniWrapper::GetString(char* key){
+	return wrImpl->GetString(key);
+};
 
 /*!
 	GetString return the string value in the specific entry of the dictionary.

@@ -25,6 +25,9 @@ namespace all { namespace sense {
   if (bIsOk)
     impl->allocate_buffers_();
 
+  color_buffer_size_ = impl->rows_*impl->cols_*3;
+  depth_buffer_size_ = impl->rows_*impl->cols_*sizeof(core::single_t);
+
   return bIsOk;
 }
 //------------------------------------------------------------------+
@@ -77,6 +80,18 @@ std::string bumblebee_driver_t::name() const
 bool  bumblebee_driver_t::grab()
 {
   return impl->grab_();
+}
+//------------------------------------------------------------------+
+///
+size_t bumblebee_driver_t::color_buffer_size() const
+{
+  return color_buffer_size_;
+}
+//------------------------------------------------------------------+
+///
+size_t bumblebee_driver_t::depth_buffer_size() const
+{
+  return depth_buffer_size_;
 }
 //------------------------------------------------------------------+
 ///

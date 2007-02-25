@@ -9,13 +9,17 @@ opencv_data_source_t::opencv_data_source_t() :	m_jpeg_quality (100)
 
 void opencv_data_source_t::init_()
 {
-  printf("opencv_data_source_t::Init\n");
+
+  printf("opencv_data_source_t::Init::IN\n");
   m_cam.reset(new sense::opencv_grabber_t);
+  //devono essere fatti prima dell'open .. ora ... TODO: da corrggere
+  m_cam->set_output_ordering(core::interleaved_tag);
+  m_cam->set_graylevel_output();
 
   if(m_cam->open(core::open_camera))
   {
     //
-    m_cam->set_output_ordering(core::interleaved_tag);
+
     //E' opzionale ... ma così evito al grabber di 
     //inizializzare ogni volta il buffer
     image.reset( new core::uint8_t[m_cam->size()] );
@@ -38,7 +42,7 @@ void opencv_data_source_t::init_()
       break;
     }
   }
-
+  printf("opencv_data_source_t::Init::OUT\n");
 }
 
 void opencv_data_source_t::set_quality(unsigned int quality) 
@@ -48,7 +52,6 @@ void opencv_data_source_t::set_quality(unsigned int quality)
 
 int opencv_data_source_t::get_data(all::core::uint8_ptr* data) 
 {
-  //printf("get_data\n");
   size_t buffer_size = 0;
 
   //Se non lo faccio qui .. opencv rifiuta di funzionare.
@@ -82,7 +85,7 @@ int opencv_data_source_t::get_data(all::core::uint8_ptr* data)
     printf("Cannot grab\n");
   }
 
-  return buffer_size;
+  return static_cast<int>(buffer_size);
 }
 
 

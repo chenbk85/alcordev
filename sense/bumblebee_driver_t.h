@@ -93,6 +93,11 @@ public:
   ///
   std::string name() const;
 
+  ///
+  size_t color_buffer_size() const;
+  ///
+  size_t depth_buffer_size() const;
+
 	///
   all::core::uint8_sarr  get_color_buffer(core::left_img_t ,  bool shared = true);
 	///
@@ -104,6 +109,9 @@ protected:
 	///PIMPL Idiom
   boost::shared_ptr<detail::bumblebee_driver_impl> impl;
   bumblebee_parameters_t params;
+
+  size_t color_buffer_size_;
+  size_t depth_buffer_size_;
 	};
 
 
