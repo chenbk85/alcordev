@@ -2,7 +2,7 @@
 
 #include "Aria.h"
 
-class ArActionFollowTarget: public : public ArAction
+class ArActionFollowTarget: public ArAction
 {
 public:
   // constructor, sets myMaxSpeed and myStopDistance
