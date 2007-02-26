@@ -3,7 +3,7 @@
 //---------------------------------------------------------------------
 #include <string>
 #include <memory>
-#pragma comment(lib, "config_parser_t.lib")
+//#pragma comment(lib, "config_parser.lib")
 //---------------------------------------------------------------------
 #define WIN32_LEAN_AND_MEAN		// Exclude rarely-used stuff from Windows headers
 //---------------------------------------------------------------------
@@ -11,13 +11,14 @@
 //---------------------------------------------------------------------
 namespace all { namespace core{
 
-    namespace detail
+    namespace tags
         { 
         struct xml_t{};
         struct ini_t{};
-        }
-    static const core::detail::xml_t xml = core::detail::xml_t();
-    static const core::detail::ini_t ini = core::detail::ini_t();
+        
+    static const xml_t xml = core::detail::xml_t();
+    static const ini_t ini = core::detail::ini_t();
+    }
     }}
 //---------------------------------------------------------------------
 namespace all { namespace core{
@@ -33,28 +34,27 @@ public:
 	///Constructor
   config_parser_t();
   config_parser_t(std::string&);
-    ~config_parser_t();
-    ///
-    void load(core::detail::xml_t, const std::string&);
-    ///
-    void load(core::detail::ini_t, const std::string&);
+  ~config_parser_t();
+  ///
+  void load(tags::xml_t, const std::string&);
+  ///
+  void load(tags::ini_t, const std::string&);
 
-public:
 	///
-	int as_int(const std::string&, int);
-	///
-	double as_double(const std::string&, double);
-	///
-	float as_float (const std::string&, float);
-	///
-	long as_long(const std::string&, long);
-	///
-	short as_short(const std::string&, short);
-	///
-	std::string as_string(const std::string&, const std::string&);
+	//int as_int(const std::string&, int);
+	/////
+	//double as_double(const std::string&, double);
+	/////
+	//float as_float (const std::string&, float);
+	/////
+	//long as_long(const std::string&, long);
+	/////
+	//short as_short(const std::string&, short);
+	/////
+	//std::string as_string(const std::string&, const std::string&);
 
-    //template <typename T>
-    //T get<T>(const std::string&, const T&);
+  template <typename T>
+  T get<T>(const std::string&, const T&);
 
 private:
     std::auto_ptr<core::detail::config_parser_impl> impl;
