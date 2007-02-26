@@ -41,6 +41,8 @@ p3dx_gateway::p3dx_gateway():
   //m_robot->attachKeyHandler(&keyHandler);
   //printf("You may press escape to exit\n");
 
+	m_robot->loadParamFile("config/p3dx.p");
+
 	//Connect  sonars al robot
 	m_robot->addRangeDevice(&m_sonar);
 	
