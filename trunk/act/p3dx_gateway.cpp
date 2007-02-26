@@ -3,9 +3,10 @@
 #include <string>
 #include <sstream>
 //---------------------------------------------------------------------------
-#include "alcor/core/config_parser_t.h"
+//#include "alcor/core/config_parser_t.h"
 #include "alcor/core/core.h"
-#include "detail/ArActionFollowTarget.hpp"
+#include "alcor/core/iniwrapper.h"
+//#include "detail/ArActionFollowTarget.hpp"
 //---------------------------------------------------------------------------
 namespace all
 	{
@@ -49,14 +50,14 @@ p3dx_gateway::p3dx_gateway():
 
 	//server is always localhost
 	m_addr.hostname = "localhost";
-  core::config_parser_t config;
-  config.load(core::ini,"config/p3dx_conf.ini");
+	iniWrapper config;
+	config.Load("config/p3dx_conf.ini");
 
-	m_addr.port		  = config.as_int("server.port",22222);
-	m_goto_dir_dist = config.as_int("params.m_goto_dir_dist",1000);
+	m_addr.port		  = config.GetInt("server:port",22222);
+	m_goto_dir_dist = config.GetInt("params:m_goto_dir_dist",1000);
 
 	//serial port (if any)
-	m_serial_port = config.as_int("serial.port",6);
+	m_serial_port = config.GetInt("serial:port",6);
 
 	//
 	init_wander_action();
