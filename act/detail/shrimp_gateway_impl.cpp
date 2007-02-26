@@ -97,6 +97,9 @@ bool shrimp_gateway_impl::connect() {
 
 void shrimp_gateway_impl::init() {
 	m_shrimp.SetBaudRate(wxBAUD_9600);
+	m_control_flags.set(0);
+	m_control_flags.set(1);
+
 }
 
 void shrimp_gateway_impl::disconnect() {
@@ -175,8 +178,9 @@ void shrimp_gateway_impl::set_speed(short speed) {
 	if (is_feasible_speed(speed)) {
 		shrimp_command_t set_speed_command(SPEED, write_t, static_cast <all::core::uint8_t> (speed));
 		send_command(set_speed_command);
-		update_control_flags();
-		m_control_flags.set(0);
+		//update_control_flags();
+		//m_control_flags.set(0);
+		//m_control_flags.set(1);
 		shrimp_command_t update_speed_command(CONTROL_FLAGS, write_t, static_cast <all::core::uint8_t> (m_control_flags.to_ulong()));
 		send_command(update_speed_command);
 	}
@@ -188,8 +192,9 @@ void shrimp_gateway_impl::set_steer(short steer) {
 	if (is_feasible_steer(steer)) {
 		shrimp_command_t set_steer_command(STEER, write_t, static_cast <all::core::uint8_t> (steer));
 		send_command(set_steer_command);
-		update_control_flags();
-		m_control_flags.set(1);
+		//update_control_flags();
+		//m_control_flags.set(0);
+		//m_control_flags.set(1);
 		shrimp_command_t update_steer_command(CONTROL_FLAGS, write_t, static_cast <all::core::uint8_t> (m_control_flags.to_ulong()));
 		send_command(update_steer_command);
 	}

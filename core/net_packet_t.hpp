@@ -80,10 +80,12 @@ public:
 	void int_to_buf(int);
 	void double_to_buf(double);
 	void string_to_buf(std::string);
+	void array_to_buf(all::core::uint8_ptr, std::size_t);
 
 	int buf_to_int();
 	double buf_to_double();
 	std::string buf_to_string();
+	std::size_t buf_to_array(all::core::uint8_ptr&);
 	
 	bool finalize_packet();
 

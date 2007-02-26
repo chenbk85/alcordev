@@ -169,6 +169,18 @@ void net_packet_t::string_to_buf(std::string s) {
 	m_data_size += byte_to_write;
 }
 
+void net_packet_t::array_to_buf(all::core::uint8_ptr arr, std::size_t arr_size)  {
+	std::size_t byte_to_write = arr_size + sizeof(std::size_t);
+	while ((m_data_size + byte_to_write) > m_data_buffer_size)
+		resize_data_buffer();
+	memcpy(m_write_ptr, &arr_size, sizeof(std::size_t));
+	m_write_ptr += sizeof(std::size_t);
+	memcpy(m_write_ptr, arr, arr_size);
+	m_write_ptr += arr_size;
+	m_data_size += byte_to_write;
+}
+
+
 int net_packet_t::buf_to_int() {
 	int i;
 	memcpy(&i, m_read_ptr, sizeof(int));
@@ -191,7 +203,15 @@ std::string net_packet_t::buf_to_string() {
 
 }
 
-
+std::size_t net_packet_t::buf_to_array(all::core::uint8_ptr& arr) {
+	std::size_t arr_size;
+	memcpy(&arr_size, m_read_ptr, sizeof(std::size_t));
+	m_read_ptr += sizeof(std::size_t);
+	arr = new all::core::uint8_t[arr_size];
+	memcpy(arr, m_read_ptr, arr_size);
+	m_read_ptr += arr_size;
+	return arr_size;
+}
 bool net_packet_t::finalize_packet() {
 	
 	//fill packet buffer
