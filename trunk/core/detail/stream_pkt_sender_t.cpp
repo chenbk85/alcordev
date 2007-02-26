@@ -5,7 +5,7 @@ namespace all {
 		namespace detail {
 
 
-stream_pkt_sender_t::stream_pkt_sender_t(boost::asio::ip::udp::socket& socket) : m_socket(socket) 
+stream_pkt_sender_t::stream_pkt_sender_t(boost::asio::ip::udp::socket& socket) : m_socket(socket)
 {
 }
 
@@ -42,6 +42,7 @@ void stream_pkt_sender_t::async_send_packet(stream_packet_ptr_t packet) {
 void stream_pkt_sender_t::handle_send_packet(const boost::system::error_code& error, std::size_t bytes_transferred, std::string* buffer_ptr) {
 	if (!error) {
 		printf("async send ok\n");
+		Sleep(1);
 	}
 	else {
 		if (m_error_callback)

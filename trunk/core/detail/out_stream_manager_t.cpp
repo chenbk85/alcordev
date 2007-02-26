@@ -83,11 +83,13 @@ void out_stream_manager_t::send_data() {
 		packet->finalize_packet();
 
 		//m_packet_sender.send_packet(packet);
+		
 		m_packet_sender.async_send_packet(packet);
 		printf("send packet n %i, size %i\n", packet_number, bytes_to_send);
 		data_pos += bytes_to_send;
 		remaining_bytes -= bytes_to_send;
 		packet_number++;
+		
 	}
 
 	delete[] data;
