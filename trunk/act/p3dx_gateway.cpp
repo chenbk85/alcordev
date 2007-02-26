@@ -14,7 +14,7 @@ namespace all
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
 p3dx_gateway::p3dx_gateway():
-			  m_serial_port(5)
+			  m_serial_port(6)
   		,myConnectedCB(this, &p3dx_gateway::connected)
 			,m_error_disconnect_cb(this, &p3dx_gateway::on_error_cb)
 			//remote services
@@ -36,9 +36,9 @@ p3dx_gateway::p3dx_gateway():
 	m_robot = new ArRobot;
 	
   //// let the global aria stuff know about it
-  Aria::setKeyHandler(&keyHandler);
+  //Aria::setKeyHandler(&keyHandler);
   //// toss it on the robot
-  m_robot->attachKeyHandler(&keyHandler);
+  //m_robot->attachKeyHandler(&keyHandler);
   //printf("You may press escape to exit\n");
 
 	//Connect  sonars al robot
@@ -85,13 +85,13 @@ bool p3dx_gateway::serial_connect()
 	{
     std::string comPort = "COM";
     comPort += core::make_string(m_serial_port);
-		printf("Attempting Pioneer connection on port: %s\n",comPort.c_str());
+		printf("Attempting %s connection on port: %s\n",m_robot->getName(), comPort.c_str());
 		// connection to the robot		
     m_serialConn.setPort(comPort.c_str());
     
 		if(!m_serialConn.openSimple() )
 		{
-			printf( "Doro SERIAL Connection failed on port %s !!\n",  
+			printf( "%s SERIAL Connection failed on port %s !!\n", m_robot->getName(),  
 				comPort.c_str());
 			return false;    
 		}
@@ -105,6 +105,7 @@ bool p3dx_gateway::serial_connect()
 			return false;
 		}
  		
+		
 		robot_run();
 		return true;
 	}
@@ -139,10 +140,11 @@ bool p3dx_gateway::blocking_connect()
 void p3dx_gateway::robot_run()
 {
   // run the robot in its own thread, so it gets and processes packets and such
+  m_robot->loadParamFile("config/p3dx.p");
   m_robot->runAsync(false);
   m_robot->enableMotors();
   start_server();
-  m_robot->waitForRunExit();
+  //m_robot->waitForRunExit();
 }
 /////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////
