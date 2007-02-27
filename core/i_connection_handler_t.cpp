@@ -1,6 +1,6 @@
 //---------------------------------------------------------------------------
 #include "i_connection_handler_t.h"
-#include "alcor/core/config_parser_t.h"
+#include "alcor/core/config_parser_t.hpp"
 //---------------------------------------------------------------------------
 namespace all{
 	namespace core{
@@ -18,12 +18,12 @@ namespace all{
 	printf("Opening ini config.\n");
 
   config_parser_t config;
-  config.load(core::ini,_inifile);
+  config.load(core::tags::ini,_inifile);
 
 	printf("Gathering address and port.\n");
 
-  m_addr.hostname = config.as_string("server.hostname","localhost");
-  m_addr.port	    = config.as_int("server.port",11111);	
+  m_addr.hostname = config.get<std::string>("server:hostname","localhost");
+  m_addr.port	    = config.get<int>("server:port",11111);	
 
   printf("Connection Handler\n");
   printf("Host: %s:",m_addr.hostname.c_str() );

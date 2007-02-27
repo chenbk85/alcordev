@@ -7,7 +7,6 @@
 #include <boost/property_tree/ptree.hpp>
 #include <boost/property_tree/xml_parser.hpp>
 #include <boost/property_tree/ini_parser.hpp>
-//#pragma comment(lib, "config_parser.lib")
 //---------------------------------------------------------------------
 #define WIN32_LEAN_AND_MEAN		// Exclude rarely-used stuff from Windows headers
 //---------------------------------------------------------------------
@@ -33,14 +32,31 @@ class config_parser_t
 {
 public:
 	///
-	void load(tags::xml_t, std::string xmlfile)
+	bool load(tags::xml_t, std::string xmlfile)
     {
-	  read_xml(xmlfile, pt_);
+      try 
+      {
+	      read_xml(xmlfile, pt_);
+       }
+      catch (boost::property_tree::ini_parser_error& e)
+      {
+        printf("%s\n",e.what());
+        return false;
+      }
+      return true;
     }
 	///
-	void load(tags::ini_t, std::string inifile)
+	bool load(tags::ini_t, std::string inifile)
     {
+      try {
     read_ini(inifile, pt_);
+      }
+      catch (boost::property_tree::ini_parser_error& e)
+      {
+        printf("%s\n",e.what());
+        return false;
+      }
+      return true;
     }
 	///
 	template <typename T> 

@@ -3,11 +3,11 @@
 //---------------------------------------------------------------------------+
 #include "alcor/core/core.h"
 //---------------------------------------------------------------------------+
-typedef struct iRGB{};
-typedef struct pRGB{};
-typedef struct iBGR{};
-typedef struct GRAY{};
-typedef struct DEPTH{};
+struct iRGB{};
+struct pRGB{};
+struct iBGR{};
+struct GRAY{};
+struct DEPTH{};
 //---------------------------------------------------------------------------+
 template <class T>
 class pixel_traits;
@@ -83,7 +83,7 @@ template< >
 class pixel_traits<GRAY>
 {
 public:
-  typedef all::uint8_t     value_type;
+  typedef all::core::uint8_t     value_type;
   typedef value_type* ptr;
   typedef const ptr*  const_ptr;
 
@@ -142,13 +142,13 @@ public:
     //
     height_ = height; 
     width_ = width;
-    channels_ = PIXEL::nchannels;
+    channels_ = pixel_traits<PIXEL>::nchannels;
 
     allocate_(height_, width_);
   }
 
   ///
-  image_of(size_t height , size_t width, PIXEL::ptr p)
+  image_of(size_t height , size_t width, typename pixel_traits<PIXEL>::ptr p)
   {
     //
     height_   = height; 
@@ -161,7 +161,7 @@ public:
             data_.get(),//Dst
             p, //Src
             height_ * width_ * channels_
-            * PIXEL::bytes_per_channel //size
+            * pixel_traits<PIXEL>::bytes_per_channel //size
             );
   }
   
@@ -170,24 +170,24 @@ public:
   size_t channels() const {return channels_;}
 
   ///
-  PIXEL::value_type
-    at(size_t row, size_t col, size_t ch = 0) const
+  typename pixel_traits<PIXEL>::value_type
+    get(size_t row, size_t col, size_t ch = 0) const
   {
-       return data_[( row*PIXEL::row_stride() )
-      +( col*PIXEL::column_stride() )
-      +( ch*PIXEL::channel_stride() ) ];
+       return data_[( row*pixel_traits<PIXEL>::row_stride() )
+      +( col*pixel_traits<PIXEL>::column_stride() )
+      +( ch*pixel_traits<PIXEL>::channel_stride() ) ];
   }
 
 
 private:
   ///
-  allocate_(size_t height, size_t width)
+  void allocate_(size_t height, size_t width)
   {
-    data_.reset( new PIXEL::value_type[height*width*PIXEL::nchannels );
+    data_.reset( new pixel_traits<PIXEL>::value_type[height*width*pixel_traits<PIXEL>::nchannels] );
   }
 
   ///
-  boost::shared_array<PIXEL::value_type> data_;
+  boost::shared_array<typename pixel_traits<PIXEL>::value_type> data_;
   ///
   size_t height_; 
   size_t width_;

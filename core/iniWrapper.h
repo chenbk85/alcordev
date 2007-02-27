@@ -8,7 +8,7 @@
 #ifndef INIWRAPPER_H
 #define INIWRAPPER_H
 //---------------------------------------------------------------------------
-#pragma comment (lib,"iniwrapper.lib")
+#pragma comment (lib,"iniWrapper.lib")
 //---------------------------------------------------------------------------
 #include <string>
 #include <boost/shared_ptr.hpp>

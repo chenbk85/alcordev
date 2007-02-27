@@ -16,7 +16,6 @@ bool directed_perception_ptu_t::open(const std::string& ini)
 {
   using namespace lti;
 
-  //core::config_parser_t config;
   iniWrapper config;
 
   //

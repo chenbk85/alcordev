@@ -2,8 +2,6 @@
 //---------------------------------------------------------------------------
 #include <string>
 #include <sstream>
-//---------------------------------------------------------------------------
-//#include "alcor/core/config_parser_t.h"
 #include "alcor/core/core.h"
 #include "alcor/core/iniwrapper.h"
 //#include "detail/ArActionFollowTarget.hpp"
