@@ -28,40 +28,31 @@ namespace all { namespace core{
 //---------------------------------------------------------------------
 namespace all { namespace core{
 //---------------------------------------------------------------------
-  //template <typename T>
+///Parses ini and xml config files
 class config_parser_t
 {
 public:
 	///
-	void load(tags::xml_t, std::string);
+	void load(tags::xml_t, std::string xmlfile)
+    {
+	  read_xml(xmlfile, pt_);
+    }
 	///
-	void load(tags::ini_t, std::string);
+	void load(tags::ini_t, std::string inifile)
+    {
+    read_ini(inifile, pt_);
+    }
 	///
 	template <typename T> 
-  T get(std::string fname, T defvalue = T());
+  T get(std::string fname, T defvalue = T())
+  {
+    return pt_.get<T>(fname.c_str(), defvalue);
+  }
 
 private:
-	std::string config_name;
 	boost::property_tree::ptree pt_;
 };
 //----------------------------------------------------------------------++
-//----------------------------------------------------------------------++
-//----------------------------------------------------------------------++
-inline  void config_parser_t::load(tags::xml_t, std::string _xmlfile)
-{
-	read_xml(_xmlfile, pt_);
-}
-//----------------------------------------------------------------------++
-inline  void config_parser_t::load(tags::ini_t, std::string _inifile)
-{
-	read_ini(_inifile, pt_);
-}
-////----------------------------------------------------------------------++
-template <typename T> 
-inline T config_parser_t::get(std::string fname, T defvalue)
-{
-return pt_.get<T>(fname.c_str(), defvalue);
-};
 //////----------------------------------------------------------------------++
 //#define SPECIALIZECONFIG(_PTYPE_)\
 //template <> \
@@ -69,13 +60,6 @@ return pt_.get<T>(fname.c_str(), defvalue);
 //{\
 //return pt_.get<_PTYPE_>(fname.c_str(), defvalue);\
 //};
-//
-//SPECIALIZECONFIG(int)
-//SPECIALIZECONFIG(long)
-//SPECIALIZECONFIG(std::string)
-//SPECIALIZECONFIG(float)
-//SPECIALIZECONFIG(double)
-//SPECIALIZECONFIG(short)
 //---------------------------------------------------------------------------
 }}//namespace
 //----------------------------------------------------------------------++
