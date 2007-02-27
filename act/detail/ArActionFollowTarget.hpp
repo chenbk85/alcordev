@@ -24,7 +24,8 @@ public:
   {
   FRONT,//front sector
   LEFT,  
-  RIGHT 
+  RIGHT,
+  SIDE
   };
 
   //depending on sector ...
@@ -39,9 +40,10 @@ public:
 private:
   // what the action wants to do; used by the action resover after fire()
   ArActionDesired myDesired;
-  double myMaxSpeed;
-  double myStopDistance;
-  bool  killMovement;
+  double  myMaxSpeed;
+  double  myStopDistance;
+  bool    killMovement;
+  double  front_sector;
   ///
   double m_rel_distance ;
   double m_rel_offset   ;
@@ -58,6 +60,7 @@ inline ArActionFollowTarget::ArActionFollowTarget(double maxSpeed, double stopDi
 {
 myMaxSpeed = maxSpeed;
 myStopDistance = stopDistance;
+front_sector  = 30.0;//degrees
 killMovement = false;
 }
 
@@ -75,6 +78,7 @@ void ArActionFollowTarget::setRobot(ArRobot *robot)
 
 ArActionDesired *ArActionFollowTarget::fire(ArActionDesired currentDesired)
 {
+  mySector = (::fabs(rel_offset) < front_sector)? (FRONT):(SIDE);
 
   return &myDesired;
 }
