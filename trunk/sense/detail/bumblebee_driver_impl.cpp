@@ -80,7 +80,11 @@ public:
 
   void allocate_buffers_();
 
+  ///
   bool grab_();
+
+  bool left_color_proc_();
+  bool right_color_proc_();
 
   float   focal_;
   float   center_row_;
@@ -243,48 +247,69 @@ inline void bumblebee_driver_impl::allocate_buffers_()
 inline bool bumblebee_driver_impl::grab_()
 {
   bool b_ok = true;
-
   //GRAB IMAGE SET
   DigiclopsError de = digiclopsGrabImage( digiclops_context_ );
   b_ok = b_ok && ( handle_digiclops_error( "digiclopsGrabImage()", de ) );
 
-  ///RIGHT  --------------------------------------------
-  de = digiclopsExtractTriclopsInput( digiclops_context_, RIGHT_IMAGE, &color_input_ );
+  b_ok = b_ok && ( left_color_proc_() );
+  b_ok = b_ok && ( right_color_proc_() );
+
+  return b_ok;
+}
+//-------------------------------------------------------------------
+inline bool bumblebee_driver_impl::left_color_proc_()
+{
+  bool b_ok = true;
+
+  //GRAB IMAGE SET
+  DigiclopsError de = digiclopsExtractTriclopsInput( digiclops_context_, LEFT_IMAGE, &color_input_ );
+  b_ok = b_ok &&  ( handle_digiclops_error( "digiclopsExtractTriclopsInput()", de ) );
+
+  TriclopsError  te = triclopsRectifyColorImage( 
+    triclops_context_, TriCam_REFERENCE, &color_input_, &left_color_ );
+  b_ok = b_ok && (handle_triclops_error( "triclopsRectifyColorImage()", te ) ); 
+
+  if(!b_ok) return false;
+
+  memcpy( &left_image_sptr_[0]           ,  left_color_.red   ,  rows_*cols_);
+  memcpy( &left_image_sptr_[rows_*cols_]  , left_color_.green , rows_*cols_);
+  memcpy( &left_image_sptr_[rows_*cols_*2], left_color_.blue  , rows_*cols_);
+
+  return true;
+}
+//-------------------------------------------------------------------
+inline bool bumblebee_driver_impl::right_color_proc_()
+{
+  bool b_ok = true;
+
+  DigiclopsError de = digiclopsExtractTriclopsInput( digiclops_context_, RIGHT_IMAGE, &color_input_ );
   b_ok = b_ok && handle_digiclops_error( "digiclopsExtractTriclopsInput()", de );
 
   TriclopsError  te = triclopsRectifyColorImage( 
     triclops_context_, TriCam_REFERENCE, &color_input_, &right_color_ );
   b_ok = b_ok && ( handle_triclops_error( "triclopsRectifyColorImage()", te ) ); 
 
+  if(!b_ok) return false;
+
   memcpy( &right_image_sptr_[0]             , right_color_.red   , rows_*cols_);
   memcpy( &right_image_sptr_[rows_*cols_]   , right_color_.green , rows_*cols_);
   memcpy( &right_image_sptr_[rows_*cols_*2] , right_color_.blue  , rows_*cols_);
 
-  ///LEFT  --------------------------------------------
-  de = digiclopsExtractTriclopsInput( digiclops_context_, LEFT_IMAGE, &color_input_ );
-  b_ok = b_ok &&  ( handle_digiclops_error( "digiclopsExtractTriclopsInput()", de ) );
-
-  te = triclopsRectifyColorImage( 
-    triclops_context_, TriCam_REFERENCE, &color_input_, &left_color_ );
-  b_ok = b_ok && (handle_triclops_error( "triclopsRectifyColorImage()", te ) ); 
-
-  memcpy( &left_image_sptr_[0]           ,  left_color_.red   ,  rows_*cols_);
-  memcpy( &left_image_sptr_[rows_*cols_]  , left_color_.green , rows_*cols_);
-  memcpy( &left_image_sptr_[rows_*cols_*2], left_color_.blue  , rows_*cols_);
-
-  return b_ok;
+  return true;
 }
 //-------------------------------------------------------------------
 inline core::uint8_sarr bumblebee_driver_impl::get_rgb_right_() const 
 {
+  //(right_color_proc_());
   return right_image_sptr_;
 }
 //-------------------------------------------------------------------
 inline core::uint8_sarr bumblebee_driver_impl::get_rgb_left_() const
 {
+  //left_color_proc_();
   return left_image_sptr_;
 }
-
+//-------------------------------------------------------------------
 inline core::single_sarr bumblebee_driver_impl::get_depthmap_()
 {
   TriclopsError       te;
