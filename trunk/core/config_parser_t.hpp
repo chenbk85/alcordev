@@ -38,7 +38,7 @@ public:
 	void load(tags::ini_t, std::string);
 	///
 	template <typename T> 
-  T get(std::string fname, T defvalue);
+  T get(std::string fname, T defvalue = T());
 
 private:
 	std::string config_name;
@@ -47,15 +47,15 @@ private:
 //----------------------------------------------------------------------++
 //----------------------------------------------------------------------++
 //----------------------------------------------------------------------++
-	inline  void config_parser_t::load(tags::xml_t, std::string _xmlfile)
-	{
-		read_xml(_xmlfile, pt_);
-	}
+inline  void config_parser_t::load(tags::xml_t, std::string _xmlfile)
+{
+	read_xml(_xmlfile, pt_);
+}
 //----------------------------------------------------------------------++
-	inline  void config_parser_t::load(tags::ini_t, std::string _inifile)
-	{
-		read_ini(_inifile, pt_);
-	}
+inline  void config_parser_t::load(tags::ini_t, std::string _inifile)
+{
+	read_ini(_inifile, pt_);
+}
 ////----------------------------------------------------------------------++
 template <typename T> 
 inline T config_parser_t::get(std::string fname, T defvalue)
@@ -63,18 +63,19 @@ inline T config_parser_t::get(std::string fname, T defvalue)
 return pt_.get<T>(fname.c_str(), defvalue);
 };
 //////----------------------------------------------------------------------++
-//template <> 
-//inline double config_parser_t::get<double>(std::string fname, double defvalue)
-//{
-//return pt_.get<double>(fname.c_str(), defvalue);
+//#define SPECIALIZECONFIG(_PTYPE_)\
+//template <> \
+//inline _PTYPE_ config_parser_t::get<_PTYPE_>(std::string fname, _PTYPE_ defvalue)\
+//{\
+//return pt_.get<_PTYPE_>(fname.c_str(), defvalue);\
 //};
-//////----------------------------------------------------------------------++
-//template <> 
-//inline std::string config_parser_t::get<std::string>(std::string fname, std::string defvalue)
-//{
-//return pt_.get<std::string>(fname.c_str(), defvalue);
-//};
-
+//
+//SPECIALIZECONFIG(int)
+//SPECIALIZECONFIG(long)
+//SPECIALIZECONFIG(std::string)
+//SPECIALIZECONFIG(float)
+//SPECIALIZECONFIG(double)
+//SPECIALIZECONFIG(short)
 //---------------------------------------------------------------------------
 }}//namespace
 //----------------------------------------------------------------------++
