@@ -1,54 +1,82 @@
-//#include "config_parser_t.h"
+#ifndef config_parser_t_H_INCLUDED
+#define config_parser_t_H_INCLUDED
+//---------------------------------------------------------------------
+#include <string>
+#include <memory>
+//---------------------------------------------------------------------
+#include <boost/property_tree/ptree.hpp>
+#include <boost/property_tree/xml_parser.hpp>
+#include <boost/property_tree/ini_parser.hpp>
+//#pragma comment(lib, "config_parser.lib")
+//---------------------------------------------------------------------
+#define WIN32_LEAN_AND_MEAN		// Exclude rarely-used stuff from Windows headers
+//---------------------------------------------------------------------
+//#pragma warning (disable : 4018 4244 4819 4996 4099 936)
+//---------------------------------------------------------------------
+
+namespace all { namespace core{
+
+		namespace tags
+		{ 
+			struct xml_t{};
+			struct ini_t{};
+			
+			static const xml_t xml = xml_t();
+			static const ini_t ini = ini_t();
+		}
+	}}
+//---------------------------------------------------------------------
+namespace all { namespace core{
+//---------------------------------------------------------------------
+  //template <typename T>
+class config_parser_t
+{
+public:
+	///
+	void load(tags::xml_t, std::string);
+	///
+	void load(tags::ini_t, std::string);
+	///
+	template <typename T> 
+  T get(std::string fname, T defvalue);
+
+private:
+	std::string config_name;
+	boost::property_tree::ptree pt_;
+};
 //----------------------------------------------------------------------++
-#include "detail/config_parser_impl.hpp"
 //----------------------------------------------------------------------++
-namespace all{ 
 //----------------------------------------------------------------------++
-inline core::config_parser_t::config_parser_t()
-    {
-    impl.reset(new core::detail::config_parser_impl);
-    }
+	inline  void config_parser_t::load(tags::xml_t, std::string _xmlfile)
+	{
+		read_xml(_xmlfile, pt_);
+	}
 //----------------------------------------------------------------------++
-core::config_parser_t::~config_parser_t()
-    {
-    impl.release();
-    }
-//----------------------------------------------------------------------++
-void core::config_parser_t::load(core::detail::xml_t, const std::string& _xmlfile)
-    {
-    impl->load_xml_(_xmlfile);
-    }
-//----------------------------------------------------------------------++
-void core::config_parser_t::load(core::detail::ini_t, const std::string& _inifile)
-    {
-    impl->load_ini_(_inifile);
-    }
+	inline  void config_parser_t::load(tags::ini_t, std::string _inifile)
+	{
+		read_ini(_inifile, pt_);
+	}
 ////----------------------------------------------------------------------++
-//void core::xml_config_t::save(const std::string&)
-//    {
-//    }
+template <typename T> 
+inline T config_parser_t::get(std::string fname, T defvalue)
+{
+return pt_.get<T>(fname.c_str(), defvalue);
+};
+//////----------------------------------------------------------------------++
+//template <> 
+//inline double config_parser_t::get<double>(std::string fname, double defvalue)
+//{
+//return pt_.get<double>(fname.c_str(), defvalue);
+//};
+//////----------------------------------------------------------------------++
+//template <> 
+//inline std::string config_parser_t::get<std::string>(std::string fname, std::string defvalue)
+//{
+//return pt_.get<std::string>(fname.c_str(), defvalue);
+//};
+
+//---------------------------------------------------------------------------
+}}//namespace
 //----------------------------------------------------------------------++
-//template<typename T> 
-//inline T  all::core::config_parser_t::get<T>
-//	(const std::string& _tag, const T& _def) const
-//    {
-//    return impl->pt_.get<T>(_tag.c_str(),_def);
-//    }
-////----------------------------------------------------------------------++
-#define _DOGENSPECIALIZATION(_TYPETAG_) template<> \
-    _TYPETAG_ all::core::config_parser_t::get<_TYPETAG_>\
-    (const std::string& _tag  ,const _TYPETAG_& _def) const\
-    {\
-    return impl->pt_.get<_TYPETAG_>(_tag.c_str(), _def);\
-    }
-//----------------------------------------------------------------------++
-_DOGENSPECIALIZATION(short)
-_DOGENSPECIALIZATION(int)
-_DOGENSPECIALIZATION(long)
-_DOGENSPECIALIZATION(double)
-_DOGENSPECIALIZATION(float)
-_DOGENSPECIALIZATION(std::string)
-//----------------------------------------------------------------------++
-//----------------------------------------------------------------------++
-    }//namespace
-//----------------------------------------------------------------------++
+#endif //config_parser_t_H_INCLUDED
+

@@ -44,7 +44,7 @@ namespace tags
     ///
     ~MTi_driver_t();
     ///
-    bool open(const std::string& configfile);
+    bool open(std::string configfile);
 
     //
     void reset(tags::heading_reset_t);
