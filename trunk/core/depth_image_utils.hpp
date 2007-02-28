@@ -160,17 +160,20 @@ namespace all { namespace core {
       {
         //calc norm
         //weird per-channel pixel access....
+        p.z = depth.get(it_r, it_c, 2);
+        if(p.z > 0.1)
+        {
         p.x = depth.get(it_r, it_c, 0);
         p.y = depth.get(it_r, it_c, 1);
-        p.z = depth.get(it_r, it_c, 2);
 
         dist = euclidean_distance(p);
-
         acc(dist);
-        chist(dist);
-      }
-    }
+        chist(dist);        
+        }//if
+      }//inner for
+    }//outer for
 
+    //log istogramma ...
     if (1)
     {
       printf("Log:\n");
