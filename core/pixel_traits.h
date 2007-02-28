@@ -3,6 +3,8 @@
 //---------------------------------------------------------------------------+
 #include "alcor/core/core.h"
 //---------------------------------------------------------------------------+
+namespace all { namespace core {
+//---------------------------------------------------------------------------+
 struct iRGB{};
 struct pRGB{};
 struct iBGR{};
@@ -17,7 +19,7 @@ class pixel_traits<iRGB>
 {
 public:
   typedef all::core::uint8_t     value_type;
-  typedef value_type*            ptr;
+  typedef all::core::traits<value_type>::ptr ptr;
   typedef const ptr*             const_ptr;
 
     //: Is signed
@@ -27,22 +29,22 @@ public:
   BOOST_STATIC_CONSTANT(std::size_t, nchannels=3);
   BOOST_STATIC_CONSTANT(std::size_t, size=sizeof(value_type));
   ///
-  static size_t row_stride(size_t width)
-  {
-    return (width*nchannels);
-  }
+  //static size_t row_stride(size_t width)
+  //{
+  //  return (width*nchannels);
+  //}
 
-  ///
-  static size_t column_stride(size_t height)
-  {
-    return (nchannels);
-  }
+  /////
+  //static size_t column_stride(size_t height)
+  //{
+  //  return (nchannels);
+  //}
 
-  ///
-  static size_t channel_stride (size_t height, size_t width)
-  {
-    return (1);
-  }
+  /////
+  //static size_t channel_stride (size_t height, size_t width)
+  //{
+  //  return (1);
+  //}
 
 };
 //---------------------------------------------------------------------------+
@@ -61,22 +63,22 @@ public:
   BOOST_STATIC_CONSTANT(std::size_t, nchannels=3);
   BOOST_STATIC_CONSTANT(std::size_t, size=sizeof(value_type));
 
-  ///
-  static size_t row_stride(size_t width)
-  {
-    return (width);
-  }
+  /////
+  //static size_t row_stride(size_t width)
+  //{
+  //  return (width);
+  //}
 
-  ///
-  static size_t column_stride(size_t height)
-  {
-    return (1);
-  }
-  ///
-  static size_t channel_stride (size_t height, size_t width)
-  {
-    return (width*height);
-  }
+  /////
+  //static size_t column_stride(size_t height)
+  //{
+  //  return (1);
+  //}
+  /////
+  //static size_t channel_stride (size_t height, size_t width)
+  //{
+  //  return (width*height);
+  //}
 };
 //---------------------------------------------------------------------------+
 template< >
@@ -90,21 +92,21 @@ public:
     //: Is signed
   static bool is_signed()   {return false;}
   ///
-  static size_t row_stride(size_t width)
-  {
-    return (width);
-  }
+  //static size_t row_stride(size_t width)
+  //{
+  //  return (width);
+  //}
 
-  ///
-  static size_t column_stride(size_t height)
-  {
-    return (1);
-  }
-  ///
-  static size_t channel_stride (size_t height, size_t width)
-  {
-    return (width*height);
-  }
+  /////
+  //static size_t column_stride(size_t dummy)
+  //{
+  //  return (1);
+  //}
+  /////
+  //static size_t channel_stride (size_t height, size_t width)
+  //{
+  //  return (width*height);
+  //}
 
   BOOST_STATIC_CONSTANT(std::size_t, bytes_per_channel=1);
   BOOST_STATIC_CONSTANT(std::size_t, nchannels=1);
@@ -120,14 +122,15 @@ public:
   typedef const ptr*          const_ptr;
 
     //: Is signed
-  static bool         is_signed()           {return true;}
+  static bool  is_signed() {return true;}
  
   BOOST_STATIC_CONSTANT(std::size_t, bytes_per_channel=sizeof(value_type));
   BOOST_STATIC_CONSTANT(std::size_t, nchannels=3);
   BOOST_STATIC_CONSTANT(std::size_t, size=sizeof(value_type));
 };
+
 //---------------------------------------------------------------------------+
-template <typename PIXEL>
+template <typename PIXELTYPE>
 class image_of
 {
 public:
@@ -135,25 +138,45 @@ public:
   image_of()
   {
   }
-
   ///
   image_of(size_t height , size_t width)
   {
     //
     height_ = height; 
     width_ = width;
-    channels_ = pixel_traits<PIXEL>::nchannels;
+    channels_ = pixel_traits<PIXELTYPE>::nchannels;
 
     allocate_(height_, width_);
   }
 
   ///
-  image_of(size_t height , size_t width, typename pixel_traits<PIXEL>::ptr p)
+  image_of(   size_t height 
+            , size_t width 
+            , typename pixel_traits<PIXELTYPE>::ptr p
+            , bool shared_ = false)
   {
-    //
+    assign(height,width,p,shared);
+  }
+  
+  typedef boost::shared_array<typename pixel_traits<PIXELTYPE>::value_type>
+    buffer_type;
+  ///
+  void assign(size_t height 
+            , size_t width 
+            , typename pixel_traits<PIXELTYPE>::ptr p
+            , bool shared  = false)
+  {
+      //
     height_   = height; 
     width_    = width;
-    channels_ = PIXEL::nchannels;
+    channels_ = PIXELTYPE::nchannels;
+
+    if(shared)
+    {
+      data_.reset(p);
+    }
+    else
+    {
     //
     allocate_(height_, width_);
     //
@@ -161,33 +184,40 @@ public:
             data_.get(),//Dst
             p, //Src
             height_ * width_ * channels_
-            * pixel_traits<PIXEL>::bytes_per_channel //size
+            * pixel_traits<PIXELTYPE>::bytes_per_channel //size
             );
+    }
   }
-  
+
+  buffer_type get_buffer_sptr() const
+  {
+    return data_;
+  }
+
   size_t height()   const {return height_;}
   size_t width()    const {return width_;}
   size_t channels() const {return channels_;}
 
-  ///
-  typename pixel_traits<PIXEL>::value_type
-    get(size_t row, size_t col, size_t ch = 0) const
-  {
-       return data_[( row*pixel_traits<PIXEL>::row_stride() )
-      +( col*pixel_traits<PIXEL>::column_stride() )
-      +( ch*pixel_traits<PIXEL>::channel_stride() ) ];
-  }
 
+
+  /////
+  //typename pixel_traits<PIXELTYPE>::value_type
+  //  get(size_t row, size_t col, size_t ch = 0) const
+  //{
+  //     return data_[( row*pixel_traits<PIXEL>::row_stride() )
+  //    +( col*pixel_traits<PIXELTYPE>::column_stride() )
+  //    +( ch*pixel_traits<PIXELTYPE>::channel_stride() ) ];
+  //}
 
 private:
   ///
   void allocate_(size_t height, size_t width)
   {
-    data_.reset( new pixel_traits<PIXEL>::value_type[height*width*pixel_traits<PIXEL>::nchannels] );
+    data_.reset( new pixel_traits<PIXELTYPE>::value_type[height*width*pixel_traits<PIXELTYPE>::nchannels] );
   }
 
   ///
-  boost::shared_array<typename pixel_traits<PIXEL>::value_type> data_;
+  boost::shared_array<typename pixel_traits<PIXELTYPE>::value_type> data_;
   ///
   size_t height_; 
   size_t width_;
@@ -195,5 +225,8 @@ private:
 };
 
 //---------------------------------------------------------------------------+
-
+typedef image_of<DEPTH> depth_image_t;
+typedef boost::shared_ptr<depth_image_t> depth_image_ptr_t;
+//---------------------------------------------------------------------------+
+}}//all::core
 #endif//pixel_traits_H_INCLUDED

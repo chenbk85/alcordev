@@ -14,13 +14,13 @@ template <class T>
 class traits;
 //-------------------------------------------------------------------------++
 template< >
-class traits<all::core::uint8_t>
+class traits<core::uint8_t>
 {
 public:
-  typedef all::core::uint8_t value_type;
-  typedef value_type* ptr;
-  typedef const ptr const_ptr;
-  BOOST_STATIC_CONSTANT(int, size=sizeof(value_type));
+  typedef core::traits<core::uint8_t>::value_type value_type;
+  typedef core::traits<value_type>::ptr ptr;
+  typedef core::traits<value_type>::const_ptr const_ptr;
+  BOOST_STATIC_CONSTANT(size_t, size=core::traits<value_type>::size);
   BOOST_STATIC_CONSTANT(mxClassID, tag = mxUINT8_CLASS);
 };
 //-------------------------------------------------------------------------++
@@ -28,10 +28,10 @@ template< >
 class traits<all::core::int8_t>
 {
 public:
-  typedef all::core::int8_t value_type;
-  typedef value_type* ptr;
-  typedef const ptr const_ptr;
-  BOOST_STATIC_CONSTANT(int, size=sizeof(value_type));
+  typedef core::traits<core::int8_t>::value_type value_type;
+  typedef core::traits<value_type>::ptr ptr;
+  typedef core::traits<value_type>::const_ptr const_ptr;
+  BOOST_STATIC_CONSTANT(size_t, size=core::traits<value_type>::size);
   BOOST_STATIC_CONSTANT(mxClassID, tag = mxINT8_CLASS);
 };
 //-------------------------------------------------------------------------++
