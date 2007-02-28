@@ -7,6 +7,7 @@
 #include <boost/accumulators/accumulators.hpp>
 #include <boost/accumulators/statistics.hpp>
 #include <boost/range/iterator.hpp>
+#include <boost/timer.hpp>
 //---------------------------------------------------------------------------+
 #include <utility>
 //---------------------------------------------------------------------------+
@@ -125,10 +126,19 @@ namespace all { namespace core {
     return std::sqrt(squared_distance(p));
   }
 //---------------------------------------------------------------------------+
+  struct mystat
+  {
+  point3d16_t::value_type mean;
+  core::single_t          moment2;
+  };
+//---------------------------------------------------------------------------+
   ///
-  inline  point3d16_t::value_type 
+  inline  mystat 
     estimate_depth(core::depth_image_t& depth, pixelcoord_t center, size_t hsize)
   {
+    boost::timer timer;
+    timer.restart();
+
     roi_2d_t roi (center, hsize);
     roi.clip_to(depth.height(), depth.width());
 
@@ -140,7 +150,7 @@ namespace all { namespace core {
       acc;
 
     psqr_accumulator_t 
-      chist(tag::p_square_cumulative_distribution::num_cells = 100);
+      chist(tag::p_square_cumulative_distribution::num_cells = 50);
 
     core::depth_image_t::buffer_type data = depth.get_buffer_sptr();
 
@@ -151,8 +161,7 @@ namespace all { namespace core {
     typedef boost::iterator_range<std::vector<std::pair<float, float> >::iterator >  
       histogram_type;
 
-    histogram_type 
-      histogram = p_square_cumulative_distribution(chist);
+
 
     for(size_t it_r = roi.topleft.row;  it_r < roi.bottomright.row; it_r++ )
     {
@@ -173,10 +182,20 @@ namespace all { namespace core {
       }//inner for
     }//outer for
 
+    mystat oustat;
+    oustat.mean     =  mean(acc);
+    oustat.moment2  =  moment<2>(acc);
+
+    //forse va messo qua ...?
+    histogram_type 
+      histogram = p_square_cumulative_distribution(chist);
+    
+    double elapsed = timer.elapsed();
+
     //log istogramma ...
     if (1)
     {
-      printf("Log:\n");
+      printf("Elapsed: %f\n", elapsed);
       printf("Mean: %f\n", mean(acc));
       printf("moment<2>: %f\n", moment<2>(acc));
 
@@ -188,7 +207,7 @@ namespace all { namespace core {
       }
     }
 
-    return (mean(acc));
+    return oustat;
   }
 //---------------------------------------------------------------------------+
 
