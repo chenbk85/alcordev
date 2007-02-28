@@ -63,22 +63,6 @@ public:
   BOOST_STATIC_CONSTANT(std::size_t, nchannels=3);
   BOOST_STATIC_CONSTANT(std::size_t, size=sizeof(value_type));
 
-  /////
-  //static size_t row_stride(size_t width)
-  //{
-  //  return (width);
-  //}
-
-  /////
-  //static size_t column_stride(size_t height)
-  //{
-  //  return (1);
-  //}
-  /////
-  //static size_t channel_stride (size_t height, size_t width)
-  //{
-  //  return (width*height);
-  //}
 };
 //---------------------------------------------------------------------------+
 template< >
@@ -91,22 +75,6 @@ public:
 
     //: Is signed
   static bool is_signed()   {return false;}
-  ///
-  //static size_t row_stride(size_t width)
-  //{
-  //  return (width);
-  //}
-
-  /////
-  //static size_t column_stride(size_t dummy)
-  //{
-  //  return (1);
-  //}
-  /////
-  //static size_t channel_stride (size_t height, size_t width)
-  //{
-  //  return (width*height);
-  //}
 
   BOOST_STATIC_CONSTANT(std::size_t, bytes_per_channel=1);
   BOOST_STATIC_CONSTANT(std::size_t, nchannels=1);
@@ -167,9 +135,15 @@ public:
             , bool shared  = false)
   {
       //
-    height_   = height; 
-    width_    = width;
-    channels_ = PIXELTYPE::nchannels;
+    height_     = height; 
+    width_      = width;
+    channels_   = PIXELTYPE::nchannels;
+
+    //vale solo nel caso planare ... da considerare nei traits.
+    row_stride  = width_;
+    column_stride = 1;
+    channel_stride_ = height_*width_;
+
 
     if(shared)
     {
@@ -200,14 +174,14 @@ public:
 
 
 
-  /////
-  //typename pixel_traits<PIXELTYPE>::value_type
-  //  get(size_t row, size_t col, size_t ch = 0) const
-  //{
-  //     return data_[( row*pixel_traits<PIXEL>::row_stride() )
-  //    +( col*pixel_traits<PIXELTYPE>::column_stride() )
-  //    +( ch*pixel_traits<PIXELTYPE>::channel_stride() ) ];
-  //}
+  ///
+  typename pixel_traits<PIXELTYPE>::value_type
+    get(size_t row, size_t col, size_t ch = 0) const
+  {
+       return data_[( row * row_stride_ )
+      +( col* column_stride_  )
+      +( ch * channel_stride_ ) ];
+  }
 
 private:
   ///
@@ -222,6 +196,9 @@ private:
   size_t height_; 
   size_t width_;
   size_t channels_;
+  size_t row_stride_;
+  size_t column_stride_;
+  size_t channel_stride_;
 };
 
 //---------------------------------------------------------------------------+
