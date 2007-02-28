@@ -7,6 +7,7 @@
 #include <boost/accumulators/accumulators.hpp>
 #include <boost/accumulators/statistics.hpp>
 
+
 namespace all { namespace core {
 
   ///
@@ -25,8 +26,22 @@ namespace all { namespace core {
       :x(x_),y(y_),z(z_)
     {
     }
-
     T x,y,z;
+  };
+
+  ///
+  template<typename T, size_t DIM=3>
+  struct pointnd_t
+  {
+    typedef T value_type;
+    BOOST_STATIC_CONSTANT(size_t
+
+    pointnd_t(core::traits<T>::const_ptr ptr)
+    {
+      memcpy(&p[0], ptr, core::traits<T>::size*DIM);
+    }
+
+    T[DIM] p;
   };
 
   ///
@@ -73,9 +88,39 @@ namespace all { namespace core {
     pixelcoord_t bottomright;
   };
 
+  //template <typename T, size_t DIM>
+  //T squared_distance()
+  ///
+  inline point3d16_t::value_type squared_distance(const point3d16_t& a, const point3d16_t& b)
+  {
+
+    return (    ((a.x - b.x)*(a.x - b.x)) 
+              + ((a.y - b.y)*(a.y - b.y)) 
+              + ((a.z - b.z)*(a.z - b.z)) 
+              );
+  }
+  ///
+  inline point3d16_t::value_type euclidean_distance(const point3d16_t& a, const point3d16_t& b)
+  {
+    return std::sqrt(squared_distance(a,b));
+  }
+  ///
+  inline point3d16_t::value_type squared_distance_from_origin(const point3d16_t& p )
+  {
+
+    return (    ((p.x )*(p.x)) 
+              + ((p.y )*(p.y)) 
+              + ((p.z )*(p.z)) 
+              );
+  }
+  ///
+  inline point3d16_t::value_type euclidean_distance_from_origin(const point3d16_t& p)
+  {
+    return std::sqrt(squared_distance_from_origin(p));
+  }
 
   ///
- inline  point3d16_t 
+  inline  point3d16_t::value_type 
     estimate_depth(core::depth_image_t& depth, pixelcoord_t center, size_t hsize)
   {
     roi_2d_t roi (center, hsize);
@@ -83,21 +128,28 @@ namespace all { namespace core {
 
     using namespace boost::accumulators;
 
-    accumulator_set<double, stats<tag::mean> > acc;
+    accumulator_set<point3d16_t::value_type, stats<tag::mean, tag::moment<2> > > acc;
 
     core::depth_image_t::buffer_type data = depth.get_buffer_sptr();
+
+    point3d16_t::value_type dist;
+    point3d16_t p;
 
     for(size_t it_r = roi.topleft.row;  it_r < roi.bottomright.row; it_r++ )
     {
       for(size_t it_c = roi.topleft.col; it_c < roi.bottomright.col; it_c++)
       {
         //calc norm
-        //double norm = squared_norm<float,3>(data[]);
-        //acc(data[])
+        p.x = depth.get(it_r, it_c, 0);
+        p.y = depth.get(it_r, it_c, 1);
+        p.z = depth.get(it_r, it_c, 2);
+
+        dist = squared_distance_from_origin(p);
+        acc(dist);
       }
     }
 
-    return point3d16_t();
+    return (mean(acc));
   }
 
 
