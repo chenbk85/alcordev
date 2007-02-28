@@ -143,6 +143,7 @@ namespace all { namespace core {
     roi.clip_to(depth.height(), depth.width());
 
     using namespace boost::accumulators;
+    
     typedef accumulator_set<point3d16_t::value_type, stats<tag::p_square_cumulative_distribution> > 
       psqr_accumulator_t;
 
