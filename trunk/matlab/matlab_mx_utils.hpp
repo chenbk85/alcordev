@@ -30,38 +30,38 @@ static mxArray* create_from_planar(typename matlab::traits<T>::const_ptr _src
       static_cast<matlab::traits<T>::ptr>(mxGetData(mxresult));
 //fill using start_pr ...
     //
-  int kb = 0;
+  size_t kb = 0;
   //
-  int row_inc = static_cast<int>(_width);
+  size_t row_inc = _width;
   //
-  int planar_inc = (int)_height*(int)_width;
-
-  int column_inc=0;	
+  size_t planar_inc = _height*_width;
+  //
+  size_t column_inc=0;	
 
 	///channel's stride ..
     //TODO: remove it from here?
-	std::vector<int> _channel_stride;
-	for (int i = _channels-1 ; i >= 0; --i)
+	std::vector<size_t> _channel_stride;
+	for (size_t i = _channels-1 ; i >= 0; --i)
 		{	
 		_channel_stride.push_back((i)*planar_inc);
 		}
 
     //total number of pixels (without taking care of the pixel's depth..)
-    int idx = planar_inc-1;
+    size_t idx = planar_inc-1;
   //printf("buffer2array loop IN\n");
 	//Loop inversion!
-	for(int coli =_width ; coli; --coli)
+	for(size_t coli =_width ; coli; --coli)
         {	
           //printf("col n: %d\n", coli);
 		column_inc = (coli-1);//*_channels; 
-		for(int rowi=_height; rowi; --rowi, --idx)
+		for(size_t rowi=_height; rowi; --rowi, --idx)
 			{
         //printf("row n: %d\n", rowi);
 			//
 			kb= (row_inc*(rowi-1)) + column_inc;
             //TODO: check this code ...          
       //printf("loop n: %d\n", idx);
-			for(int ich = _channels ; ich; --ich)
+			for(size_t ich = _channels ; ich; --ich)
 				{
 				start_pr[idx + _channel_stride[ich-1]] = _src[kb+_channel_stride[ich-1]];
 				}
@@ -71,29 +71,6 @@ static mxArray* create_from_planar(typename matlab::traits<T>::const_ptr _src
 	return mxresult;
 }
 
-//static mxArray* create_from_planar(typename T::const_pointer _src
-//        ,matlab::detail::column_major_t//src data ordering
-//				,int _height
-//				,int _width
-//				,int _channels=3)
-//{
-//   ///
-//int dims[] = {_height, _width, _channels};
-/////
-//int ndimensions = ( (_channels > 2 ) ? (3) : (2) );
-/////
-//mxArray* mxresult = mxCreateNumericArray(ndimensions, dims, T::tag, mxREAL);
-/////
-//T::pointer start_pr = static_cast<T::pointer>(mxGetData(mxresult));
-//
-/////
-//std::memcpy(start_ptr,_src,( _height*_width*T::size*_channels));
-//
-/////
-//return mxresult;
-//
-//
-//}
 //---------------------------------------------------------------------++
 ///
 static mxArray* create_from_interleaved(typename matlab::traits<T>::const_ptr _src

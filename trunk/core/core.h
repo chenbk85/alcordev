@@ -193,7 +193,7 @@ template< >
 class traits<uint8_t>
 {
 public:
-  typedef uint8_t self_t;
+  typedef uint8_t value_type;
   typedef uint8_t* ptr;
   typedef const uint8_t* const_ptr;
     //: Is signed
@@ -206,7 +206,7 @@ template< >
 class traits<int8_t>
 {
 public:
-  typedef int8_t self_t;
+  typedef int8_t value_type;
   typedef int8_t* ptr;
   typedef const int8_t* const_ptr;
     //: Is signed
@@ -219,7 +219,7 @@ template< >
 class traits<int32_t>
 {
 public:
-  typedef int32_t self_t;
+  typedef int32_t value_type;
   typedef int32_t* ptr;
   typedef const int32_t* const_ptr;
     //: Is signed
@@ -232,7 +232,7 @@ template< >
 class traits<single_t>
 {
 public:
-  typedef single_t self_t;
+  typedef single_t value_type;
   typedef single_t* ptr;
   typedef const single_t* const_ptr;
   static bool is_signed() {return true;}
@@ -244,7 +244,7 @@ template< >
 class traits<double_t>
 {
 public:
-  typedef double_t  self_t;
+  typedef double_t  value_type;
   typedef double_t* ptr;
   typedef const double_t* const_ptr;
   static bool is_signed() {return true;}
