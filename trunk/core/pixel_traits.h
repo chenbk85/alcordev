@@ -2,6 +2,7 @@
 #define pixel_traits_H_INCLUDED
 //---------------------------------------------------------------------------+
 #include "alcor/core/core.h"
+#include <boost/shared_ptr.hpp>
 //---------------------------------------------------------------------------+
 namespace all { namespace core {
 //---------------------------------------------------------------------------+
@@ -128,6 +129,7 @@ public:
   
   typedef boost::shared_array<typename pixel_traits<PIXELTYPE>::value_type>
     buffer_type;
+
   ///
   void assign(size_t height 
             , size_t width 
@@ -137,13 +139,12 @@ public:
       //
     height_     = height; 
     width_      = width;
-    channels_   = PIXELTYPE::nchannels;
+    channels_   = pixel_traits<PIXELTYPE>::nchannels;
 
     //vale solo nel caso planare ... da considerare nei traits.
-    row_stride  = width_;
-    column_stride = 1;
+    row_stride_  = width_;
+    column_stride_ = 1;
     channel_stride_ = height_*width_;
-
 
     if(shared)
     {

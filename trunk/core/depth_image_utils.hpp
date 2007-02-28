@@ -1,13 +1,15 @@
 #ifndef depth_image_utils_HPP_INCLUDED
 #define depth_image_utils_HPP_INCLUDED
-
+//---------------------------------------------------------------------------+
 #include "alcor/core/core.h"
 #include "alcor/core/pixel_traits.h"
-
+//---------------------------------------------------------------------------+
 #include <boost/accumulators/accumulators.hpp>
 #include <boost/accumulators/statistics.hpp>
-
-
+#include <boost/range/iterator.hpp>
+//---------------------------------------------------------------------------+
+#include <utility>
+//---------------------------------------------------------------------------+
 namespace all { namespace core {
 
   ///
@@ -15,7 +17,7 @@ namespace all { namespace core {
   {
     size_t row,col;
   };
-
+//---------------------------------------------------------------------------+
   ///
   template<typename T/*, size_t DIM*/>
   struct point3d_t
@@ -28,22 +30,23 @@ namespace all { namespace core {
     }
     T x,y,z;
   };
-
+//---------------------------------------------------------------------------+
   ///
   template<typename T, size_t DIM=3>
   struct pointnd_t
   {
     typedef T value_type;
-    BOOST_STATIC_CONSTANT(size_t
 
-    pointnd_t(core::traits<T>::const_ptr ptr)
+    BOOST_STATIC_CONSTANT(size_t, dim = DIM);
+
+    pointnd_t(typename core::traits<T>::const_ptr ptr)
     {
       memcpy(&p[0], ptr, core::traits<T>::size*DIM);
     }
 
-    T[DIM] p;
+    T p[DIM];
   };
-
+//---------------------------------------------------------------------------+
   ///
   typedef struct point3d_t<float> 
           point3d16_t;
@@ -51,7 +54,7 @@ namespace all { namespace core {
   typedef struct point3d_t<double> 
           point3d32_t;
 
-
+//---------------------------------------------------------------------------+
   ///Generates concrete intervals from a ROI (center, halfsize).
   struct roi_2d_t
   {
@@ -87,7 +90,7 @@ namespace all { namespace core {
     pixelcoord_t topleft;
     pixelcoord_t bottomright;
   };
-
+//---------------------------------------------------------------------------+
   //template <typename T, size_t DIM>
   //T squared_distance()
   ///
@@ -99,13 +102,15 @@ namespace all { namespace core {
               + ((a.z - b.z)*(a.z - b.z)) 
               );
   }
+//---------------------------------------------------------------------------+
   ///
   inline point3d16_t::value_type euclidean_distance(const point3d16_t& a, const point3d16_t& b)
   {
     return std::sqrt(squared_distance(a,b));
   }
+//---------------------------------------------------------------------------+
   ///
-  inline point3d16_t::value_type squared_distance_from_origin(const point3d16_t& p )
+  inline point3d16_t::value_type squared_distance(const point3d16_t& p )
   {
 
     return (    ((p.x )*(p.x)) 
@@ -113,12 +118,13 @@ namespace all { namespace core {
               + ((p.z )*(p.z)) 
               );
   }
+//---------------------------------------------------------------------------+
   ///
-  inline point3d16_t::value_type euclidean_distance_from_origin(const point3d16_t& p)
+  inline point3d16_t::value_type euclidean_distance(const point3d16_t& p)
   {
-    return std::sqrt(squared_distance_from_origin(p));
+    return std::sqrt(squared_distance(p));
   }
-
+//---------------------------------------------------------------------------+
   ///
   inline  point3d16_t::value_type 
     estimate_depth(core::depth_image_t& depth, pixelcoord_t center, size_t hsize)
@@ -127,33 +133,63 @@ namespace all { namespace core {
     roi.clip_to(depth.height(), depth.width());
 
     using namespace boost::accumulators;
+    typedef accumulator_set<point3d16_t::value_type, stats<tag::p_square_cumulative_distribution> > 
+      psqr_accumulator_t;
 
-    accumulator_set<point3d16_t::value_type, stats<tag::mean, tag::moment<2> > > acc;
+    accumulator_set<point3d16_t::value_type, stats<tag::mean(immediate), tag::moment<2> > > 
+      acc;
+
+    psqr_accumulator_t 
+      chist(tag::p_square_cumulative_distribution::num_cells = 100);
 
     core::depth_image_t::buffer_type data = depth.get_buffer_sptr();
 
     point3d16_t::value_type dist;
     point3d16_t p;
 
+    //typedef psqr_accumulator_t::histogram_type histogram_type;
+    typedef boost::iterator_range<std::vector<std::pair<float, float> >::iterator >  
+      histogram_type;
+
+    histogram_type 
+      histogram = p_square_cumulative_distribution(chist);
+
     for(size_t it_r = roi.topleft.row;  it_r < roi.bottomright.row; it_r++ )
     {
       for(size_t it_c = roi.topleft.col; it_c < roi.bottomright.col; it_c++)
       {
         //calc norm
+        //weird per-channel pixel access....
         p.x = depth.get(it_r, it_c, 0);
         p.y = depth.get(it_r, it_c, 1);
         p.z = depth.get(it_r, it_c, 2);
 
-        dist = squared_distance_from_origin(p);
+        dist = euclidean_distance(p);
+
         acc(dist);
+        chist(dist);
+      }
+    }
+
+    if (1)
+    {
+      printf("Log:\n");
+      printf("Mean: %f\n", mean(acc));
+      printf("moment<2>: %f\n", moment<2>(acc));
+
+      for (std::size_t i = 0; i < histogram.size(); ++i)
+      {   
+      // problem with small results: epsilon is relative (in percent), not absolute!
+      if ( histogram[i].second > 0.001 )  //non capito ...  
+        printf("%d --> first: %f second: %f\n", histogram[i].first, histogram[i].second);
       }
     }
 
     return (mean(acc));
   }
-
+//---------------------------------------------------------------------------+
 
 }}
 
-
+//---------------------------------------------------------------------------+
 #endif //depth_image_utils_HPP_INCLUDED
