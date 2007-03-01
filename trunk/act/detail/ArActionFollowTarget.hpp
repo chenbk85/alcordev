@@ -6,7 +6,7 @@ class ArActionFollowTarget: public ArAction
 {
 public:
   // constructor, sets myMaxSpeed and myStopDistance
-  ArActionFollowTarget();
+  ArActionFollowTarget(double speed_limit);
 
   // destructor. does not need to do anything
   ~ArActionFollowTarget(void) {};
@@ -47,14 +47,14 @@ private:
   double  front_sector;//??
 
   ///
-  double m_rel_distance ;
+  volatile double m_rel_distance ;
   ///
-  double m_rel_offset   ;
+  volatile double m_rel_offset   ;
   
   ///
-  double  calcvclose(double dist);
+  double  calcvclose();
   ///
-  double  calcvfar  (double dist);
+  double  calcvfar  ();
 
   ///
   float dnear;  
@@ -81,25 +81,31 @@ private:
 //###################################################################
 //###################################################################
 //
-inline ArActionFollowTarget::ArActionFollowTarget()
+inline ArActionFollowTarget::ArActionFollowTarget(double speed_limit)
 {
   //myMaxSpeed = maxSpeed;
   //myStopDistance = stopDistance;
   front_sector  = 30.0;//degrees
 
+  ///
   kill_Movement = false;
+
+  ///
+  m_speed_limit = speed_limit;
+
+
 //some defaul
   ///metri
   dnear   = 1.0;  
   ///metri
   dclose  = 2.0;
   ///
-  dfar    = 2.8;
+  dfar    = 3.0;
 
   ///
-  vclose  = ;
+  vclose  = 100;
   ///
-  vfar    = ;
+  vfar    = 200;
 
 }
 
@@ -142,18 +148,24 @@ ArActionDesired *ArActionFollowTarget::fire(ArActionDesired currentDesired)
     tempvel = 0;
   }
 
+  tempvel = (tempvel > m_speed_limit)? (tempvel) : (speed_limit) ;
+
   return &myDesired;
 }
 
+
   ///
-double  ArActionFollowTarget::calcvclose(double dist)
+inline double  ArActionFollowTarget::calcvclose()
 {
   double numer = (m_rel_distance - dnear)*(m_rel_distance - dnear);
   double denom = (dclose-dnear)*(dclose-dnear);
   return (vclose * (numer/denom) );
 }
   ///
-double  ArActionFollowTarget::calcvfar  (double dist);
+inline double  ArActionFollowTarget::calcvfar  ();
 {
-
+  double numer = (m_rel_distance-dclose)*(m_rel_distance-dclose);
+  double denom = (dfar-dclose)*(dfar-dclose);
+  double fraction = - numer/denom;
+  return ( ((vclose-vfar)* fraction ) + vclose );
 }
