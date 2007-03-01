@@ -153,10 +153,10 @@ namespace all { namespace core {
                                                     > > acc;
 
     accumulator_set<float, stats<tag::density> > 
-      hist(tag::density::cache_size = 10,tag::density::num_bins = 50);
+      hist(tag::density::cache_size = 5,tag::density::num_bins = 10);
 
-    psqr_accumulator_t 
-      chist(tag::p_square_cumulative_distribution::num_cells = 50);
+    //psqr_accumulator_t 
+    //  chist(tag::p_square_cumulative_distribution::num_cells = 10);
 
     core::depth_image_t::buffer_type data = 
       depth.get_buffer_sptr();
@@ -183,7 +183,7 @@ namespace all { namespace core {
 
         dist = euclidean_distance(point);
         acc(dist);
-        chist(dist);  
+        //chist(dist);  
         hist(dist);
         }//if
 
@@ -195,8 +195,8 @@ namespace all { namespace core {
     //outstat.stddev  =    extract_result<tag::error_of<tag::mean> >(acc);
     outstat.stddev  =    error_of<tag::immediate_mean>(acc);
 
-    histogram_type 
-      chistogram = p_square_cumulative_distribution(chist);
+    //histogram_type 
+    //  chistogram = p_square_cumulative_distribution(chist);
 
     histogram_type 
       histogram = density(hist); 
@@ -208,16 +208,16 @@ namespace all { namespace core {
     {
       printf("Elapsed:  %f\n", elapsed);
       printf("Mean:     %f\n", mean(acc));
-      printf("StdDev    %f\n", error_of<tag::immediate_mean>(acc));
+      printf("StdDev    %f\n\n", error_of<tag::immediate_mean>(acc));
 
       for (std::size_t i = 0; i < histogram.size(); ++i)
       {   
       // problem with small results: epsilon is relative (in percent), not absolute!
-      if ( histogram[i].second > 0.001 )  //non capito ...  
-        printf("%d --> first: %f second: %f\n", i, histogram[i].first, histogram[i].second);
+      if ( histogram[i].second > 0.0001 )  //non capito ...  
+        printf("%f %f\n", histogram[i].first, histogram[i].second);
       }
     }
-
+    printf("\n");
     return outstat;
   }
 //---------------------------------------------------------------------------+
