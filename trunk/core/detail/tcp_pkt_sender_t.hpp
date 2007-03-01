@@ -22,7 +22,7 @@ public:
 
 	void send_packet_blk(net_packet_ptr_t);
 
-	void handle_write(const boost::system::error_code&, std::size_t);
+	void handle_write(const boost::system::error_code&, std::size_t, std::string*);
 
 private:
 	typedef boost::function <void (const boost::system::error_code&)> error_callback_t;
