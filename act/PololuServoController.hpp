@@ -1,11 +1,12 @@
 #ifndef PololuServoControllerHPP
 #define PololuServoControllerHPP
 
-#include <wx/ctb/serport.h>
-#include <wx/ctb/timer.h>
+#include <alcor.extern/wxctb/serport.h>
+//#include <alcor.extern/wxctb/timer.h>
 
 #include <alcor/core/iniWrapper.h>
 #include <alcor/core/core.h>
+#include <alcor/math/angle.h>
 
 using namespace std;
 
@@ -19,8 +20,8 @@ namespace all {
 			
 			static const int SZ_POLBUF = 6;
 
-			static const byte kSync			= 0x80;
-			static const byte kDeviceId     = 0x01;
+			static const core::uint8_t kSync			= 0x80;
+			static const core::uint8_t kDeviceId     = 0x01;
 
 			//default servo configuration
 			static const int defMinPose = 500;
@@ -42,7 +43,7 @@ namespace all {
 		
 		//c'tor
 		public:
-			PololuServoController(char* iniFile="config/polServoConf.ini");
+			PololuServoController(char* iniFile="config/pololu_ctrl.ini");
 			~PololuServoController();
 
 		//connection
@@ -74,13 +75,15 @@ namespace all {
 			//get servo speed in degrees per second
 			double getSpeed(int);
 
+			int getNServo() {return mNumServo;}
+
 		//service function
 		protected:
 			//send a command to the controller (number of byte to send)
 			void sendCommand(int);
 
 			//implements the corrispondent protocol's command
-			void setAbsPose(byte, byte, byte);
+			void setAbsPose(core::uint8_t, core::uint8_t, core::uint8_t);
 
 			//initialize the servos struct from ini file
 			void initServos();
@@ -98,7 +101,7 @@ namespace all {
 		//typedef
 		protected:
 			typedef struct {
-				byte id;
+				core::uint8_t id;
 				int minPos;
 				int maxPos;
 				int defaultPos;

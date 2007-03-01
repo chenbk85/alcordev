@@ -81,7 +81,7 @@ namespace all {
 		bool PololuServoController::connect() {
 			if (!mConnected) {
 				cout << "Trying connecting to the controller..." << endl;
-				if (mPol.Open(mPolPort)) {
+				if (mPol.Open(mPolPort) != -1) {
 					
 					//serial port settings 
 					mPol.SetBaudRate(wxBAUD_19200);
@@ -94,7 +94,7 @@ namespace all {
 					return true;
 				}
 				else {
-					cout << "Cannot connecting to the specified serial port" << endl;
+					cout << "Cannot connect to the specified serial port" << endl;
 					return false;
 				}
 			} 
@@ -160,7 +160,7 @@ namespace all {
 		}
 
 
-		void PololuServoController::setAbsPose(byte servoId, byte data1, byte data2) {
+		void PololuServoController::setAbsPose(core::uint8_t servoId, core::uint8_t data1, core::uint8_t data2) {
 			mCmdBuffer[2]=0x04;      //absolute position command code
 			mCmdBuffer[3]=servoId;
 			mCmdBuffer[4]=data1;
