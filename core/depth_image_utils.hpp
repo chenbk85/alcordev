@@ -153,7 +153,7 @@ namespace all { namespace core {
                                                     > > acc;
 
     accumulator_set<float, stats<tag::density> > 
-      hist(tag::density::cache_size = 5,tag::density::num_bins = 10);
+      hist(tag::density::cache_size = 20,tag::density::num_bins = 20);
 
     //psqr_accumulator_t 
     //  chist(tag::p_square_cumulative_distribution::num_cells = 10);
