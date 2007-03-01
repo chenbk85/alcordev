@@ -9,52 +9,66 @@
 #include <boost/range/iterator.hpp>
 #include <boost/timer.hpp>
 //---------------------------------------------------------------------------+
+#include <boost/numeric/ublas/vector.hpp>
+//---------------------------------------------------------------------------+
 #include <utility>
 //---------------------------------------------------------------------------+
+//namespace boost::numeric::ublas = ublas
+//---------------------------------------------------------------------------+
 namespace all { namespace core {
-
-  ///
+//---------------------------------------------------------------------------+
+  ///Pixel Coordinates
   struct pixelcoord_t
   {
     size_t row,col;
   };
 //---------------------------------------------------------------------------+
   ///
-  template<typename T/*, size_t DIM*/>
-  struct point3d_t
-  {
-    typedef T value_type;
-
-    point3d_t(T x_ = T(), T y_ = T(), T z_= T())
-      :x(x_),y(y_),z(z_)
-    {
-    }
-    T x,y,z;
-  };
-//---------------------------------------------------------------------------+
-  ///
   template<typename T, size_t DIM=3>
   struct pointnd_t
   {
+    ///
     typedef T value_type;
+    ///
+    typedef T& reference;
+    typedef const T& const_reference;
 
+    ///
     BOOST_STATIC_CONSTANT(size_t, dim = DIM);
-
-    pointnd_t(typename core::traits<T>::const_ptr ptr)
+    ///
+    pointnd_t()
     {
-      memcpy(&p[0], ptr, core::traits<T>::size*DIM);
+      vdata = boost::numeric::ublas::zero_vector<T>(DIM); 
+    }
+    ///
+    pointnd_t(const pointnd_t<T,DIM>& point)
+    {
+      vdata=point.vdata;
     }
 
-    T p[DIM];
-  };
-//---------------------------------------------------------------------------+
-  ///
-  typedef struct point3d_t<float> 
-          point3d16_t;
-  ///
-  typedef struct point3d_t<double> 
-          point3d32_t;
+    inline reference       operator()(const std::size_t& index)       { return vdata[index]; }
 
+    inline const_reference operator()(const std::size_t& index) const { return vdata[index]; }
+
+    inline void assign(const_reference val, const std::size_t& index)
+          {if (index < DIM ) vdata[index]= val; }
+
+    ///
+    inline pointnd_t<T,DIM>& operator=(const pointnd_t<T,DIM>& point)
+    {
+      vdata = point.vdata;
+      return *this;
+    }
+
+   vdata;
+  };
+//////---------------------------------------------------------------------------+
+  ///
+  typedef struct pointnd_t<float,3> 
+          point3df_t;
+
+  typedef struct pointnd_t<float,3> 
+          point3df_t;
 //---------------------------------------------------------------------------+
   ///Generates concrete intervals from a ROI (center, halfsize).
   struct roi_2d_t
@@ -67,6 +81,11 @@ namespace all { namespace core {
       bottomright.row = center.row + half_size;
       bottomright.col = center.col + half_size;
     }
+
+    size_t minrow() const {return topleft.row;}
+    size_t maxrow() const {return bottomright.row;}
+    size_t mincol() const {return topleft.col;}
+    size_t maxcol() const {return bottomright.col;}
 
     void clip_to(size_t nrows, size_t ncols)
     {
@@ -90,46 +109,27 @@ namespace all { namespace core {
 
     pixelcoord_t topleft;
     pixelcoord_t bottomright;
+
   };
 //---------------------------------------------------------------------------+
-  //template <typename T, size_t DIM>
-  //T squared_distance()
   ///
-  inline point3d16_t::value_type squared_distance(const point3d16_t& a, const point3d16_t& b)
+  inline point3df_t::value_type euclidean_distance(const point3df_t& point)
   {
-
-    return (    ((a.x - b.x)*(a.x - b.x)) 
-              + ((a.y - b.y)*(a.y - b.y)) 
-              + ((a.z - b.z)*(a.z - b.z)) 
-              );
+    return(boost::numeric::ublas::norm_2(point.vdata));
   }
 //---------------------------------------------------------------------------+
   ///
-  inline point3d16_t::value_type euclidean_distance(const point3d16_t& a, const point3d16_t& b)
+  inline point3df_t::value_type squared_distance(const point3df_t& point)
   {
-    return std::sqrt(squared_distance(a,b));
+    return(boost::numeric::ublas::norm_1(point.vdata));
   }
 //---------------------------------------------------------------------------+
-  ///
-  inline point3d16_t::value_type squared_distance(const point3d16_t& p )
-  {
-
-    return (    ((p.x )*(p.x)) 
-              + ((p.y )*(p.y)) 
-              + ((p.z )*(p.z)) 
-              );
-  }
 //---------------------------------------------------------------------------+
-  ///
-  inline point3d16_t::value_type euclidean_distance(const point3d16_t& p)
-  {
-    return std::sqrt(squared_distance(p));
-  }
 //---------------------------------------------------------------------------+
   struct mystat
   {
-  point3d16_t::value_type mean;
-  core::single_t          moment2;
+  core::single_t          mean;
+  core::single_t          stddev;
   };
 //---------------------------------------------------------------------------+
   ///
@@ -144,71 +144,80 @@ namespace all { namespace core {
 
     using namespace boost::accumulators;
     
-    typedef accumulator_set<point3d16_t::value_type, stats<tag::p_square_cumulative_distribution> > 
+    typedef accumulator_set<point3df_t::value_type, stats<tag::p_square_cumulative_distribution> > 
       psqr_accumulator_t;
 
-    accumulator_set<point3d16_t::value_type, stats<tag::mean(immediate), tag::moment<2> > > 
-      acc;
+    accumulator_set <point3df_t::value_type, stats < tag::mean(immediate)
+                                                      , tag::error_of<tag::mean> 
+                                                    > > acc;
+
+    accumulator_set<float, stats<tag::density> > 
+      hist(tag::density::cache_size = 10,tag::density::num_bins = 50);
 
     psqr_accumulator_t 
       chist(tag::p_square_cumulative_distribution::num_cells = 50);
 
-    core::depth_image_t::buffer_type data = depth.get_buffer_sptr();
+    core::depth_image_t::buffer_type data = 
+      depth.get_buffer_sptr();
 
-    point3d16_t::value_type dist;
-    point3d16_t p;
+    point3df_t::value_type  dist;
+    point3df_t              point;
 
-    //typedef psqr_accumulator_t::histogram_type histogram_type;
-    typedef boost::iterator_range<std::vector<std::pair<float, float> >::iterator >  
+    typedef boost::iterator_range<std::vector<std::pair<single_t, single_t> >::iterator >  
       histogram_type;
 
-
-
-    for(size_t it_r = roi.topleft.row;  it_r < roi.bottomright.row; it_r++ )
+    for (size_t it_r = roi.minrow()  ;  it_r < roi.maxrow(); it_r++)
     {
-      for(size_t it_c = roi.topleft.col; it_c < roi.bottomright.col; it_c++)
+      for (size_t it_c = roi.mincol(); it_c < roi.maxcol() ; it_c++)
       {
         //calc norm
         //weird per-channel pixel access....
-        p.z = depth.get(it_r, it_c, 2);
-        if(p.z > 0.1)
-        {
-        p.x = depth.get(it_r, it_c, 0);
-        p.y = depth.get(it_r, it_c, 1);
+        //prima vedo se la zeta è valida....
+        point.assign( depth.get(it_r, it_c, 2),  2);
 
-        dist = euclidean_distance(p);
+        if(point(2) > 0.1 && point(2) < 10.0)
+        {
+        point.assign( depth.get(it_r, it_c, 0), 0);
+        point.assign( depth.get(it_r, it_c, 1), 1);
+
+        dist = euclidean_distance(point);
         acc(dist);
-        chist(dist);        
+        chist(dist);  
+        hist(dist);
         }//if
+
       }//inner for
     }//outer for
 
-    mystat oustat;
-    oustat.mean     =  mean(acc);
-    oustat.moment2  =  moment<2>(acc);
+    mystat outstat;
+    outstat.mean     =   mean(acc);
+    //outstat.stddev  =    extract_result<tag::error_of<tag::mean> >(acc);
+    outstat.stddev  =    error_of<tag::mean>(acc);
 
-    //forse va messo qua ...?
     histogram_type 
-      histogram = p_square_cumulative_distribution(chist);
-    
+      chistogram = p_square_cumulative_distribution(chist);
+
+    histogram_type 
+      histogram = density(hist); 
+
     double elapsed = timer.elapsed();
 
-    //log istogramma ...
+    //log istogramma cumulativo ...
     if (1)
     {
-      printf("Elapsed: %f\n", elapsed);
-      printf("Mean: %f\n", mean(acc));
-      printf("moment<2>: %f\n", moment<2>(acc));
+      printf("Elapsed:  %f\n", elapsed);
+      printf("Mean:     %f\n", mean(acc));
+      printf("StdDev    %f\n", error_of<tag::mean>(acc));
 
       for (std::size_t i = 0; i < histogram.size(); ++i)
       {   
       // problem with small results: epsilon is relative (in percent), not absolute!
       if ( histogram[i].second > 0.001 )  //non capito ...  
-        printf("%d --> first: %f second: %f\n", histogram[i].first, histogram[i].second);
+        printf("%d --> first: %f second: %f\n", i, histogram[i].first, histogram[i].second);
       }
     }
 
-    return oustat;
+    return outstat;
   }
 //---------------------------------------------------------------------------+
 
