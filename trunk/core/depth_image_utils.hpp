@@ -60,7 +60,7 @@ namespace all { namespace core {
       return *this;
     }
 
-   vdata;
+    boost::numeric::ublas::vector<T> vdata;
   };
 //////---------------------------------------------------------------------------+
   ///
@@ -147,8 +147,9 @@ namespace all { namespace core {
     typedef accumulator_set<point3df_t::value_type, stats<tag::p_square_cumulative_distribution> > 
       psqr_accumulator_t;
 
-    accumulator_set <point3df_t::value_type, stats < tag::mean(immediate)
-                                                      , tag::error_of<tag::mean> 
+    accumulator_set <point3df_t::value_type, stats < 
+                                tag::mean(immediate)
+                                , tag::error_of<tag::immediate_mean> 
                                                     > > acc;
 
     accumulator_set<float, stats<tag::density> > 
@@ -192,7 +193,7 @@ namespace all { namespace core {
     mystat outstat;
     outstat.mean     =   mean(acc);
     //outstat.stddev  =    extract_result<tag::error_of<tag::mean> >(acc);
-    outstat.stddev  =    error_of<tag::mean>(acc);
+    outstat.stddev  =    error_of<tag::immediate_mean>(acc);
 
     histogram_type 
       chistogram = p_square_cumulative_distribution(chist);
@@ -207,7 +208,7 @@ namespace all { namespace core {
     {
       printf("Elapsed:  %f\n", elapsed);
       printf("Mean:     %f\n", mean(acc));
-      printf("StdDev    %f\n", error_of<tag::mean>(acc));
+      printf("StdDev    %f\n", error_of<tag::immediate_mean>(acc));
 
       for (std::size_t i = 0; i < histogram.size(); ++i)
       {   
