@@ -45,7 +45,15 @@ bool MTi_driver_t::open(std::string configfile)
   printf("Could not set (all) device mode(s)\n");
   return false;
 	}
-	// Put MTi/MTx in Measurement State
+
+  
+  printf("Setting skip factor\n");
+  if (impl->mtcomm.setSetting(MID_SETOUTPUTSKIPFACTOR,	0xFFFF, LEN_OUTPUTSKIPFACTOR, detail::MTi_driver_impl::SENSOR_BID) != MTRV_OK) {
+		printf("Cannot set skip factor\n");
+		return false;
+  }
+
+  // Put MTi/MTx in Measurement State
 	impl->mtcomm.writeMessage(MID_GOTOMEASUREMENT);
   impl->mtcomm.flush();
 
@@ -81,6 +89,15 @@ void MTi_driver_t::reset(tags::align_reset_t)
 all::math::rpy_angle_t   MTi_driver_t::get_euler()
 {    
   math::rpy_angle_t rpy;
+
+  	impl->data[IND_PREAMBLE] = PREAMBLE;
+	impl->data[IND_BID] = detail::MTi_driver_impl::SENSOR_BID;
+	impl->data[IND_MID] = MID_REQDATA;
+	impl->data[IND_LEN] = 0;
+	impl->data[IND_LEN+1] = - ((unsigned char) (detail::MTi_driver_impl::SENSOR_BID + MID_REQDATA));
+	
+	impl->mtcomm.writeData(impl->data, IND_LEN+2);
+
   if(impl->mtcomm.readDataMessage(impl->data, impl->datalen) == MTRV_OK)
   {
 		impl->mtcomm.getValue(VALUE_SAMPLECNT, impl->samplecounter, impl->data, BID_MASTER);
