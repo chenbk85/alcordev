@@ -29,24 +29,6 @@ public:
   BOOST_STATIC_CONSTANT(std::size_t, bytes_per_channel=1);
   BOOST_STATIC_CONSTANT(std::size_t, nchannels=3);
   BOOST_STATIC_CONSTANT(std::size_t, size=sizeof(value_type));
-  ///
-  //static size_t row_stride(size_t width)
-  //{
-  //  return (width*nchannels);
-  //}
-
-  /////
-  //static size_t column_stride(size_t height)
-  //{
-  //  return (nchannels);
-  //}
-
-  /////
-  //static size_t channel_stride (size_t height, size_t width)
-  //{
-  //  return (1);
-  //}
-
 };
 //---------------------------------------------------------------------------+
 template< >
@@ -173,8 +155,6 @@ public:
   size_t width()    const {return width_;}
   size_t channels() const {return channels_;}
 
-
-
   ///
   typename pixel_traits<PIXELTYPE>::value_type
     get(size_t row, size_t col, size_t ch = 0) const
@@ -183,6 +163,9 @@ public:
       +( col* column_stride_  )
       +( ch * channel_stride_ ) ];
   }
+
+  ///
+
 
 private:
   ///
@@ -204,7 +187,7 @@ private:
 
 //---------------------------------------------------------------------------+
 typedef image_of<DEPTH> depth_image_t;
-typedef boost::shared_ptr<depth_image_t> depth_image_ptr_t;
+typedef depth_image_t::buffer_type depth_image_ptr_t;
 //---------------------------------------------------------------------------+
 }}//all::core
 #endif//pixel_traits_H_INCLUDED
