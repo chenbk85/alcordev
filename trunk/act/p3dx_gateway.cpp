@@ -4,7 +4,6 @@
 #include <sstream>
 #include "alcor/core/core.h"
 #include "alcor/core/iniwrapper.h"
-//#include "detail/ArActionFollowTarget.hpp"
 //---------------------------------------------------------------------------
 namespace all
 	{
@@ -65,6 +64,8 @@ p3dx_gateway::p3dx_gateway():
 	init_stop_action();
 	//	
 	init_goto_dir();
+  ///
+  init_follow_action();
 
 	//Starts with actions deactivated ...
 	m_robot->deactivateActions();
@@ -370,7 +371,29 @@ void p3dx_gateway::init_stop_action()
   m_stop.reset(new 	ArActionGroupStop(m_robot));
 }
 //---------------------------------------------------------------------------
+void p3dx_gateway::init_follow_action()
+{
+  //TODO enable external ini files...
+  m_follow.reset(new ArActionGroup(m_robot));
 
+  // if we're stalled we want to back up and recover
+  m_follow->addAction(new ArActionStallRecover, 100);
+
+  //
+  m_ac_follow.reset(new ArActionGotoStraight("target",250) );
+
+  //
+  m_follow->addAction(m_ac_follow.get(), 49);
+
+  // avoid things closer to us
+  m_follow->addAction(new ArActionAvoidFront("Avoid Front Near", 200, 0), 50);
+
+  // avoid things further away
+  m_follow->addAction(new ArActionAvoidFront, 45);
+
+  // keep moving
+  m_follow->addAction(new ArActionConstantVelocity("Constant Velocity", 100), 25);
+}
 //---------------------------------------------------------------------------
 bool p3dx_gateway::is_running()
 	{
@@ -404,6 +427,24 @@ void p3dx_gateway::stop_mode()
 	m_robot->clearDirectMotion();
 	m_stop->activateExclusive();
 	printf("The robot will now just stop.\n");
+}
+//---------------------------------------------------------------------------
+void p3dx_gateway::follow_mode()
+{
+	m_robot->clearDirectMotion();
+	m_follow->activateExclusive();
+	printf("The robot will now just follow.\n");
+}
+//---------------------------------------------------------------------------
+///only when in follow_mode.
+///distance (mt) e offset angolare dal target (gradi)
+void p3dx_gateway::set_target (double distance, double offset, double speed )
+{
+  printf("target rel: %f %f\n", distance, offset);
+
+  m_ac_follow->setSpeed(speed);
+
+  m_ac_follow->setGoalRel(distance*1000, offset, false, false);
 }
 //---------------------------------------------------------------------------
 void p3dx_gateway::goto_dir_mode()

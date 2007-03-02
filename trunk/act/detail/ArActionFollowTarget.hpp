@@ -1,6 +1,9 @@
 #pragma once
 
 #include "Aria.h"
+#include <cmath>
+
+inline int my_sign(double x) {return (x<0)? (-1) : (1) ;};
 
 class ArActionFollowTarget: public ArAction
 {
@@ -32,9 +35,9 @@ public:
   //try to adjust speed ...
   enum eRange
   {
-  FAR,  //go fast 
-  CLOSE,//go medium
-  NEAR  //stop
+  isFAR,  //go fast 
+  isCLOSE,//go medium
+  isNEAR  //stop
   };
 
 private:
@@ -69,7 +72,18 @@ private:
   double vfar;
 
   ///
+  double speed_dump;
+  double m_speed_limit;
 
+  ///
+  ///gradi
+  double  th_near;    
+  ///gradi
+  double  th_close;  
+  //gradi
+   double  deltah_close;
+  ///gradi
+   double  deltah_max  ;
   ///
   eSector mySector;
   ///
@@ -81,20 +95,15 @@ private:
 //###################################################################
 //###################################################################
 //
-inline ArActionFollowTarget::ArActionFollowTarget(double speed_limit)
+inline ArActionFollowTarget::ArActionFollowTarget(double speed_limit):  ArAction("FH")
 {
-  //myMaxSpeed = maxSpeed;
-  //myStopDistance = stopDistance;
-  front_sector  = 30.0;//degrees
-
   ///
   kill_Movement = false;
 
   ///
   m_speed_limit = speed_limit;
 
-
-//some defaul
+  //some defaul
   ///metri
   dnear   = 1.0;  
   ///metri
@@ -102,31 +111,49 @@ inline ArActionFollowTarget::ArActionFollowTarget(double speed_limit)
   ///
   dfar    = 3.0;
 
-  ///
-  vclose  = 100;
-  ///
-  vfar    = 200;
+  //some defaul
+  ///gradi
+  th_near   = 1.0;  
+  ///gradi
+  th_close  = 25.0;
 
+  //gradi
+  deltah_close  = 8.0;
+  ///gradi
+  deltah_max    = 10.0;
+
+  ///
+  vclose  = 120;
+  ///
+  vfar    = 250;
+  ///
+  speed_dump = 0.7;
+
+  m_rel_distance = 0;
+  m_rel_offset   = 0;
 }
 
 //
 inline void ArActionFollowTarget::set_target(double rel_distance, double rel_offset)
 {
+  printf("setting: %f %f\n", rel_distance,rel_offset);
   m_rel_distance = rel_distance;
   m_rel_offset   = rel_offset;
 }
 
-void ArActionFollowTarget::setRobot(ArRobot *robot)
+inline void ArActionFollowTarget::setRobot(ArRobot *robot)
 {
   ArAction::setRobot(robot);
 }
 
-ArActionDesired *ArActionFollowTarget::fire(ArActionDesired currentDesired)
+inline ArActionDesired *ArActionFollowTarget::fire(ArActionDesired currentDesired)
 {
-  mySector = (::fabs(rel_offset) < front_sector)? (FRONT):(SIDE);
-
   double tempvel;
-  double temprotvel;
+  //double temprotvel;
+
+  // reset the actionDesired (must be done), to clear
+  // its previous values.
+  //myDesired.reset();
 
   if(m_rel_distance > dnear)
   {
@@ -134,12 +161,12 @@ ArActionDesired *ArActionFollowTarget::fire(ArActionDesired currentDesired)
     if(m_rel_distance < dclose)
     {
     //target is close
-    tempvel = calcvclose(m_rel_distance);
+    tempvel = calcvclose();
     }
     else
     {
       //target is far
-    tempvel = calcvfar(m_rel_distance);
+    tempvel = calcvfar();
     }
   }
   else
@@ -148,8 +175,34 @@ ArActionDesired *ArActionFollowTarget::fire(ArActionDesired currentDesired)
     tempvel = 0;
   }
 
-  tempvel = (tempvel > m_speed_limit)? (tempvel) : (speed_limit) ;
+  tempvel = (tempvel > m_speed_limit)? (m_speed_limit) : (tempvel) ;
 
+  double absoffset = ::fabs(m_rel_offset);
+
+  if ( absoffset  > th_near)
+  {
+    if(absoffset  < th_close )
+    {
+      //myDesired.setRotVel();
+      double numer = (m_rel_offset - th_near)*(m_rel_offset - th_near);
+      double denom = (th_close - th_near)* (th_close - th_near);
+      myDesired.setDeltaHeading (my_sign(m_rel_offset)*deltah_close * (numer/denom) );  
+    }
+    else
+    {
+      tempvel *= speed_dump;
+      myDesired.setDeltaHeading( my_sign(m_rel_offset)*deltah_max);
+    }
+  }
+  else
+  {
+    myDesired.setDeltaHeading(0);      
+  }
+
+  myDesired.setVel(tempvel);
+
+  printf("Desired: VEL: %f dHeading: %f \n", myDesired.getVel()
+    ,myDesired.getDeltaHeading());
   return &myDesired;
 }
 
@@ -162,7 +215,7 @@ inline double  ArActionFollowTarget::calcvclose()
   return (vclose * (numer/denom) );
 }
   ///
-inline double  ArActionFollowTarget::calcvfar  ();
+inline double  ArActionFollowTarget::calcvfar  ()
 {
   double numer = (m_rel_distance-dclose)*(m_rel_distance-dclose);
   double denom = (dfar-dclose)*(dfar-dclose);
