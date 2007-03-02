@@ -3,6 +3,7 @@
 //---------------------------------------------------------------------------
 #include <Aria.h>
 #include <ArNetworking.h>
+#include "detail/ArActionFollowTarget.hpp"
 //---------------------------------------------------------------------------
 #include "alcor/core/core.h"
 #include "alcor/act/p3dx_server_data_t.h"
@@ -38,6 +39,11 @@ public:
 	void wander_mode();
 	///Enable Stop Action
 	void stop_mode();
+  ///
+  void follow_mode();
+  ///only when in follow_mode.
+  ///distance (mt) e offset angolare dal target (gradi)
+  void set_target (double distance, double offset,double speed = 100);
 
 	///Enable Goto DIR Action ///////////////////////////////////////////////////////
 	void goto_dir_mode();
@@ -47,9 +53,7 @@ public:
 
 	void set_local_goto_dir(ArPose);
 	/////////////////////////////////////////////////////////////////////////////////
-private:
-	///The private goto action handled by set_local_dir.
-	auto_ptr<ArActionGoto>  m_ac_goto_dir;
+
 	/////////////////////////////////////////////////////////////////////////////////
 
 public:
@@ -103,6 +107,8 @@ private:
   	void init_stop_action();
 	///ops changed naming convention ;)
 	void init_goto_dir();	
+  ///
+  void init_follow_action();
 
 private:	
   auto_ptr<ArActionGroup> m_wander;
@@ -110,6 +116,10 @@ private:
 	auto_ptr<ArActionGroup> m_stop;
 	auto_ptr<ArActionGroup> m_goto_dir;
 	auto_ptr<ArActionGroup> m_goto_pos;
+  auto_ptr<ArActionGroup> m_follow;
+	///The private goto action handled by set_local_dir.
+	auto_ptr<ArActionGoto>  m_ac_goto_dir;
+  auto_ptr<ArActionGotoStraight> m_ac_follow;
 
 private:
 	ArTcpConnection 	m_tcpConn;
@@ -118,7 +128,7 @@ private:
   //ArSimpleConnector connector;
 
 	ArSerialConnection 	m_serialConn;	
-	ArSonarDevice		m_sonar;
+	ArSonarDevice		    m_sonar;
 	
 private:
 	// to be called if the connection was made
