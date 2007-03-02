@@ -3,7 +3,7 @@
 //---------------------------------------------------------------------------
 #include <Aria.h>
 #include <ArNetworking.h>
-#include "detail/ArActionFollowTarget.hpp"
+//#include "detail/ArActionFollowTarget.hpp"
 //---------------------------------------------------------------------------
 #include "alcor/core/core.h"
 #include "alcor/act/p3dx_server_data_t.h"

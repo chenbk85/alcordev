@@ -7,6 +7,8 @@
 //#include <windows.h>
 #include <boost/shared_ptr.hpp>
 #include <boost/thread/thread.hpp>
+#include <boost/function.hpp>
+#include <boost/bind.hpp>
 //---------------------------------------------------------------------------
 #include <boost\bind.hpp>
 //---------------------------------------------------------------------------
@@ -24,7 +26,7 @@ public:
   void set_slam(boost::shared_ptr<core::slam_data_adapter_i>);
 
   typedef enum {
-    idle,
+    idled,
     enabled
   }loop_state;
 
@@ -38,13 +40,26 @@ public:
 
   void run_loop();
 
+  boost::function <void (void)> loop_action;
+
+  void idle_action();
+  void enabled_action();
+
+  bool is_enabled() const {return state_==enabled;}
+  bool is_idled()   const {return state_==idled;}
+
   void enable(bool bflag)
-  { (bflag) ? (state_= enabled) : (state_ = idle);};
+  { 
+    (bflag) ? (state_= enabled) : (state_ = idled);
+    if(bflag)
+      loop_action = 
+        boost::bind(&pantilt_control_loop_t::enabled_action, this);
+    else
+      loop_action = 
+        boost::bind(&pantilt_control_loop_t::idle_action, this);
+  };
 
   void esc(){running_ = false;};
-
-private:
-  void adjust_();
 
 private:
   volatile bool running_;
@@ -58,21 +73,17 @@ private:
   boost::shared_ptr<directed_perception_ptu_t>  ptu_;
   boost::shared_ptr<slam_data_adapter_i>        slam_;
 };
-
 ////---------------------------------------------------------------------------
-//}}//namespaces
-////
-//
 ////---------------------------------------------------------------------------
-//namespace all{ namespace act{
-
+////---------------------------------------------------------------------------
 inline pantilt_control_loop_t::pantilt_control_loop_t():
-//ptu_(iptu),
-//slam_(islam),
+
 running_(true),
-state_(idle),
+state_(idled),
 reference_(0)
 {
+  loop_action = 
+    boost::bind(&pantilt_control_loop_t::idle_action, this);
     ///The MACHINE
   loop_thr.reset(
     new boost::thread 
@@ -124,7 +135,12 @@ inline double pantilt_control_loop_t::get_polar_reference(math::rad_t) const
   return core::dconstants::deg_to_rad(reference_);
 }
 //---------------------------------------------------------------------------
-inline void pantilt_control_loop_t::adjust_()
+inline   void pantilt_control_loop_t::idle_action()
+{
+  BOOST_SLEEP(100);
+}
+
+inline   void pantilt_control_loop_t::enabled_action()
 {
   if(slam_ && ptu_)
   {
@@ -135,30 +151,17 @@ inline void pantilt_control_loop_t::adjust_()
   printf("theta_rob: %f \n",theta_rob);
   ptu_->set_pan(static_cast<float>(pan_setpoint), 0.2f);
   }
+  BOOST_SLEEP(70);
 }
 //---------------------------------------------------------------------------
 inline void pantilt_control_loop_t::run_loop()
 {
   while (running_)
   {
-    switch(state_)
-    {
-      case enabled:
-        adjust_();
-        //Sleep(100);
-        BOOST_SLEEP(100);
-        break;
-
-      case idle:
-        BOOST_SLEEP(100);
-        break;
-
-      default:
-        break;
-    }
+    loop_action();
     boost::thread::yield();
   }
-  state_ = idle;
+  state_ = idled;
 }
 //---------------------------------------------------------------------------
 }}//namespaces
