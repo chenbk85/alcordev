@@ -392,7 +392,7 @@ void p3dx_gateway::init_follow_action()
   m_follow->addAction(new ArActionAvoidFront, 45);
 
   // keep moving
-  m_follow->addAction(new ArActionConstantVelocity("Constant Velocity", 100), 25);
+  //m_follow->addAction(new ArActionConstantVelocity("Constant Velocity", 100), 25);
 }
 //---------------------------------------------------------------------------
 bool p3dx_gateway::is_running()
