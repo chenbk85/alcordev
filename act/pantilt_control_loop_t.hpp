@@ -4,7 +4,8 @@
 #include "alcor/core/core.h"
 #include "alcor/act/directed_perception_ptu_t.h"
 #include "alcor/core/slam_data_adapter_i.h"
-//#include <windows.h>
+//---------------------------------------------------------------------------
+#include <boost/thread/mutex.hpp>
 #include <boost/shared_ptr.hpp>
 #include <boost/thread/thread.hpp>
 #include <boost/function.hpp>
@@ -50,6 +51,8 @@ public:
 
   void enable(bool bflag)
   { 
+    boost::mutex::scoped_lock lock(mutex);
+
     (bflag) ? (state_= enabled) : (state_ = idled);
     if(bflag)
       loop_action = 
@@ -72,6 +75,7 @@ private:
 
   boost::shared_ptr<directed_perception_ptu_t>  ptu_;
   boost::shared_ptr<slam_data_adapter_i>        slam_;
+  boost::mutex mutex;
 };
 ////---------------------------------------------------------------------------
 ////---------------------------------------------------------------------------
@@ -142,6 +146,7 @@ inline   void pantilt_control_loop_t::idle_action()
 
 inline   void pantilt_control_loop_t::enabled_action()
 {
+  boost::mutex::scoped_lock lock(mutex);
   if(slam_ && ptu_)
   {
   printf("adjust\n");
@@ -151,7 +156,7 @@ inline   void pantilt_control_loop_t::enabled_action()
   printf("theta_rob: %f \n",theta_rob);
   ptu_->set_pan(static_cast<float>(pan_setpoint), 0.2f);
   }
-  BOOST_SLEEP(70);
+  BOOST_SLEEP(100);
 }
 //---------------------------------------------------------------------------
 inline void pantilt_control_loop_t::run_loop()
