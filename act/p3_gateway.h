@@ -27,15 +27,15 @@ namespace all{namespace act{
     bool open(std::string inifile);
 
     ///Get Odometry (not localised) in meters!!.
-    math::pose2d const& get_odometry()const;
+    math::pose2d get_odometry();
 
-    //[DIRECT COMMANDS]
+    //[DIRECT COMMANDS]*>++++++++++++++++++++++++++++++++++++++++
     ///Move forward.
     void move(double);
     ///
-    void set_heading(math::angle);
+    void set_heading(const math::angle&);
     ///
-    void set_delta_heading(math::angle);
+    void set_delta_heading(const math::angle&);
     ///
     void set_rot_vel(double);
     ///
@@ -45,17 +45,19 @@ namespace all{namespace act{
     ///
     void stop();
 
-    //[ACTIONS]
+    //[ACTIONS] ]*>++++++++++++++++++++++++++++++++++++++++++++++
     ///Enable Wandering Action
-    void wander_mode();
+    void enable_wander_mode();
+
     ///Enable Stop Action
-    void stop_mode();
-    ///
-    void follow_mode();
+    void enable_stop_mode();
+
+    ///Follow Mode
+    void enable_follow_mode();
     ///only when in follow_mode.
     ///distance (mt) e offset angolare dal target (gradi)
     void set_target_to_follow 
-        (double distance, double offset,double speed = 100);
+      (const math::pose2d& target, double speed = 100);
 
   private:
     boost::shared_ptr<detail::p3_gateway_impl> impl;

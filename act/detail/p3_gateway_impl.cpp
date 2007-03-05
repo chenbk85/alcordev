@@ -2,6 +2,9 @@
 #include <Aria.h>
 #include <ArNetworking.h>
 //---------------------------------------------------------------------------
+#include <memory>
+using std::auto_ptr;
+//---------------------------------------------------------------------------
 #include "alcor/core/core.h"
 //---------------------------------------------------------------------------
 namespace all { namespace act { namespace detail {
@@ -18,6 +21,18 @@ struct p3_gateway_impl
 	bool blocking_connect();
   ///
   void robot_run();
+
+  //[ACTIONS]
+  void init_follow_action();
+  void init_stop_action();
+
+  //FOLLOW ActionGroup ---------------------
+  auto_ptr<ArActionGroup>         m_follow;
+  //keep a pointer to set the current target
+  auto_ptr<ArActionGotoStraight>  m_ac_follow;
+
+  //STOP ActionGroup -----------------------
+	auto_ptr<ArActionGroup> m_stop;
 
   ///connections
 	ArTcpConnection 	  m_tcpConn;
@@ -43,6 +58,12 @@ inline p3_gateway_impl::p3_gateway_impl()
 
   //Connect  sonars al robot
   m_robot->addRangeDevice(&m_sonar);
+
+  //Init actions
+  ///Stop
+  init_stop_action();
+  ///Follow
+  init_follow_action();
 
 	//Starts with actions deactivated ...
 	m_robot->deactivateActions();
@@ -86,7 +107,6 @@ inline void p3_gateway_impl::robot_run()
   m_robot->enableMotors();
 }
 //---------------------------------------------------------------------------
-
 inline bool p3_gateway_impl::blocking_connect()
 	{	
 	  // try to connect, if we fail, the connection handler should bail
@@ -102,5 +122,39 @@ inline bool p3_gateway_impl::blocking_connect()
   return true;
 }
 //---------------------------------------------------------------------------
+//---------------------------------------------------------------------------
+//ACTIONS!!
+//---------------------------------------------------------------------------
+inline void p3_gateway_impl::init_stop_action() 
+{
+   //Stop Action ...
+  m_stop.reset(new 	ArActionGroupStop(m_robot));
+}
+//---------------------------------------------------------------------------
+inline void p3_gateway_impl::init_follow_action()
+{
+  //TODO: enable external ini files...
+  m_follow.reset(new ArActionGroup(m_robot));
 
+  // if we're stalled we want to back up and recover
+  m_follow->addAction(new ArActionStallRecover, 100);
+
+  //create action
+  m_ac_follow.reset(new ArActionGotoStraight("target",250) );
+
+  //
+  m_follow->addAction(m_ac_follow.get(), 49);
+
+  // avoid things closer to us
+  m_follow->addAction(new ArActionAvoidFront("Avoid Front Near", 200, 0), 50);
+
+  // avoid things further away
+  m_follow->addAction(new ArActionAvoidFront, 45);
+
+  // keep moving
+  //m_follow->addAction(new ArActionConstantVelocity("Constant Velocity", 100), 25);
+}
+//---------------------------------------------------------------------------
+//---------------------------------------------------------------------------
 }}}//all::act::detail
+//---------------------------------------------------------------------------
