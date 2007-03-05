@@ -3,7 +3,7 @@
 
 #include <boost/shared_ptr.hpp>
 #include "alcor/core/slam_data_adapter_i.h"
-#include "alcor/act/p3dx_client_t.h"
+#include "alcor/act/p3dx_gateway.h"
 
 namespace all { namespace act {
 
@@ -11,7 +11,7 @@ namespace all { namespace act {
   {
   public:
     ///
-    p3_odometry_adapter_t(act::p3dx_client_sptr);
+    p3_odometry_adapter_t(act::p3dx_gateway_sptr);
 
   public:
       ///(Not)Localized rotation angle in degrees.
@@ -20,11 +20,11 @@ namespace all { namespace act {
     double get_current_rot(math::rad_t);
 
   private:
-    act::p3dx_client_sptr p3;
+    act::p3dx_gateway_sptr p3;
   };
 
 
-  inline p3_odometry_adapter_t::p3_odometry_adapter_t(act::p3dx_client_sptr p3ptr)
+  inline p3_odometry_adapter_t::p3_odometry_adapter_t(act::p3dx_gateway_sptr p3ptr)
   {
     p3 = p3ptr;
   }

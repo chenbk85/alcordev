@@ -5,6 +5,7 @@
 #include <boost/crc.hpp>  // for boost::crc_32_type
 //-------------------------------------------------------------------------++
 #include <boost/shared_array.hpp>
+#include <boost/shared_ptr.hpp>
 #include <boost/thread/thread.hpp>
 #include <boost/thread/xtime.hpp>
 //-------------------------------------------------------------------------++

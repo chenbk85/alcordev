@@ -30,14 +30,14 @@ void directed_perception_ptu_server_t::assign_ptu(act::directed_perception_sptr 
 void directed_perception_ptu_server_t::reset(client_connection_ptr_t, net_packet_ptr_t)
 {
   printf("Reset\n");
-  if(ptu_sp.get())
+  if(ptu_sp)
     ptu_sp->reset();
 }
 
 void directed_perception_ptu_server_t::pantilt(client_connection_ptr_t, net_packet_ptr_t packet)
 {
   //printf("Set\n");
-  if(ptu_sp.get())
+  if(ptu_sp)
   {
       act::ptu_server_data_t clientdata;
       clientdata.import(packet);
@@ -48,7 +48,7 @@ void directed_perception_ptu_server_t::pantilt(client_connection_ptr_t, net_pack
 void directed_perception_ptu_server_t::send_pantilt_data(client_connection_ptr_t cl, net_packet_ptr_t packet)
 {
   //printf("Update\n");
-  if(ptu_sp.get())
+  if(ptu_sp)
   {
     //printf("get_pantilt\n");
     ptu_sp->get_current_pantilt((float&)ptu_data.pan, (float&)ptu_data.tilt);

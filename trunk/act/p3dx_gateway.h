@@ -3,7 +3,6 @@
 //---------------------------------------------------------------------------
 #include <Aria.h>
 #include <ArNetworking.h>
-//#include "detail/ArActionFollowTarget.hpp"
 //---------------------------------------------------------------------------
 #include "alcor/core/core.h"
 #include "alcor/act/p3dx_server_data_t.h"
@@ -192,6 +191,7 @@ private:
 	all::act::p3dx_position_t m_odometry;
 };
 //---------------------------------------------------------------------------
+typedef boost::shared_ptr<p3dx_gateway> p3dx_gateway_sptr;
 //---------------------------------------------------------------------------
 }//alcor
 }//device

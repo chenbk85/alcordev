@@ -105,8 +105,7 @@ bool p3dx_gateway::serial_connect()
 		{
 			return false;
 		}
- 		
-		
+	
 		robot_run();
 		return true;
 	}
@@ -148,7 +147,6 @@ void p3dx_gateway::robot_run()
   //m_robot->waitForRunExit();
 }
 /////////////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////////////////
 //								SERVER SIDE
 /////////////////////////////////////////////////////////////////////////////
 //---------------------------------------------------------------------------
@@ -177,20 +175,17 @@ void p3dx_gateway::start_server()
 		//[Assign Callbacks]
 	m_server.addData("setdeltaheading", "Set Delta Heading", 
     &m_set_delta_heading_cb, "none", "none");
-
 			//[Assign Callbacks]
 	m_server.addData("setrotvel", "SetRotVel", 
 						&m_set_rot_vel_cb, "none", "none");
-
 	m_server.addData("stop", "Stop", 
 						&m_stop_cb, "none", "none");
+
   //ACTIONS
 	m_server.addData("wander", "Set Wander Action", 
 						&m_set_wandermode_cb, "none", "none");
-
 	m_server.addData("setlocaldir", "Set Local Dir Action", 
     &m_set_localdir_cb, "none", "Delta angle in degrees");
-
 	m_server.addData("move", "Move of a certain distance (meters)", 
     &m_move_cb, "none", "Distance to travel in Meters");
 
