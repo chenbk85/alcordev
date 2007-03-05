@@ -2,8 +2,10 @@
 #define p3_gateway_H_INCLUDED
 //---------------------------------------------------------------------------
 #include "alcor/core/core.h"
+//---------------------------------------------------------------------------
 #include "alcor/math/angle.h"
 #include "alcor/math/pose2d.h"
+#include "alcor/math/point2d.h"
 //---------------------------------------------------------------------------
 namespace all{namespace act{
   namespace detail
@@ -16,13 +18,14 @@ namespace all{namespace act{
 //tcpmode=0
 //comport=COM5
 //---------------------------------------------------------------------------
-
+  ///p3_gateway
   class p3_gateway
   {
   public:
     ///
     p3_gateway();
-
+    ~p3_gateway();
+    //>+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     ///
     bool open(std::string inifile);
 
@@ -57,13 +60,13 @@ namespace all{namespace act{
     ///only when in follow_mode.
     ///distance (mt) e offset angolare dal target (gradi)
     void set_target_to_follow 
-      (const math::pose2d& target, double speed = 100);
+      (const math::point2d& target, double speed = 100);
 
   private:
     boost::shared_ptr<detail::p3_gateway_impl> impl;
   };
 //---------------------------------------------------------------------------
-  typedef boost::shared_ptr<p3_gateway>  p3_gateway_ptr;
+  typedef boost::shared_ptr<p3_gateway>  p3_gateway_sptr;
 //---------------------------------------------------------------------------
   }}//all::act
 //---------------------------------------------------------------------------
