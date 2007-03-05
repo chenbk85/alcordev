@@ -9,6 +9,13 @@ p3_gateway::p3_gateway()
 impl.reset(new detail::p3_gateway_impl());
 }
 //---------------------------------------------------------------------------
+p3_gateway::~p3_gateway()
+{
+	if(impl->m_robot)  
+			impl->m_robot->stopRunning();
+  Aria::shutdown();
+}
+//---------------------------------------------------------------------------
 bool p3_gateway::open(std::string inifile)
 {
   iniWrapper ini;
@@ -16,6 +23,7 @@ bool p3_gateway::open(std::string inifile)
   {
     if(ini.GetInt("config:serialmode", 1))
     {
+      printf("Opening serial connection\n");
       char* port = ini.GetStringAsChar("config:comport","COM5");
       return (impl->serial_connect(port));
     }
@@ -66,14 +74,14 @@ void p3_gateway::enable_follow_mode()
 }
 //---------------------------------------------------------------------------
 void p3_gateway::set_target_to_follow 
-    (const math::pose2d& target, double speed)
+    (const math::point2d& target, double speed)
 {
   //
   impl->m_ac_follow->setSpeed(speed);
   //
   impl->m_ac_follow->setGoalRel(  
-                      target.getP().magnitude()
-                    , target.getP().orientation().deg()
+                      target.magnitude()
+                    , target.orientation().deg()
                     , false, false
                     );
 }
