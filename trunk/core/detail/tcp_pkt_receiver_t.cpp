@@ -49,7 +49,7 @@ net_packet_ptr_t tcp_pkt_receiver_t::get_last_packet() {
 
 
 void tcp_pkt_receiver_t::read_packet() {
-	printf("waiting packet...\n");
+	//printf("waiting packet...\n");
 	boost::asio::async_read_until(m_socket, m_in_pkt_buffer, boost::regex(net_packet_t::END_SEQUENCE), 
 								  boost::bind (&tcp_pkt_receiver_t::handle_read_data, this,
 											   boost::asio::placeholders::error,
@@ -59,7 +59,7 @@ void tcp_pkt_receiver_t::read_packet() {
 void tcp_pkt_receiver_t::handle_read_data(const boost::system::error_code& error, std::size_t bytes_transferred) {
 	if (!error) {
 		
-		printf("read %i bytes\n", bytes_transferred);
+		//printf("read %i bytes\n", bytes_transferred);
 		
 		std::istream is(&m_in_pkt_buffer);
 

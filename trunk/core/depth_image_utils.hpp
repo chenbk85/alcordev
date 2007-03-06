@@ -8,6 +8,7 @@
 #include <boost/accumulators/statistics.hpp>
 #include <boost/range/iterator.hpp>
 #include <boost/timer.hpp>
+#include "alcor.extern/gil/core/gil_all.hpp"
 //---------------------------------------------------------------------------+
 #include <boost/numeric/ublas/vector.hpp>
 //---------------------------------------------------------------------------+
@@ -220,7 +221,14 @@ namespace all { namespace core {
     printf("\n");
     return outstat;
   }
+
+
 //---------------------------------------------------------------------------+
+  /////
+  //inline  mystat 
+  //  estimate_depth(GIL:: & depth, pixelcoord_t center, size_t hsize)
+  //{
+  //}
 
 }}
 
