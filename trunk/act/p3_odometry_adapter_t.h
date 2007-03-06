@@ -21,11 +21,11 @@ namespace all { namespace act {
     double get_current_rot(math::rad_t);
 
   private:
-    act::p3_gateway_sptr p3;
+    act::p3_gateway_ptr_t p3;
   };
 
 //-------------------------------------------------------------------
-  inline p3_odometry_adapter_t::p3_odometry_adapter_t(act::p3_gateway_sptr p3ptr)
+  inline p3_odometry_adapter_t::p3_odometry_adapter_t(act::p3_gateway_ptr_t p3ptr)
   {
     p3 = p3ptr;
   }
