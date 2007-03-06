@@ -13,6 +13,8 @@ struct p3_gateway_impl
   ///
   p3_gateway_impl();
 
+  ~p3_gateway_impl();
+
 	///Serial Connection
 	bool serial_connect(char*);
 	///TCP Connection
@@ -67,6 +69,14 @@ inline p3_gateway_impl::p3_gateway_impl()
 
 	//Starts with actions deactivated ...
 	m_robot->deactivateActions();
+}  
+//---------------------------------------------------------------------------
+inline p3_gateway_impl::~p3_gateway_impl()
+{
+	if(m_robot)  
+			m_robot->stopRunning();
+
+  Aria::shutdown();
 }
 //---------------------------------------------------------------------------
 	///Serial Connection

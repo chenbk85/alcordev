@@ -13,10 +13,20 @@ namespace all { namespace act{
   {
   public:
     ///
-    p3_client_t(char* ini);
+    p3_client_t(const char* ini);
+    
     ///
     const math::pose2d& 
       get_odometry() const;
+
+    ///
+    typedef boost::function<void (const math::pose2d&)> 
+      user_callback_t;
+    ///the actual method invoked
+    user_callback_t user_callback;
+  
+    ///
+    void set_user_callback(user_callback_t);
 
   private:
     ///

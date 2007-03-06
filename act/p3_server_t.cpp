@@ -3,7 +3,7 @@
 //-------------------------------------------------------------------
 namespace all { namespace act{
 //-------------------------------------------------------------------
-p3_server_t::p3_server_t(char* ini_file)
+p3_server_t::p3_server_t(const char* ini_file)
 {
   iniWrapper ini;
 	if (ini.Load(ini_file)) 
@@ -11,6 +11,7 @@ p3_server_t::p3_server_t(char* ini_file)
 		int port = ini.GetInt("server:port", 76543);
 		set_port(port);
 	}
+  register_();
 }
 //-------------------------------------------------------------------
 void p3_server_t::set_gateway_ptr(p3_gateway_ptr_t p3ptr)
@@ -18,7 +19,7 @@ void p3_server_t::set_gateway_ptr(p3_gateway_ptr_t p3ptr)
 p3_ = p3ptr;
 }
 //-------------------------------------------------------------------
-void p3_server_t::start_service()
+void p3_server_t::register_()
 {
 	add_command_handler("getData", boost::bind(&p3_server_t::send_p3_data, this, _1, _2));
 

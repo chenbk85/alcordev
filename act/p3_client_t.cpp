@@ -3,7 +3,7 @@
 //-------------------------------------------------------------------
 namespace all { namespace act{
 //-------------------------------------------------------------------
-  p3_client_t::p3_client_t(char* inifile)
+  p3_client_t::p3_client_t(const char* inifile)
   {
     iniWrapper ini;
     ini.Load(inifile);
@@ -27,7 +27,15 @@ const math::pose2d& p3_client_t::get_odometry() const
   void p3_client_t::update_p3_data(net_packet_ptr_t answer_packet)
   {
     p3_data_.import(answer_packet);
+    if(user_callback)
+      user_callback(p3_data_.pose);
   }
+//-------------------------------------------------------------------
+void p3_client_t::set_user_callback(user_callback_t callback)
+{
+  //??
+  user_callback = callback;
+}
 //-------------------------------------------------------------------
   ///
   void p3_client_t::connected_callback()

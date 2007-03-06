@@ -13,17 +13,18 @@ class p3_server_t : public server_base_t
 {
 public:
   ///
-  p3_server_t(char* ini_file); 
+  p3_server_t(const char* ini_file); 
   ///
   void set_gateway_ptr(p3_gateway_ptr_t);
-  ///
-  void start_service();
+
 
 public:
   ///
   void send_p3_data(client_connection_ptr_t, net_packet_ptr_t);
 
 private:
+    ///
+  void register_();
   ///
   p3_gateway_ptr_t   p3_;
   ///
