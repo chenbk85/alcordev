@@ -13,9 +13,11 @@ class p3_server_t : public server_base_t
 {
 public:
   ///
-  p3_server_t(char* ini_file);  
+  p3_server_t(char* ini_file); 
   ///
-  void start_service(p3_gateway_sptr);
+  void set_gateway_ptr(p3_gateway_ptr_t);
+  ///
+  void start_service();
 
 public:
   ///
@@ -23,7 +25,7 @@ public:
 
 private:
   ///
-  p3_gateway_sptr   p3_;
+  p3_gateway_ptr_t   p3_;
   ///
   p3_server_data_t  p3_data_;
 };
