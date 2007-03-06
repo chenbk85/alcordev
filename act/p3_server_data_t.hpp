@@ -27,7 +27,6 @@ inline void p3_server_data_t::pack(core::net_packet_ptr_t packet)
   packet->double_to_buf(pose.get_x1());
   packet->double_to_buf(pose.get_x2());
   packet->double_to_buf(pose.get_th(all::math::deg_tag)); 
-	packet->finalize_packet();
 }
 //-------------------------------------------------------------------
 }}//all::act
