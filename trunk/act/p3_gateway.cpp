@@ -35,8 +35,9 @@ math::pose2d  p3_gateway::get_odometry()
   ArPose arpose = impl->m_robot->getPose();
   math::pose2d mypose;
 
-  mypose.set_x1(arpose.getX());
-  mypose.set_x2(arpose.getY());
+  //TODO: dovrebbe essere così
+  mypose.set_x1(arpose.getX()/1000.0);
+  mypose.set_x2(arpose.getY()/1000.0);
 
   mypose.set_th(arpose.getTh(),math::deg_tag);
 
