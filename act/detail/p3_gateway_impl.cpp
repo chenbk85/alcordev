@@ -112,7 +112,7 @@ inline bool p3_gateway_impl::serial_connect(char* comPort)
 inline void p3_gateway_impl::robot_run()
 {    
   // run the robot in its own thread, so it gets and processes packets and such
-  m_robot->loadParamFile("config/p3dx.p");
+  //m_robot->loadParamFile("config/p3dx.p");
   m_robot->runAsync(false);
   m_robot->enableMotors();
 }
