@@ -18,12 +18,22 @@ public:
   void set_gateway_ptr(p3_gateway_ptr_t);
 
 
-public:
+private:
+  ///
+  void set_vel(client_connection_ptr_t, net_packet_ptr_t);
+  ///
+  void enable_wander(client_connection_ptr_t, net_packet_ptr_t);
+  ///
+  void enable_stop(client_connection_ptr_t, net_packet_ptr_t);
+  ///
+  void enable_follow(client_connection_ptr_t, net_packet_ptr_t);
+  ///
+  void set_target(client_connection_ptr_t, net_packet_ptr_t);
+
   ///
   void send_p3_data(client_connection_ptr_t, net_packet_ptr_t);
 
-private:
-    ///
+  ///
   void register_();
   ///
   p3_gateway_ptr_t   p3_;

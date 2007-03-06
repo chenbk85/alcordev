@@ -28,6 +28,21 @@ namespace all { namespace act{
     ///
     void set_user_callback(user_callback_t);
 
+    //[remote methods]
+  public:
+    ///
+    void set_vel(double mmpersecs);
+    ///
+    void enable_stop_mode();
+    ///
+    void enable_wander_mode();
+    ///
+    void enable_follow_mode();
+    ///only when in follow_mode.
+    ///distance (mt) e offset angolare dal target (gradi)
+    void set_target_to_follow 
+      (const math::point2d& target, double speed = 100);
+
   private:
     ///
 	  void update_p3_data(net_packet_ptr_t);

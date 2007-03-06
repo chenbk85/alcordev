@@ -37,11 +37,48 @@ void p3_client_t::set_user_callback(user_callback_t callback)
   user_callback = callback;
 }
 //-------------------------------------------------------------------
-  ///
-  void p3_client_t::connected_callback()
-  {
+///
+void p3_client_t::set_vel(double mmpersecs)
+{
+  core::net_packet_ptr_t packet(new core::net_packet_t());
+  packet->double_to_buf(mmpersecs);
+  send_command("setVel", packet);
+}
+//-------------------------------------------------------------------
+void p3_client_t::enable_stop_mode()
+{
+  send_command("enableStop");
+}
+//-------------------------------------------------------------------
+void p3_client_t::enable_wander_mode()
+{
+    send_command("enableWander");
+}
+//-------------------------------------------------------------------
+void p3_client_t::enable_follow_mode()
+{
+    send_command("enableFollow");
+}
+//-------------------------------------------------------------------
+///only when in follow_mode.
+///distance (mt) e offset angolare dal target (gradi)
+void p3_client_t::set_target_to_follow 
+  (const math::point2d& target, double mmpersecs)
+{
+  core::net_packet_ptr_t packet(new core::net_packet_t());
 
-  }
+  packet->double_to_buf(target.magnitude());
+  packet->double_to_buf(target.orientation().deg());
+  packet->double_to_buf(mmpersecs);
+    
+  send_command("setTarget", packet);
+}
+//-------------------------------------------------------------------
+///
+void p3_client_t::connected_callback()
+{
+//TODO:
+}
 //-------------------------------------------------------------------
 }}//all::act
 //-------------------------------------------------------------------
