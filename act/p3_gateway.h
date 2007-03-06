@@ -66,7 +66,7 @@ namespace all{namespace act{
     boost::shared_ptr<detail::p3_gateway_impl> impl;
   };
 //---------------------------------------------------------------------------
-  typedef boost::shared_ptr<p3_gateway>  p3_gateway_sptr;
+  typedef boost::shared_ptr<p3_gateway>  p3_gateway_ptr_t;
 //---------------------------------------------------------------------------
   }}//all::act
 //---------------------------------------------------------------------------
