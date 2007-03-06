@@ -17,6 +17,9 @@ namespace all{namespace act{
 //serialmode=1
 //tcpmode=0
 //comport=COM5
+//[server]
+//hostname = localhost
+//port = 87654
 //---------------------------------------------------------------------------
   ///p3_gateway
   class p3_gateway

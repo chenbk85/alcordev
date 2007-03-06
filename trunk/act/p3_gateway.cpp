@@ -11,9 +11,7 @@ impl.reset(new detail::p3_gateway_impl());
 //---------------------------------------------------------------------------
 p3_gateway::~p3_gateway()
 {
-	if(impl->m_robot)  
-			impl->m_robot->stopRunning();
-  Aria::shutdown();
+
 }
 //---------------------------------------------------------------------------
 bool p3_gateway::open(std::string inifile)
