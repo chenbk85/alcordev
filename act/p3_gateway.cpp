@@ -37,6 +37,7 @@ math::pose2d  p3_gateway::get_odometry()
 
   mypose.set_x1(arpose.getX());
   mypose.set_x2(arpose.getY());
+
   mypose.set_th(arpose.getTh(),math::deg_tag);
 
   return mypose;
