@@ -77,7 +77,7 @@ void p3_client_t::set_target_to_follow
 ///
 void p3_client_t::connected_callback()
 {
-//TODO:
+send_request("getData", 500);
 }
 //-------------------------------------------------------------------
 }}//all::act
