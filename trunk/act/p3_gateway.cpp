@@ -55,6 +55,22 @@ void p3_gateway::set_delta_heading(const math::angle& deltaheading)
   impl->m_robot->setDeltaHeading(deltaheading.deg());
   impl->m_robot->unlock();
 }
+//---------------------------------------------------------------------------  
+///
+void p3_gateway::set_rot_vel(double rotvel)
+{
+  impl->m_robot->lock();
+  impl->m_robot->setRotVel(rotvel);
+  impl->m_robot->unlock();
+}
+//---------------------------------------------------------------------------
+///
+void p3_gateway::set_vel(double vel)
+{
+  impl->m_robot->lock();
+  impl->m_robot->setVel(vel);
+  impl->m_robot->unlock();
+}
 //---------------------------------------------------------------------------
     ///Enable Stop Action
 void p3_gateway::enable_stop_mode()
@@ -62,6 +78,10 @@ void p3_gateway::enable_stop_mode()
 	impl->m_robot->clearDirectMotion();
 	impl->m_stop->activateExclusive();
 	printf("The robot will now just stop.\n");
+}
+//---------------------------------------------------------------------------
+void p3_gateway::enable_wander_mode()
+{
 }
 //---------------------------------------------------------------------------
 void p3_gateway::enable_follow_mode()

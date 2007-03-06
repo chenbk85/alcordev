@@ -13,6 +13,7 @@ namespace all{namespace act{
     struct p3_gateway_impl;
   }
 //---------------------------------------------------------------------------
+//p3_conf.ini
 //[config]
 //serialmode=1
 //tcpmode=0
