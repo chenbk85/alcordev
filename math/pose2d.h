@@ -38,11 +38,11 @@ public:	//binary operators
 	//pose2d&			operator-=(const pose2d& temp){p_-=temp.p_; theta_-=temp.theta_; return *this;}
 
 public:	//unary operators
-	const pose2d	operator-(){return pose2d(-p_,-theta_);}
+	pose2d	operator-(){return pose2d(-p_,-theta_);}
 
 public:	//setters and getters
-	const	point2d	getP() const {return p_;}
-	const	angle	getTh() const {return theta_;}
+	point2d	getP() const {return p_;}
+	angle	getTh() const {return theta_;}
 	double	getX() const {return p_.getX();}
 	double	getY() const {return p_.getY();}
 
@@ -69,7 +69,7 @@ public:	//tools
 	 *		distance(*this, this->move(K)) == K
 	 *		(this->move(K)).theta_ = this->theta_
 	 */
-	const pose2d	move(double delta) const {return pose2d( p_ + point2d(delta,theta_) , theta_);}
+	pose2d	move(double delta) const {return pose2d( p_ + point2d(delta,theta_) , theta_);}
 
 	/**
 	 *	function overload
@@ -80,7 +80,7 @@ public:	//tools
 	 *		(this->move(K,H)).p_ - p_ == point2d(K,H)
 	 *		(this->move(K,H)).theta_ = this->theta_
 	 */
-	const pose2d	move(double deltaP, const angle& deltaTh) const {return pose2d( (rotate(deltaTh).move(deltaP)).p_ , theta_);}
+	pose2d	move(double deltaP, const angle& deltaTh) const {return pose2d( (rotate(deltaTh).move(deltaP)).p_ , theta_);}
 
 	/**
 	 *	function overload
@@ -102,7 +102,7 @@ public:	//tools
 	 *	this function returns a pose2d representing a rotation counterclockwise of "delta".
 	 *	invariant: p_ remains the same
 	 */
-	const pose2d	rotate(const angle& delta) const {return pose2d(p_,theta_+delta);}
+	pose2d	rotate(const angle& delta) const {return pose2d(p_,theta_+delta);}
 
 	/**
 	 *	this function change the *this object, rotating the pose by "delta"
@@ -118,7 +118,7 @@ public:	//tools
   //mentre relative ipotizza che il point sia espresso 
   //  in coordinate del frame assoluto e che si vogliano le coordinate in un frame
   //centrato nella pose2d
-	const point2d	relative(const point2d& absolute) const {return (absolute - p_).rotate(-theta_);}
+	point2d	relative(const point2d& absolute) const {return (absolute - p_).rotate(-theta_);}
 
 	/**
 	 *	this function returns a point2d representing the absolute position of the point "relative", 
@@ -129,7 +129,7 @@ public:	//tools
 
   //comunque... absolute ipotizza che il point sia espresso in un frame solidale 
   //  con la pose2d e che si vogliano le sue coordinate nel frame (0,0,0)
-	const point2d	absolute(const point2d& relative) const {return relative.rotate(theta_) + p_;}
+	point2d	absolute(const point2d& relative) const {return relative.rotate(theta_) + p_;}
 
 public:	//friends
 	friend	std::ostream&	operator<<(std::ostream& os, const pose2d& temp);
