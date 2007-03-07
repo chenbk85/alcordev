@@ -12,7 +12,7 @@ namespace all { namespace act {
   {
   public:
     ///
-    p3_odometry_adapter_t(act::p3_gateway_sptr);
+    p3_odometry_adapter_t(act::p3_gateway_ptr_t);
 
   public:
       ///(Not)Localized rotation angle in degrees.
