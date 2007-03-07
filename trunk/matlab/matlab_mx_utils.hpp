@@ -42,7 +42,7 @@ static mxArray* create_from_planar(typename matlab::traits<T>::const_ptr _src
     //TODO: remove it from here?
 	std::vector<size_t> _channel_stride;
 
-	for (int i = _channels ; i; --i)
+	for (size_t i = _channels ; i; --i)
 		{	
 		_channel_stride.push_back((i-1)*planar_inc);
 		}
@@ -51,7 +51,7 @@ static mxArray* create_from_planar(typename matlab::traits<T>::const_ptr _src
     size_t idx = planar_inc-1;
   printf("buffer2array loop IN\n");
 	//Loop inversion!
-	for(int coli =_width ; coli; --coli)
+	for(size_t coli =_width ; coli; --coli)
         {	
           //printf("col n: %d\n", coli);
 		column_inc = (coli-1);//*_channels; 
@@ -101,9 +101,9 @@ static mxArray* create_from_interleaved(typename matlab::traits<T>::const_ptr _s
 	///channel's stride ..
     //TODO: remove it from here?
 	std::vector<int> _channel_stride;
-	for (int i = _channels-1 ; i >= 0; --i)
+	for (int i = _channels ; i ; --i)
 		{	
-		_channel_stride.push_back((i)*planar_inc);
+		_channel_stride.push_back((i-1)*planar_inc);
 		}
 
     //total number of pixels (without taking care of the pixel's depth..)
