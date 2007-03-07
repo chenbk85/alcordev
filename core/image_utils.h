@@ -2,7 +2,6 @@
 #define image_utils_H_INCLUDED
 //-------------------------------------------------------------------
 #include "alcor/core/core.h"
-
 //-------------------------------------------------------------------
 namespace all { namespace core {
 //-------------------------------------------------------------------
@@ -93,8 +92,6 @@ inline  void change_ordering::to_planar(all::core::uint8_sarr& arr,
     }
   }
 
-  //}//parallel
-  //arr.reset(temp.get());
   arr = temp;
     }
 //-------------------------------------------------------------------

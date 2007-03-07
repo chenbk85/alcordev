@@ -8,7 +8,7 @@
 #include <boost/accumulators/statistics.hpp>
 #include <boost/range/iterator.hpp>
 #include <boost/timer.hpp>
-#include "alcor.extern/gil/core/gil_all.hpp"
+//#include "alcor.extern/gil/core/gil_all.hpp"
 //---------------------------------------------------------------------------+
 #include <boost/numeric/ublas/vector.hpp>
 //---------------------------------------------------------------------------+
@@ -156,9 +156,6 @@ namespace all { namespace core {
     accumulator_set<float, stats<tag::density> > 
       hist(tag::density::cache_size = 20,tag::density::num_bins = 20);
 
-    //psqr_accumulator_t 
-    //  chist(tag::p_square_cumulative_distribution::num_cells = 10);
-
     core::depth_image_t::buffer_type data = 
       depth.get_buffer_sptr();
 
@@ -204,21 +201,21 @@ namespace all { namespace core {
 
     double elapsed = timer.elapsed();
 
-    //log istogramma cumulativo ...
-    if (1)
-    {
-      printf("Elapsed:  %f\n", elapsed);
-      printf("Mean:     %f\n", mean(acc));
-      printf("StdDev    %f\n\n", error_of<tag::immediate_mean>(acc));
+    ////log istogramma cumulativo ...
+    //if (1)
+    //{
+    //  printf("Elapsed:  %f\n", elapsed);
+    //  printf("Mean:     %f\n", mean(acc));
+    //  printf("StdDev    %f\n\n", error_of<tag::immediate_mean>(acc));
 
-      for (std::size_t i = 0; i < histogram.size(); ++i)
-      {   
-      // problem with small results: epsilon is relative (in percent), not absolute!
-      if ( histogram[i].second > 0.0001 )  //non capito ...  
-        printf("%f %f\n", histogram[i].first, histogram[i].second);
-      }
-    }
-    printf("\n");
+    //  for (std::size_t i = 0; i < histogram.size(); ++i)
+    //  {   
+    //  // problem with small results: epsilon is relative (in percent), not absolute!
+    //  if ( histogram[i].second > 0.0001 )  //non capito ...  
+    //    printf("%f %f\n", histogram[i].first, histogram[i].second);
+    //  }
+    //}
+    //printf("\n");
     return outstat;
   }
 

@@ -7,9 +7,14 @@
 //---------------------------------------------------------------------------
 namespace all { namespace act {
 //---------------------------------------------------------------------------
-  directed_perception_ptu_t::directed_perception_ptu_t()
+directed_perception_ptu_t::directed_perception_ptu_t()
 {
   //impl.reset(new lti::directedPerceptionPTU);
+}
+//---------------------------------------------------------------------------
+directed_perception_ptu_t::~directed_perception_ptu_t()
+{
+ 
 }
 //---------------------------------------------------------------------------
 bool directed_perception_ptu_t::open(const std::string& ini)
@@ -87,7 +92,6 @@ bool directed_perception_ptu_t::open(const std::string& ini)
     return false;
 
   return true;
-
 }
 //---------------------------------------------------------------------------
 bool directed_perception_ptu_t::set_angle_format(math::deg_t)

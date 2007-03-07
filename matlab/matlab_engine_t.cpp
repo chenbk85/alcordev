@@ -39,7 +39,7 @@ matlab_engine_t::matlab_engine_t(bool single_mode)
 //---------------------------------------------------------------------------
 void matlab_engine_t::command_line(const string& arg)
 {
-	std::printf("Command: %s\n",arg.c_str() );
+	//std::printf("Command: %s\n",arg.c_str() );
 	engEvalString(m_eng, arg.c_str());
 }
 //---------------------------------------------------------------------------
