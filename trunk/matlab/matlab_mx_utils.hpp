@@ -49,7 +49,7 @@ static mxArray* create_from_planar(typename matlab::traits<T>::const_ptr _src
 
     //total number of pixels (without taking care of the pixel's depth..)
     size_t idx = planar_inc-1;
-  printf("buffer2array loop IN\n");
+  //printf("buffer2array loop IN\n");
 	//Loop inversion!
 	for(size_t coli =_width ; coli; --coli)
         {	
@@ -68,7 +68,7 @@ static mxArray* create_from_planar(typename matlab::traits<T>::const_ptr _src
 				}
 			}
 		}  
-  printf("buffer2array loop OUT\n");
+  //printf("buffer2array loop OUT\n");
 	return mxresult;
 }
 

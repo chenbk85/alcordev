@@ -25,7 +25,8 @@ namespace all { namespace act {
 {
 public:
   directed_perception_ptu_t();
-  
+  ~directed_perception_ptu_t();  
+
   boost::shared_ptr<directed_perception_ptu_t> getshared(){return shared_from_this();};
 
   bool open(const std::string& ini);

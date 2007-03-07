@@ -141,7 +141,7 @@ inline double pantilt_control_loop_t::get_polar_reference(math::rad_t) const
 //---------------------------------------------------------------------------
 inline   void pantilt_control_loop_t::idle_action()
 {
-  BOOST_SLEEP(100);
+  BOOST_SLEEP(50);
 }
 
 inline   void pantilt_control_loop_t::enabled_action()
@@ -153,10 +153,10 @@ inline   void pantilt_control_loop_t::enabled_action()
   double theta_rob = slam_->get_current_rot(math::deg_tag);
   printf("reference: %f\n", reference_);
   double pan_setpoint =  reference_ - theta_rob;
-  printf("theta_rob: %f \n",theta_rob);
-  ptu_->set_pan(static_cast<float>(pan_setpoint), 0.2f);
+  //printf("theta_rob: %f \n",theta_rob);
+  ptu_->set_pan(static_cast<float>(pan_setpoint), 0.1f);
   }
-  BOOST_SLEEP(100);
+  BOOST_SLEEP(50);
 }
 //---------------------------------------------------------------------------
 inline void pantilt_control_loop_t::run_loop()
