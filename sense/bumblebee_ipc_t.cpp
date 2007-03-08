@@ -155,7 +155,7 @@ void all::sense::bumblebee_ipc_t::run_thread()
       ///////////////////////////////////////////////////////////////////
      if (bee->grab())//acquisition
      {
-       ipc::scoped_lock<ipc::named_mutex> lock(mutex);
+       //ipc::scoped_lock<ipc::named_mutex> lock(mutex);
        //boost::scoped_lock< > lock(mutex);
        //RIGHT
 		    {
@@ -184,7 +184,7 @@ void all::sense::bumblebee_ipc_t::run_thread()
         //
         ///////////////////////////////////////////////////////////////////
 		boost::thread::yield();
-		Sleep(25);
+    core::BOOST_SLEEP(50);
 		}//_running ... out of thread loop...
 	///////////////////////////////////////////////////////////////////////
     ipc::shared_memory_object::remove(right_rgb_name.c_str());

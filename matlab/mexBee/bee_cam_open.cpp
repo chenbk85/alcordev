@@ -9,28 +9,28 @@ void bee_cam_open( int nlhs
 					,const mxArray 
 					*prhs[])
 	{
-  char *input_buf;
-  int   buflen;
+ // char *input_buf;
+ // int   buflen;
 
-   //Input must be a string. 
-  if (mxIsChar(CAMERA_ID_) != 1)
-    mexErrMsgTxt("Input must be a string.");
-  //Input must be a row vector.
-  if (mxGetM(CAMERA_ID_) != 1)
-    mexErrMsgTxt("Input must be a row vector.");
+ //  //Input must be a string. 
+ // if (mxIsChar(CAMERA_ID_) != 1)
+ //   mexErrMsgTxt("Input must be a string.");
+ // //Input must be a row vector.
+ // if (mxGetM(CAMERA_ID_) != 1)
+ //   mexErrMsgTxt("Input must be a row vector.");
 
-  //Get the length of the input string. 
-  buflen = (int)(mxGetM(CAMERA_ID_) * mxGetN(CAMERA_ID_)) + 1;
+ // //Get the length of the input string. 
+ // buflen = (int)(mxGetM(CAMERA_ID_) * mxGetN(CAMERA_ID_)) + 1;
 
 	all::sense::bumblebee_driver_t& mybee = 
     get_object<all::sense::bumblebee_driver_t>(OBJ_HANDLE_);
 
-   //Allocate memory for input and output strings. 
-  input_buf = (char*) mxCalloc(buflen, sizeof(char));
-  mxGetString(CAMERA_ID_, input_buf, buflen);
+ //  //Allocate memory for input and output strings. 
+ // input_buf = (char*) mxCalloc(buflen, sizeof(char));
+ // mxGetString(CAMERA_ID_, input_buf, buflen);
 
-  std::string ininame = "config/";
-  ininame += input_buf;
+  std::string ininame = "config/bumblebeeB";
+  //ininame += input_buf;
 
   std::printf("Opening %s\n", ininame.c_str());
 
