@@ -137,8 +137,8 @@ namespace all { namespace core {
   inline  mystat 
     estimate_depth(core::depth_image_t& depth, pixelcoord_t center, size_t hsize)
   {
-    boost::timer timer;
-    timer.restart();
+    //boost::timer timer;
+    //timer.restart();
 
     roi_2d_t roi (center, hsize);
     roi.clip_to(depth.height(), depth.width());
@@ -199,7 +199,7 @@ namespace all { namespace core {
     histogram_type 
       histogram = density(hist); 
 
-    double elapsed = timer.elapsed();
+    //double elapsed = timer.elapsed();
 
     ////log istogramma cumulativo ...
     //if (1)
