@@ -1,7 +1,8 @@
 #include "matlab_bee_inc.h"
 //--------------------------------------------------------------------++
 #include <boost/function.hpp>
-#include <vector>
+#include <map>
+#include <boost/assign/list_inserter.hpp>
 ////--------------------------------------------------------------------++
 ////External Functions (they do all the serious work)
 extern void bee_cam_create( int nlhs, mxArray *plhs[], int nrhs, const mxArray 
@@ -27,7 +28,7 @@ typedef boost::function<void (int nlhs,
                         int nrhs, 
                         const mxArray* prhs[])> func_t;
 
-typedef std::vector<func_t> function_table_t;
+typedef std::map<int,func_t> function_table_t;
 
 static		function_table_t*	function_table	= NULL;
 //--------------------------------------------------------------------++
@@ -59,17 +60,25 @@ static void init_function_table()
 		function_table = new function_table_t;
 
 		//self.CREATE         = 0;
-		function_table->push_back(&bee_cam_create);
-		//self.OPEN           = 1;
-		function_table->push_back(&bee_cam_open);
-		//self.CLOSE           = 2;
-		function_table->push_back(&bee_cam_close);
-		//self.GRABCOLOR       = 3;
-		function_table->push_back(&bee_cam_grab_color);
-		//self.GRABRGBXYZ       = 4;
-		function_table->push_back(&bee_cam_grab_color_and_depth);
-		//self.GRABALL       = 5;
-		function_table->push_back(&bee_grab_all);
+		//function_table->push_back(&bee_cam_create);
+    boost::assign::insert(*function_table) 
+      (0, &bee_cam_create)//self.CREATE = 0;
+      (1, &bee_cam_open)//self.OPEN =1
+      (2, &bee_cam_close)//self.CLOSE =2
+      (3, &bee_cam_grab_color)//self.GRABCOLOR =3
+      (4, &bee_cam_grab_color_and_depth)//self.GRABRGBXYZ =4
+      (5, &bee_grab_all);//self.GRABALL =5
+       
+		////self.OPEN           = 1;
+		//function_table->push_back(&bee_cam_open);
+		////self.CLOSE           = 2;
+		//function_table->push_back(&bee_cam_close);
+		////self.GRABCOLOR       = 3;
+		//function_table->push_back(&bee_cam_grab_color);
+		////self.GRABRGBXYZ       = 4;
+		//function_table->push_back(&bee_cam_grab_color_and_depth);
+		////self.GRABALL       = 5;
+		//function_table->push_back(&bee_grab_all);
 
 		myStaticDataInitialized = 1;
 		myFuncTableSize = static_cast<int> (function_table->size());
@@ -104,7 +113,8 @@ void mexFunction( int nlhs, mxArray* plhs[], int nrhs, const mxArray
 		if( cmd >= 0 && cmd < myFuncTableSize )
 			{
 				//Ok we are in the range...
-				func_t func = function_table->at(cmd);
+				//func_t func = function_table->at(cmd);
+        func_t func = function_table->operator [](cmd);
 				//Check ... you'll never know...
 				if(func)
 					// N.B. the -1 and +1

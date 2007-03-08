@@ -1,6 +1,7 @@
 #include "matlab_bee_inc.h"
 
 #define OBJ_HANDLE_ prhs[0]
+#define CAMERA_ID_  prhs[1]
 
 void bee_cam_open( int nlhs 
 					,mxArray *plhs[]
@@ -8,13 +9,32 @@ void bee_cam_open( int nlhs
 					,const mxArray 
 					*prhs[])
 	{
-	printf("Opening ....\n");
+  char *input_buf;
+  int   buflen;
+
+   //Input must be a string. 
+  if (mxIsChar(CAMERA_ID_) != 1)
+    mexErrMsgTxt("Input must be a string.");
+  //Input must be a row vector.
+  if (mxGetM(CAMERA_ID_) != 1)
+    mexErrMsgTxt("Input must be a row vector.");
+
+  //Get the length of the input string. 
+  buflen = (int)(mxGetM(CAMERA_ID_) * mxGetN(CAMERA_ID_)) + 1;
+
 	all::sense::bumblebee_driver_t& mybee = 
     get_object<all::sense::bumblebee_driver_t>(OBJ_HANDLE_);
 
-  std::printf("Opening\n");
+   //Allocate memory for input and output strings. 
+  input_buf = (char*) mxCalloc(buflen, sizeof(char));
+  mxGetString(CAMERA_ID_, input_buf, buflen);
 
-  if(mybee.open("config/bumblebeeB.ini"))    
+  std::string ininame = "config/";
+  ininame += input_buf;
+
+  std::printf("Opening %s\n", ininame.c_str());
+
+  if(mybee.open(ininame))    
   {
     printf("OK\n");
     printf("Bumblebee RGB IPC stream succesfully opened!\n");

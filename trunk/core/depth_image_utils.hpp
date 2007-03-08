@@ -165,9 +165,9 @@ namespace all { namespace core {
     typedef boost::iterator_range<std::vector<std::pair<single_t, single_t> >::iterator >  
       histogram_type;
 
-    for (size_t it_r = roi.minrow()  ;  it_r < roi.maxrow(); it_r++)
+    for (size_t it_r = roi.minrow()  ;  it_r < roi.maxrow();  it_r++)
     {
-      for (size_t it_c = roi.mincol(); it_c < roi.maxcol() ; it_c++)
+      for (size_t it_c = roi.mincol();  it_c < roi.maxcol() ; it_c++)
       {
         //calc norm
         //weird per-channel pixel access....
