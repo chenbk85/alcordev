@@ -83,6 +83,9 @@ void p3_gateway::enable_stop_mode()
 //---------------------------------------------------------------------------
 void p3_gateway::enable_wander_mode()
 {
+  impl->m_robot->clearDirectMotion();
+  impl->m_wander->activateExclusive();
+  printf("Wandering.\n");
 }
 //---------------------------------------------------------------------------
 void p3_gateway::enable_follow_mode()
