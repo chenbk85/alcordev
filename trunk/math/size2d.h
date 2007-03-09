@@ -29,6 +29,7 @@ public:	//setters and getters
 public:	//friends
 	friend	std::ostream&	operator<<(std::ostream& os, size2d temp);
 	friend	std::istream&	operator>>(std::istream& is, size2d& temp);
+	friend	bool operator==(const size2d& a, const size2d& b);
 
 private: //data stored as a pair of size_t
 	size_t	x_;
@@ -47,6 +48,14 @@ inline	std::istream&	operator>>(std::istream& is, size2d& temp)
 	is >> temp.x_ >> temp.y_; 
 	return is;
 }
+
+bool inline	operator==(const size2d& a, const size2d& b)
+{
+	return (a.x_ == b.x_) && (a.y_ == b.y_);
+}
+
+const size_t size_max = static_cast<size_t>(-1);
+const size2d size2d_max(size_max,size_max);
 
 }//namespace math
 }//namespace all
