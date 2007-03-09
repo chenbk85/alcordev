@@ -12,6 +12,12 @@ struct change_ordering
                         size_t width, 
                         size_t depth);
 
+  static void  to_interleaved(all::core::single_sarr& arr, 
+                      size_t height, 
+                      size_t width, 
+                      size_t depth);
+
+
   static void to_planar(all::core::uint8_sarr& arr, 
                         size_t height, 
                         size_t width, 
@@ -49,6 +55,42 @@ inline void  change_ordering::to_interleaved(all::core::uint8_sarr& arr,
     temp[comp_index_il + 2]  = arr[comp_index_pl + channel_stride2];
     }
   }
+
+  arr.reset(temp);
+
+  }
+//-------------------------------------------------------------------
+inline void  change_ordering::to_interleaved(all::core::single_sarr& arr, 
+                        size_t height, 
+                        size_t width, 
+                        size_t depth)
+
+  {
+    size_t channel_stride  = height*width;//*sizeof(core::single_t);
+    size_t channel_stride2 = channel_stride*2;
+
+    size_t row_stride     = width;//*sizeof(core::single_t);
+
+    core::single_ptr temp = new core::single_t[height*width*depth];
+
+    size_t comp_index_pl    = 0;
+    size_t comp_index_il    = 0;
+
+    for(int row = height; row ; --row)
+    {
+      for(int col = width; col ; --col)
+      {
+      comp_index_pl = ((row-1)*row_stride) + ( (col-1) );
+      comp_index_il = comp_index_pl*3;
+
+      //R
+      temp[comp_index_il]      = arr[comp_index_pl];
+      //G
+      temp[comp_index_il + 1]  = arr[comp_index_pl + channel_stride];
+      //B
+      temp[comp_index_il + 2]  = arr[comp_index_pl + channel_stride2];
+      }
+    }
 
   arr.reset(temp);
 
