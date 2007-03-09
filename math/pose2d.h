@@ -31,6 +31,8 @@ public:	//ctors
 	explicit	pose2d(point2d q):p_(q),theta_(0.0, deg_tag){}
 	pose2d(point2d q, angle a):p_(q),theta_(a){}
 	pose2d(double a, double b, angle c):p_(a,b),theta_(c){}
+	pose2d(double a, double b, double c, rad_t d):p_(a,b),theta_(c,d){}
+	pose2d(double a, double b, double c, deg_t d):p_(a,b),theta_(c,d){}
 
 public:	//binary operators
 	// to do... do we need operator + and - for pose2d??
@@ -48,8 +50,8 @@ public:	//setters and getters
 
 	double	get_x1() const {return p_.get_x1();}
 	double	get_x2() const {return p_.get_x2();}
-	double	get_th(math::deg_t) const {return theta_.deg();};
-	double	get_th(math::rad_t) const {return theta_.rad();};
+	double	get_th(deg_t) const {return theta_.deg();};
+	double	get_th(rad_t) const {return theta_.rad();};
 
 	void	setP(const point2d& temp){p_ = temp;}
 	void	setTh(const angle& temp){theta_ = temp;}
@@ -58,8 +60,8 @@ public:	//setters and getters
 
 	void	set_x1(double val)  {p_.set_x1(val); };
 	void	set_x2(double val)  {p_.set_x2(val);};
-	void	set_th(double val, math::deg_t) {theta_.set_deg(val);};
-	void	set_th(double val, math::rad_t) {theta_.set_rad(val);};
+	void	set_th(double val, deg_t) {theta_.set_deg(val);};
+	void	set_th(double val, rad_t) {theta_.set_rad(val);};
 
 public:	//tools
 	/**

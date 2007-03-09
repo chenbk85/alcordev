@@ -1,12 +1,10 @@
 #ifndef	size2d_H
 #define	size2d_H
-
+//-----------------------------------------------------------------------------------------------
 #include<iostream>
-
-namespace all
-{
-namespace math
-{
+//-----------------------------------------------------------------------------------------------
+namespace all{
+namespace math{
 
 /**
  *	class size2d
@@ -59,5 +57,5 @@ const size2d size2d_max(size_max,size_max);
 
 }//namespace math
 }//namespace all
-
+//-----------------------------------------------------------------------------------------------
 #endif //size2d_H

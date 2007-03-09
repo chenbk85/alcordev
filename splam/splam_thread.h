@@ -1,6 +1,8 @@
 #ifndef SPLAM_THREAD_H
 #define SPLAM_THREAD_H
 //-----------------------------------------------------------------------------------------------
+#include <boost/shared_ptr.hpp>
+//-----------------------------------------------------------------------------------------------
 namespace all{
 namespace splam{
 
@@ -27,7 +29,7 @@ class splam_thread_impl;
 class splam_thread
 {
 public:	
-	explicit splam_thread(char* name = "./config/splam.ini");
+	explicit splam_thread(const char* name = "./config/splam.ini");
 	~splam_thread();
 	void	run();
 	void	stop();
@@ -35,7 +37,7 @@ public:
 	void	stop_server();
 
 private:
-	splam_thread_impl* pImpl_;
+	boost::shared_ptr<splam_thread_impl> pImpl_;
 };
 
 }//namespace splam
