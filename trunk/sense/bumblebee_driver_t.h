@@ -23,6 +23,11 @@ namespace all{
 	class bumblebee_driver_t;
 	class bumblebee_parameters_t;
   typedef boost::shared_ptr<all::sense::bumblebee_driver_t> bumblebee_sptr;
+//---------------------------------------------------------------------------
+typedef boost::shared_ptr<all::sense::bumblebee_driver_t> bumblebee_driver_ptr_t;
+///backward compatibility
+typedef boost::shared_ptr<all::sense::bumblebee_driver_t> bumblebee_driver_ptr;
+//---------------------------------------------------------------------------
   namespace detail{
   class bumblebee_driver_impl;
   }
@@ -58,7 +63,6 @@ public:
 
 };
 
-typedef boost::shared_ptr<all::sense::bumblebee_driver_t> bumblebee_driver_ptr;
 //---------------------------------------------------------------------------
 class all::sense::bumblebee_driver_t : public i_device_driver
 	{
@@ -113,7 +117,6 @@ protected:
   size_t color_buffer_size_;
   size_t depth_buffer_size_;
 	};
-
 
 //---------------------------------------------------------------------------
 #endif //bumblebee_t_H_INCLUDED
