@@ -31,8 +31,8 @@ public:	//ctors
 	explicit	pose2d(point2d q):p_(q),theta_(0.0, deg_tag){}
 	pose2d(point2d q, angle a):p_(q),theta_(a){}
 	pose2d(double a, double b, angle c):p_(a,b),theta_(c){}
-	pose2d(double a, double b, double c, rad_t d):p_(a,b),theta_(c,d){}
-	pose2d(double a, double b, double c, deg_t d):p_(a,b),theta_(c,d){}
+	pose2d(double a, double b, double c, rad_t):p_(a,b),theta_(c,rad_t){}
+	pose2d(double a, double b, double c, deg_t):p_(a,b),theta_(c,deg_t){}
 
 public:	//binary operators
 	// to do... do we need operator + and - for pose2d??
