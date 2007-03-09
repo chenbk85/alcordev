@@ -1,14 +1,12 @@
 #ifndef	point2d_H
 #define	point2d_H
-
+//-----------------------------------------------------------------------------------------------
 #include <iostream>
 #include <cmath>
 #include "angle.h"
-
-namespace all
-{
-namespace math
-{
+//-----------------------------------------------------------------------------------------------
+namespace all{
+namespace math{
 
 //fwd declarations
 class	point2d;
@@ -256,5 +254,5 @@ inline	double	dotproduct(const point2d& a, const point2d& b)
 
 }//namespace math
 }//namespace all
-
+//-----------------------------------------------------------------------------------------------
 #endif //point2d_H
