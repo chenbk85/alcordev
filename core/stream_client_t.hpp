@@ -26,6 +26,9 @@ public:
 
 	virtual void stop();
 
+	void send_source_cmd(std::string);
+	void send_source_cmd(std::string, net_packet_ptr_t);
+
 private:
 
 	void connect_cb();

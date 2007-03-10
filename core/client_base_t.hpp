@@ -47,6 +47,8 @@ public:
 	void send_request(std::string, net_packet_ptr_t, int req_freq = 0);
 
 	void stop_request(std::string);
+
+	void send_finalized_packet(net_packet_ptr_t);
 	
 	//set handler for incoming packet (based on its type)
 	void set_packet_handler (net_packet_type, boost::function <void (net_packet_ptr_t) >);

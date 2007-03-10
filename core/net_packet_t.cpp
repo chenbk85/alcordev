@@ -87,6 +87,7 @@ net_packet_t::net_packet_t() {
 	m_write_ptr = m_data;
 	m_req_freq = 0;
 	m_data_size = 0;
+	m_command.clear();
 }
 
 net_packet_t::net_packet_t(net_packet_header_t header, const char* buffer, std::size_t buffer_size): 
@@ -103,19 +104,19 @@ net_packet_t::net_packet_t(net_packet_header_t header, const char* buffer, std::
 
 	m_write_ptr = m_buffer.get();
 	
-	if (packet_type == COMMAND_PACKET || packet_type == ANSWER_PACKET || packet_type == REQUEST_PACKET) {
+	//if (packet_type == COMMAND_PACKET || packet_type == ANSWER_PACKET || packet_type == REQUEST_PACKET) {
 
 		m_command.assign(m_write_ptr);
 		m_write_ptr += (m_command.size() +1);
 		m_data_size -= (m_command.size() +1);
 
-		if (packet_type == REQUEST_PACKET) {
+		//if (packet_type == REQUEST_PACKET) {
 			memcpy(&m_req_freq, m_write_ptr, sizeof(m_req_freq));
 			m_write_ptr += sizeof(m_req_freq);
 			m_data_size -= sizeof(m_req_freq);
-		}
+		//}
 		
-	}
+	//}
 	
 	m_data_buffer_size = m_data_size;
 	m_data = new char[m_data_buffer_size];
@@ -215,18 +216,18 @@ std::size_t net_packet_t::buf_to_array(all::core::uint8_ptr& arr) {
 bool net_packet_t::finalize_packet() {
 	
 	//fill packet buffer
-	net_packet_type packet_type = m_header.get_packet_type();
+	//net_packet_type packet_type = m_header.get_packet_type();
 
-	if (packet_type == COMMAND_PACKET || packet_type == ANSWER_PACKET) {
-        m_buffer_size = m_data_size + m_command.size() + 1 + END_SEQUENCE.size();
-		m_buffer.reset(new char[m_buffer_size]);
-		
-		m_write_ptr = m_buffer.get();
-		
-		strcpy(m_write_ptr, m_command.c_str());
-		m_write_ptr += (m_command.size()+1);
-	}
-	else if (packet_type == REQUEST_PACKET)  {
+	//if (packet_type == COMMAND_PACKET || packet_type == ANSWER_PACKET) {
+ //       m_buffer_size = m_data_size + m_command.size() + 1 + END_SEQUENCE.size();
+	//	m_buffer.reset(new char[m_buffer_size]);
+	//	
+	//	m_write_ptr = m_buffer.get();
+	//	
+	//	strcpy(m_write_ptr, m_command.c_str());
+	//	m_write_ptr += (m_command.size()+1);
+	//}
+	//else if (packet_type == REQUEST_PACKET)  {
 		m_buffer_size = m_data_size + m_command.size() + 1 + sizeof(m_req_freq) + END_SEQUENCE.size();
 		m_buffer.reset(new char[m_buffer_size]);
 		
@@ -238,12 +239,12 @@ bool net_packet_t::finalize_packet() {
 		memcpy(m_write_ptr, &m_req_freq, sizeof(m_req_freq));
 		m_write_ptr += sizeof(m_req_freq);
 
-	}
-	else  {
-		m_buffer_size = m_data_size + END_SEQUENCE.size();
-		m_buffer.reset(new char[m_buffer_size]);
-		m_write_ptr = m_buffer.get();
-	}
+	//}
+	//else  {
+	//	m_buffer_size = m_data_size + END_SEQUENCE.size();
+	//	m_buffer.reset(new char[m_buffer_size]);
+	//	m_write_ptr = m_buffer.get();
+	//}
 	
 	memcpy(m_write_ptr, m_data, m_data_size);
 	m_write_ptr += m_data_size;
