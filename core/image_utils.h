@@ -17,6 +17,16 @@ struct change_ordering
                       size_t width, 
                       size_t depth);
 
+  static void  to_topleft(all::core::uint8_sarr& arr, 
+                      size_t height, 
+                      size_t width, 
+                      size_t depth);
+
+  static void  from_rgba_opengl(
+                      const all::core::uint8_sarr& arr, 
+                      all::core::uint8_sarr& out,
+                      size_t height, 
+                      size_t width);
 
   static void to_planar(all::core::uint8_sarr& arr, 
                         size_t height, 
@@ -95,6 +105,81 @@ inline void  change_ordering::to_interleaved(all::core::single_sarr& arr,
   arr.reset(temp);
 
   }
+//-------------------------------------------------------------------
+///FROM BOTTOM LEFT TO TOPLEFT ORIGIN -- PLANAR
+inline void  change_ordering::to_topleft(all::core::uint8_sarr& arr, 
+                    size_t height, 
+                    size_t width, 
+                    size_t depth)
+{
+  size_t channel_stride  = height*width;
+  size_t channel_stride2 = channel_stride*2;
+
+  size_t row_stride     = width;
+
+  core::uint8_ptr temp = new core::uint8_t[height*width*depth];
+
+  //bottom left index
+  size_t comp_index_bl    = 0;
+  //topleft index
+  size_t comp_index_tl    = 0;
+
+  for(int row = height; row ; --row)
+  {
+    //copy (bottomleft) row to its right (topleft) position
+    //origin pointer
+    core::uint8_ptr from_rowptr =  arr.get()+ ((row-1)        * row_stride);
+    core::uint8_ptr to_rowptr   =  temp     + ((height - row) * row_stride);
+
+    //plane 0
+    memcpy(to_rowptr, from_rowptr, row_stride);
+    //plane 1
+    memcpy(to_rowptr+channel_stride,  from_rowptr+channel_stride, row_stride);
+    //plane 2
+    memcpy(to_rowptr+channel_stride2, from_rowptr+channel_stride2, row_stride);
+    
+  }
+
+  arr.reset(temp);
+}
+//-------------------------------------------------------------------
+inline void  change_ordering::from_rgba_opengl(
+                      const all::core::uint8_sarr& arr,
+                      all::core::uint8_sarr& out,
+                      size_t height, 
+                      size_t width)
+  {
+
+  size_t channel_stride  = height*width;
+  size_t channel_stride2 = channel_stride*2;
+
+  //size_t row_stride     = width;
+
+  //core::uint8_ptr temp = new core::uint8_t[height*width*3];
+
+	// get num pixels
+	unsigned int total_size = width * height * 4;
+	unsigned int this_pixel_start = 0;
+  unsigned int out_pixel_start =0;
+
+  	// loop through each pixel
+	for( ; this_pixel_start != total_size  ; this_pixel_start += 4, ++out_pixel_start  ) 
+  {
+
+		//// get address of pixel data
+    const unsigned char* pixel = arr.get() + this_pixel_start;
+
+    out[out_pixel_start] = pixel[0];
+    out[out_pixel_start + channel_stride] = pixel[1];
+    out[out_pixel_start + channel_stride2] = pixel[2];
+	}
+
+  //devo fare per forza un doppio loop
+  //l'origine originale è bottomleft
+
+
+  }
+
 //-------------------------------------------------------------------
 inline  void change_ordering::to_planar(all::core::uint8_sarr& arr, 
                         size_t height, 
