@@ -17,7 +17,8 @@ enum net_packet_type {
 		REQUEST_PACKET,
 		ANSWER_PACKET,
 		ALIVE_PACKET,
-		RAW_PACKET
+		RAW_PACKET,
+		APPL_PACKET
 };
 
 class net_packet_header_t {

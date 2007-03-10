@@ -193,6 +193,9 @@ void client_base_t::stop_request(std::string request) {
 	send_request(request, -1);
 }
 
+void client_base_t::send_finalized_packet(net_packet_ptr_t packet) {
+	m_tcp_sender.send_packet(packet);
+}
 
 void client_base_t::in_packet_handler (net_packet_ptr_t packet) {
 	

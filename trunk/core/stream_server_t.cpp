@@ -32,6 +32,9 @@ stream_server_t::stream_server_t(stream_source_t& stream_source, char* ini_file)
 	set_client_connect_cb(boost::bind(&stream_server_t::client_connect_cb, this, _1));
 	set_client_disconnect_cb(boost::bind(&stream_server_t::client_disconnect_cb, this, _1));
 
+	//add handler for stream source command
+	set_packet_handler(APPL_PACKET, boost::bind(&stream_source_t::process_command, &m_stream_source, _2)); 
+
 	m_streaming = false;
 }
 

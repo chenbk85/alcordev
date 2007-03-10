@@ -126,7 +126,19 @@ void stream_client_t::stop() {
 	client_base_t::stop();
 }
 
+void stream_client_t::send_source_cmd(std::string command) {
+	net_packet_ptr_t packet(new net_packet_t());
+	send_source_cmd(command, packet);
+}
 
+void stream_client_t::send_source_cmd(std::string command, net_packet_ptr_t packet) {
+	if (is_connected()) {
+		packet->set_packet_type(APPL_PACKET);
+		packet->set_command(command);
+		packet->finalize_packet();
+		send_finalized_packet(packet);
+	}
+}
 
 
 
