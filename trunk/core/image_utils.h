@@ -22,11 +22,17 @@ struct change_ordering
                       size_t width, 
                       size_t depth);
 
-  static void  from_rgba_opengl(
+  static void  from_rgba_opengl_to_planar(
                       const all::core::uint8_sarr& arr, 
                       all::core::uint8_sarr& out,
                       size_t height, 
                       size_t width);
+
+  static void  from_rgba_opengl_to_interleaved(
+                    const all::core::uint8_sarr& arr, 
+                    all::core::uint8_sarr& out,
+                    size_t height, 
+                    size_t width);
 
   static void to_planar(all::core::uint8_sarr& arr, 
                         size_t height, 
@@ -143,7 +149,7 @@ inline void  change_ordering::to_topleft(all::core::uint8_sarr& arr,
   arr.reset(temp);
 }
 //-------------------------------------------------------------------
-inline void  change_ordering::from_rgba_opengl(
+inline void  change_ordering::from_rgba_opengl_to_planar(
                       const all::core::uint8_sarr& arr,
                       all::core::uint8_sarr& out,
                       size_t height, 
@@ -179,7 +185,30 @@ inline void  change_ordering::from_rgba_opengl(
 
 
   }
+//-------------------------------------------------------------------
+inline void  change_ordering::from_rgba_opengl_to_interleaved(
+                    const all::core::uint8_sarr& arr, 
+                    all::core::uint8_sarr& out,
+                    size_t height, 
+                    size_t width)
+{
+	// get num pixels
+	unsigned int total_size = width * height * 4;
+	unsigned int this_pixel_start = 0;
+  unsigned int out_pixel_start =0;
 
+  	// loop through each pixel
+	for( ; this_pixel_start != total_size  ; this_pixel_start += 4, out_pixel_start +=3  ) 
+  {
+
+		//// get address of pixel data
+    const unsigned char* pixel = arr.get() + this_pixel_start;
+
+    out[out_pixel_start] = pixel[0];
+    out[out_pixel_start + 1] = pixel[1];
+    out[out_pixel_start + 2] = pixel[2];
+	}
+}
 //-------------------------------------------------------------------
 inline  void change_ordering::to_planar(all::core::uint8_sarr& arr, 
                         size_t height, 
