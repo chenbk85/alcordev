@@ -105,8 +105,15 @@ urg_laser_impl::~urg_laser_impl() {
 bool urg_laser_impl::connect() {
 	if ( m_urg.Open(m_urg_port.c_str()) != -1) {
 		printf("URG connected on port %s\n", m_urg_port.c_str());
+
+		m_urg.SetBaudRate(wxBAUD_115200);
+		send_command("SS115200");
+		read_reply();
+
 		scip2_mode();
 		laser_on();
+
+		
 		return true;
 	}
 	else {
@@ -166,9 +173,11 @@ urg_scan_data_ptr urg_laser_impl::do_scan(int start_step, int end_step, int cc) 
 
 	read_reply();
 
+	m_last_scan.scan_vec.reset(new urg_scan_data_ptr[1]);
+
 	if (m_last_reply.status == URG_CMD_OK) {
 
-		m_last_scan.scan_vec.reset(new urg_scan_data_ptr(new urg_scan_data_t()));
+		m_last_scan.scan_vec[0].reset(new urg_scan_data_t());
 		m_last_scan.n_scan = 1;
 
 		m_last_scan.scan_vec[0]->start_step = start_step;
@@ -220,6 +229,7 @@ urg_multi_scan_t urg_laser_impl::do_multiple_scan(int start_step, int end_step, 
 			}
 			else
 				m_last_scan.scan_vec[i].reset();
+
 		}
 		return m_last_scan;
 	}
@@ -248,11 +258,13 @@ void urg_laser_impl::read_reply() {
 		char* reply_buf = NULL;
 		int rd = m_urg.ReadUntilRegEx(&reply_buf, "\n\n", READ_WRITE_TIMEOUT);
 
+		printf("byte letti %i\n", rd);
+
 		std::string reply = reply_buf;
 
 		delete[] reply_buf;
 
-		std::cout << reply;
+		//std::cout << reply;
 
 		//divide reply in command, status and data (see protocol)
 		std::string::size_type pos = reply.find('\n',0);

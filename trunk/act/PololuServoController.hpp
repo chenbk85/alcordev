@@ -68,6 +68,8 @@ namespace all {
 		public:
 			void setSpeed (int, int);
 
+			void setSpeedDeg(int, double);
+
 		//getters
 		public:
 			double getPose (int);

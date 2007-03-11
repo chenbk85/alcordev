@@ -240,6 +240,15 @@ namespace all {
 			}
 		}
 
+		void PololuServoController::setSpeedDeg(int servoNumber, double speed) {
+
+			int step_speed = (speed * kdeg2step) / 100;
+
+			setSpeed(servoNumber, step_speed);
+		}
+
+
+
 		void PololuServoController::reset() {
 			for (int i=0; i< mNumServo; i++) {
 				
