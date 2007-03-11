@@ -55,7 +55,7 @@ stream_packet_ptr_t stream_pkt_receiver_t::get_last_packet() {
 
 
 void stream_pkt_receiver_t::read_packet() {
-	printf("waiting packet...\n");
+	//printf("waiting packet...\n");
 	//m_socket.async_receive_from(boost::asio::buffer(m_in_data_buffer, m_packet_size), m_remote_endpoint,  
 	//							  boost::bind (&stream_pkt_receiver_t::handle_read_data, this,
 	//										   boost::asio::placeholders::error,
@@ -69,7 +69,7 @@ void stream_pkt_receiver_t::read_packet() {
 void stream_pkt_receiver_t::handle_read_data(const boost::system::error_code& error, std::size_t bytes_transferred) {
 	if (!error) {
 		
-		printf("read %i bytes\n", bytes_transferred);
+		//printf("read %i bytes\n", bytes_transferred);
 		
 		m_packet_ptr.reset(new stream_packet_t());
 

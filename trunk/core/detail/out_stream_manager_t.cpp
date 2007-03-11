@@ -85,7 +85,7 @@ void out_stream_manager_t::send_data() {
 		//m_packet_sender.send_packet(packet);
 		
 		m_packet_sender.async_send_packet(packet);
-		printf("send packet n %i, size %i\n", packet_number, bytes_to_send);
+		//printf("send packet n %i, size %i\n", packet_number, bytes_to_send);
 		data_pos += bytes_to_send;
 		remaining_bytes -= bytes_to_send;
 		packet_number++;
@@ -107,7 +107,7 @@ void out_stream_manager_t::next_frame_handler(const boost::system::error_code& e
 		
 		m_curr_data_size = m_get_data_cb(&m_curr_data);
 
-		printf("data_size: %i\n", m_curr_data_size);
+		//printf("data_size: %i\n", m_curr_data_size);
 		
 		//m_send_data_thread.reset(new boost::thread(boost::bind(&out_stream_manager_t::send_data, this)));
 		send_data();

@@ -41,12 +41,12 @@ void in_stream_manager_t::in_packet_cb(stream_packet_ptr_t packet) {
 	//frame it's not in the frame buffer
 	if (frame_buffer_pos == -1) {
 		
-		printf("Frame %i not in buffer...\n", frame_num);
+		//printf("Frame %i not in buffer...\n", frame_num);
 	
 		//if it's the first packet of a new frame...
 		if ( (frame_num > m_last_frame_num) || ( (frame_num == 1) && (frame_num != m_last_frame_num) )) {
 		
-			printf("First packet of a new frame...\n");
+			//printf("First packet of a new frame...\n");
 
 			int ready_frame_pos = (m_last_frame_pos + 1) % m_frame_buffer_size;
 			int ready_frame_size = m_frame_size[ready_frame_pos];
@@ -80,7 +80,7 @@ void in_stream_manager_t::in_packet_cb(stream_packet_ptr_t packet) {
 		int packet_num = packet->get_packet_number();
 		int packet_data_size = packet->get_data_size();
 
-		printf("Packet number %i\n", packet_num);
+		//printf("Packet number %i\n", packet_num);
 		
 		//find last byte position of current data in the frame
 		int last_frame_byte = (m_packet_data_size * (packet_num-1)) + packet_data_size;
