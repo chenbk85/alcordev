@@ -19,6 +19,8 @@ private:
 
 };
 
+typedef boost::shared_ptr <stream_source_t> stream_source_ptr;
+
 }}  //namespaces
 
 #endif

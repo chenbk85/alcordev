@@ -3,7 +3,7 @@
 namespace all {
 	namespace core {
 
-stream_server_t::stream_server_t(stream_source_t& stream_source, char* ini_file):
+stream_server_t::stream_server_t(stream_source_ptr stream_source, char* ini_file):
 									m_stream_service(),
 									m_udp_socket(m_stream_service),
 									m_stream_manager(m_udp_socket),
@@ -24,7 +24,7 @@ stream_server_t::stream_server_t(stream_source_t& stream_source, char* ini_file)
 	m_stream_manager.set_packet_size(m_ini_config.GetInt("stream:packet_size", 65000));
 	m_stream_manager.set_frame_rate(m_ini_config.GetInt("stream:frame_rate", 5));
 
-	m_stream_manager.set_get_data_callback(boost::bind(&stream_source_t::get_data, &m_stream_source, _1));
+	m_stream_manager.set_get_data_callback(boost::bind(&stream_source_t::get_data, m_stream_source, _1));
 
 	add_command_handler("setFrameRate", boost::bind(&stream_server_t::set_frame_rate_cb, this, _1, _2));
 	add_command_handler("getStreamSetting", boost::bind(&stream_server_t::send_stream_setting_cb, this, _1, _2));
@@ -33,7 +33,7 @@ stream_server_t::stream_server_t(stream_source_t& stream_source, char* ini_file)
 	set_client_disconnect_cb(boost::bind(&stream_server_t::client_disconnect_cb, this, _1));
 
 	//add handler for stream source command
-	set_packet_handler(APPL_PACKET, boost::bind(&stream_source_t::process_command, &m_stream_source, _2)); 
+	set_packet_handler(APPL_PACKET, boost::bind(&stream_source_t::process_command, m_stream_source, _2)); 
 
 	m_streaming = false;
 }

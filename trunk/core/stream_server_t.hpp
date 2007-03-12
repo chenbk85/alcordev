@@ -16,7 +16,7 @@ namespace all {
 class stream_server_t : public server_base_t {
 
 public:
-	stream_server_t(stream_source_t&, char* ini_file = "config/stream_server.ini");
+	stream_server_t(stream_source_ptr, char* ini_file = "config/stream_server.ini");
 
 	void start_streaming();
 	void stop_streaming();
@@ -44,7 +44,7 @@ private:
 
 	iniWrapper m_ini_config;
 
-	stream_source_t& m_stream_source;
+	stream_source_ptr m_stream_source;
 
 	all::core::ip_address_t m_multicast_address;
 
