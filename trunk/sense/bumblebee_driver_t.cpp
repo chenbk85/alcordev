@@ -95,6 +95,12 @@ size_t bumblebee_driver_t::depth_buffer_size() const
 }
 //------------------------------------------------------------------+
 ///
+size_t bumblebee_driver_t::valid_3d_points() const
+{
+  return impl->valid_count_;
+}
+//------------------------------------------------------------------+
+///
 all::core::uint8_sarr  bumblebee_driver_t::get_color_buffer(core::left_img_t , bool shared)
 {
   all::core::uint8_sarr return_ptr = impl->get_rgb_left_();
@@ -140,6 +146,12 @@ all::core::uint8_sarr bumblebee_driver_t::get_color_buffer(core::right_img_t , b
 all::core::single_sarr bumblebee_driver_t::get_depth_buffer(bool shared)
 {
   return impl->get_depthmap_();
+}
+//------------------------------------------------------------------+
+///  
+all::core::single_sarr bumblebee_driver_t::get_depth_buffer(core::interleaved_t, bool shared)
+{
+  return impl->get_depthmap_interleaved_();
 }
 //------------------------------------------------------------------+
 
