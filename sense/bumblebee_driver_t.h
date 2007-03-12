@@ -71,6 +71,15 @@ public:
 	bumblebee_driver_t();
 
   ///
+  static boost::shared_ptr<all::sense::bumblebee_driver_t> create()
+  {
+    boost::shared_ptr<all::sense::bumblebee_driver_t> 
+      px(new all::sense::bumblebee_driver_t);
+      // use px as 'this_'
+      return px;
+  }
+
+  ///
   //boost::mutex mutex;
 
 	///Inherited
@@ -98,16 +107,20 @@ public:
   std::string name() const;
 
   ///
-  size_t color_buffer_size() const;
+  size_t  color_buffer_size() const;
   ///
-  size_t depth_buffer_size() const;
+  size_t  depth_buffer_size() const;
+  ///
+  size_t  valid_3d_points() const;
 
 	///
   all::core::uint8_sarr  get_color_buffer(core::left_img_t ,  bool shared = true);
 	///
   all::core::uint8_sarr  get_color_buffer(core::right_img_t , bool shared = true);
 	///
-  all::core::single_sarr get_depth_buffer(bool shared = true);
+  all::core::single_sarr get_depth_buffer( bool shared = true);
+  ///
+  all::core::single_sarr get_depth_buffer(core::interleaved_t, bool shared = true);
 
 protected:
 	///PIMPL Idiom
