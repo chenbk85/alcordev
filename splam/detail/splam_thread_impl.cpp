@@ -4,6 +4,8 @@
 #include "alcor/act/p3dx_client_t.h"
 #include "alcor/sense/urg_laser_t.hpp"
 #include "alcor/core/iniWrapper.h"
+#include "alcor/splam/splam_data.h"
+#include "alcor/splam/scan_data.h"
 #include "pmap_wrap.h"
 //-----------------------------------------------------------------------------------------------
 using namespace all::core;
@@ -30,8 +32,8 @@ private:		//hokuyo urg laser
 	std::vector<int>    laser_mask;
 	void				set_laser_mask(std::pair<double,double>);
 	void				filter();			//le precondizioni è che lo urg_scan_data_t sia già pieno
-	urg_scan_data_t		current_scan_;		//
-	urg_scan_data_t		last_scan_;			//
+	scan_data			current_scan_;		//
+	scan_data			last_scan_;			//
 	ArMutex				scan_data_mutex_;	//
 	size_t				scan_count_;		//number of current scan
 	int					laser_com_port_;	//
