@@ -11,10 +11,13 @@ splam_thread::splam_thread(const char* name)
 
 splam_thread::~splam_thread()
 {
+	pImpl_->stop_server();
+	pImpl_->stop();
 }
 
 void	splam_thread::run()
 {
+	pImpl_->runAsync();
 }
 
 void	splam_thread::stop()
