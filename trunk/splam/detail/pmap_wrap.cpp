@@ -90,7 +90,7 @@ void pmap_wrap::fill_splam_data(boost::shared_ptr<splam_data> data)
 	}
 	data->og_resolution_ = omap_->grid_res;
 	data->og_col_ = omap_->grid_sx;
-	data->og_raw_ = omap_->grid_sy;
+	data->og_row_ = omap_->grid_sy;
 
 #if 1
 	static int contazzo=0;

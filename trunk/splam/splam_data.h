@@ -27,7 +27,7 @@ public:
 
 public:	// occupancy grid data
 	map_value_vect	og_cells_;	///< occupancy grid map occupancy value
-	size_t			og_raw_;	///< number of occupancy grid map raw... old mapYdimension
+	size_t			og_row_;	///< number of occupancy grid map raw... old mapYdimension
 	size_t			og_col_;	///< number of occupancy grid map column... old mapXdimension
 	double			og_resolution_;	///< dimesion of occupancy grid map cells... in meters
 
@@ -46,7 +46,7 @@ public:	// services
 	 */
 	point2d	get_position_of(const size2d& temp) const 
 	{
-		return point2d((temp.get_x1() - og_raw_/2)*og_resolution_, (temp.get_x2() - og_col_/2)*og_resolution_);
+		return point2d((temp.get_x1() - og_row_/2)*og_resolution_, (temp.get_x2() - og_col_/2)*og_resolution_);
 	}	
 
 	/**	
@@ -54,7 +54,7 @@ public:	// services
 	 */
 	size2d	get_coord_of(const point2d& temp) const
 	{
-		int temp1 = static_cast<int>((static_cast<double>(og_raw_)/2.0) + (temp.getY()/og_resolution_));
+		int temp1 = static_cast<int>((static_cast<double>(og_row_)/2.0) + (temp.getY()/og_resolution_));
 		int temp2 = static_cast<int>((static_cast<double>(og_col_)/2.0) + (temp.getX()/og_resolution_));
 		if((temp1>=0) && (temp2>=0))
 			return size2d(temp1,temp2);
@@ -69,7 +69,7 @@ public:	// services
 	 *	given a cell's coord (raw,col), it returns "true" iff that position is inside the allocated area
 	 *	i.e. 0 <= raw <= RAW and 0 <= col <= COL 
 	 */	
-	bool	in_map(const size2d& temp) const {return temp.get_x1()<og_raw_ && temp.get_x2()<og_col_;}	
+	bool	in_map(const size2d& temp) const {return temp.get_x1()<og_row_ && temp.get_x2()<og_col_;}	
 
 };
 
