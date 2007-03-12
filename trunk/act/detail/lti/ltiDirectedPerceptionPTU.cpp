@@ -838,9 +838,9 @@ namespace lti {
 
       awaitPosCommandCompletion();
       // Ensure save starting conditions
-      //while ( !isPTUidle() ) {
-      //  // do nothing
-      //}
+      while ( !isPTUidle() ) {
+        // do nothing
+      }
       cout << "Initialization completed!" << endl << endl;
       return(true);
     }
