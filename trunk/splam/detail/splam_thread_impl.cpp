@@ -17,18 +17,18 @@ namespace splam{
 
 class splam_thread_impl: public ArASyncTask 
 {
-public:		//typedefs
+public:		// typedefs
 	typedef ArFunctor2C<splam_thread_impl,ArServerClient*, ArNetPacket*>	functor;
 
-public:		//ctor, dtor, copy ctor, copy assign
+public:		// ctor, dtor, copy ctor, copy assign
 	splam_thread_impl(char* name = "./config/splam.ini");
 	~splam_thread_impl();
 
-public:		//thread side
+public:		// thread side
 	virtual void*		runThread(void*);
 	void				stop(){this->stopRunning();}
 
-private:		//hokuyo urg laser
+private:	// hokuyo urg laser
 	std::vector<int>    laser_mask;
 	void				set_laser_mask(std::pair<double,double>);
 	void				filter();			//le precondizioni è che lo urg_scan_data_t sia già pieno
@@ -41,29 +41,29 @@ private:		//hokuyo urg laser
 	size_t				urg_step_end_;		//
 	size_t				urg_cc_;			//
 
-public:		//Pioneer Robot (p3dx or p3at)
+public:		// Pioneer Robot (p3dx or p3at)
 	boost::shared_ptr<p3dx_client_t>		robot_;
 
-private:	//
+private:	// Mutex
 	ArMutex				splam_data_mutex_;
 	ArMutex				pmap_mutex_;
 
-private:		//Data Acquisition
+private:	// Data Acquisition
 	void				acquire_all();
 	void				acquire_laser_scan();	//internal
 	void				acquire_odometry();	//internal
 	void				estimate_odometry();
 
-public:	//Data Processing
-	void				process_();
-	void				fill_map_data();
+public:		// Data Processing
+	void				slam_process();
+	void				fill_slam_data();
 
-private:
+private:	// ...
 	pmap_wrap			pmap_wrap_;
 	splam_data			splam_data_;
 	value_iteration		value_iteration_;
 
-public:	//Data Broadcasting
+public:		// Data Broadcasting
 	void				start_server();
 	void				stop_server();
 	void				broadcast_splam_data();
@@ -136,6 +136,33 @@ splam_thread_impl::~splam_thread_impl()
 	delete slamDataNet_;
 }
 
+void	splam_thread_impl::maps(ArServerClient* client, ArNetPacket* clientPack)
+{
+	//cout << "Mappa Richiesta :D"<<endl;
+	// callback vuota, in quanto i dati dello SLAM vanno spediti solo in broadcast
+}
+
+void	splam_thread_impl::others(ArServerClient* client, ArNetPacket* clientPack)
+{
+	//cout << "Altri Dati Richiesti :D"<<endl;
+	// callback vuota, in quanto i dati dello SLAM vanno spediti solo in broadcast
+}
+
+
+void*	splam_thread_impl::runThread(void* arg)
+{
+	while(this->ArASyncTask::getRunning())
+	{
+		acquire_all();
+		slam_process();
+		fill_slam_data();
+		broadcast_splam_data();
+		update_pose_on_robot();
+		ArUtil::sleep(1);
+		cout << "splam_thread_impl IS RUNNING....................................." << endl;
+	}
+	return NULL;
+}
 
 }//namespace splam
 }//namespace all
