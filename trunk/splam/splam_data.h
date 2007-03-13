@@ -3,7 +3,7 @@
 //-----------------------------------------------------------------------------------------------
 #include <vector>
 #include "alcor/splam/scan_data.h"
-#include "alcor/math/pose2d.h"
+//#include "alcor/math/pose2d.h"
 #include "alcor/math/point2d.h"
 #include "alcor/math/size2d.h"
 //-----------------------------------------------------------------------------------------------
@@ -42,7 +42,7 @@ public:	// goal
 
 public:	// services
 	/**	
-	 *	given a cell's coord (raw,col), it returns the metric coord of the cell's center
+	 *	given a cell's coord (row,col), it returns the metric coord of the cell's center
 	 */
 	point2d	get_position_of(const size2d& temp) const 
 	{
@@ -50,7 +50,7 @@ public:	// services
 	}	
 
 	/**	
-	 *	given a metric position over the map, it returns the related cell's coord (raw,col)
+	 *	given a metric position over the map, it returns the related cell's coord (row,col)
 	 */
 	size2d	get_coord_of(const point2d& temp) const
 	{

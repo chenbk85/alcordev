@@ -6,7 +6,16 @@ namespace all{namespace act{
 //---------------------------------------------------------------------------
 p3_gateway::p3_gateway()
 {
-impl.reset(new detail::p3_gateway_impl());
+
+}
+//---------------------------------------------------------------------------
+///
+boost::shared_ptr<p3_gateway> p3_gateway::create()
+{
+boost::shared_ptr<p3_gateway> 
+  px(new p3_gateway);
+  // use px as 'this_'
+  return px;
 }
 //---------------------------------------------------------------------------
 p3_gateway::~p3_gateway()
@@ -19,6 +28,20 @@ bool p3_gateway::open(std::string inifile)
   iniWrapper ini;
   if ( ini.Load(inifile.c_str()) ) 
   {
+    bool is_p3dx = true;
+
+    if(ini.GetInt("config:p3dx", 1))
+    {
+      robot_model_ = p3DX;
+    }
+    else
+    {
+      is_p3dx = false;
+      robot_model_ = p3AT;
+    }
+
+    impl.reset(new detail::p3_gateway_impl(is_p3dx));
+
     if(ini.GetInt("config:serialmode", 1))
     {
       printf("Opening serial connection\n");

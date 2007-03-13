@@ -304,13 +304,11 @@ inline bool bumblebee_driver_impl::right_color_proc_()
 //-------------------------------------------------------------------
 inline core::uint8_sarr bumblebee_driver_impl::get_rgb_right_() const 
 {
-  //(right_color_proc_());
   return right_image_sptr_;
 }
 //-------------------------------------------------------------------
 inline core::uint8_sarr bumblebee_driver_impl::get_rgb_left_() const
 {
-  //left_color_proc_();
   return left_image_sptr_;
 }
 //-------------------------------------------------------------------
