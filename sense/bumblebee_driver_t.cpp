@@ -109,9 +109,7 @@ all::core::uint8_sarr  bumblebee_driver_t::get_color_buffer(core::left_img_t , b
     return return_ptr;
   else
   {
-    size_t a_size = impl->rows_ 
-                    * impl->cols_ 
-                    * 3;
+    size_t a_size = impl->pixelnum;
 
     all::core::uint8_sarr a_copy_of(new all::core::uint8_t[a_size]);
   
@@ -130,9 +128,7 @@ all::core::uint8_sarr bumblebee_driver_t::get_color_buffer(core::right_img_t , b
     return return_ptr;
   else
   {
-    size_t a_size = impl->rows_ 
-                    * impl->cols_ 
-                    * 3;
+    size_t a_size = impl->pixelnum;
 
     all::core::uint8_sarr a_copy_of(new all::core::uint8_t[a_size]);
   

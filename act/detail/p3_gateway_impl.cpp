@@ -10,8 +10,8 @@ using std::auto_ptr;
 namespace all { namespace act { namespace detail {
 struct p3_gateway_impl
 {
-  ///
-  p3_gateway_impl();
+  ///weird... no better solution now...
+  p3_gateway_impl(bool is_p3dx);
 
   ~p3_gateway_impl();
 
@@ -38,29 +38,29 @@ struct p3_gateway_impl
   auto_ptr<ArActionGroup>         m_wander;
 
   //STOP ActionGroup -----------------------
-	auto_ptr<ArActionGroup> m_stop;
+	auto_ptr<ArActionGroup>         m_stop;
 
   ///connections
 	ArTcpConnection 	  m_tcpConn;
 	ArSerialConnection 	m_serialConn;	
   ///Sonars
 	ArSonarDevice		    m_sonar;
-  /////unused
-  //all::core::ip_address_t m_addr;
+  ///
 	ArRobot*      m_robot;	
 };
 
 //###########################################################################
 //IMPL
 //###########################################################################
-inline p3_gateway_impl::p3_gateway_impl()
+inline p3_gateway_impl::p3_gateway_impl(bool is_p3dx)
 {
   	//Mandatory init ..
 	Aria::init();
 	//
 	m_robot = new ArRobot;
 
-  m_robot->loadParamFile("config/p3dx.p");
+  if (is_p3dx)
+    m_robot->loadParamFile("config/p3dx.p");
 
   //Connect  sonars al robot
   m_robot->addRangeDevice(&m_sonar);
@@ -90,8 +90,6 @@ inline p3_gateway_impl::~p3_gateway_impl()
 	///Serial Connection
 inline bool p3_gateway_impl::serial_connect(char* comPort)
 	{
-    //std::string comPort = "COM";
-    //comPort += core::make_string(m_serial_port);
 		printf("Attempting %s connection on port: %s\n",m_robot->getName(), comPort);
 		// connection to the robot		
     m_serialConn.setPort(comPort);
@@ -120,7 +118,6 @@ inline bool p3_gateway_impl::serial_connect(char* comPort)
 inline void p3_gateway_impl::robot_run()
 {    
   // run the robot in its own thread, so it gets and processes packets and such
-  //m_robot->loadParamFile("config/p3dx.p");
   m_robot->runAsync(false);
   m_robot->enableMotors();
 }
@@ -177,20 +174,21 @@ inline void p3_gateway_impl::init_follow_action()
   // if we're stalled we want to back up and recover
   m_follow->addAction(new ArActionStallRecover, 100);
 
-  //create action
-  m_ac_follow.reset(new ArActionGotoStraight("target",250) );
+  //This action lets you drive toward the target.
+  m_ac_follow.reset(new ArActionGotoStraight("target",200) );
 
-  //
-  m_follow->addAction(m_ac_follow.get(), 49);
+  //drive toward the target
+  m_follow->addAction(m_ac_follow.get(), 40);
 
   // avoid things closer to us
-  m_follow->addAction(new ArActionAvoidFront("Avoid Front Near", 200, 0), 50);
+  m_follow->addAction(new ArActionAvoidFront("Avoid Front Near", 200, 0), 60);
 
   // avoid things further away
-  m_follow->addAction(new ArActionAvoidFront, 45);
+  m_follow->addAction(new ArActionAvoidFront("Avoid Front Far",400, 200, 15), 55);
 
-  // keep moving
-  //m_follow->addAction(new ArActionConstantVelocity("Constant Velocity", 100), 25);
+  // avoid side
+  m_follow->addAction(new ArActionAvoidSide("Side Avoid", 300,5), 55);
+
 }
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------

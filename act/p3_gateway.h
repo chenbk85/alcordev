@@ -15,6 +15,8 @@ namespace all{namespace act{
 //---------------------------------------------------------------------------
 //p3_conf.ini
 //[config]
+//p3dx = 0
+//p3at = 1
 //serialmode=1
 //tcpmode=0
 //comport=COM5
@@ -29,6 +31,15 @@ namespace all{namespace act{
     ///
     p3_gateway();
     ~p3_gateway();
+
+    typedef enum 
+    {
+      p3DX,
+      p3AT
+    } e_robot_model;
+
+    ///
+    static boost::shared_ptr<p3_gateway> create();
     //>+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     ///
     bool open(std::string inifile);
@@ -68,6 +79,7 @@ namespace all{namespace act{
 
   private:
     boost::shared_ptr<detail::p3_gateway_impl> impl;
+    e_robot_model robot_model_;
   };
 //---------------------------------------------------------------------------
   typedef boost::shared_ptr<p3_gateway>  p3_gateway_ptr_t;
