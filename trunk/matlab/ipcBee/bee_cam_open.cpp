@@ -14,7 +14,7 @@ void bee_cam_open( int nlhs
 
   std::printf("Opening\n");
 
-  if(mybee.open("config/bumblebeeA.ini"))    
+  if(mybee.open("config/bumblebeeB.ini"))    
   {
     printf("OK\n");
     printf("Bumblebee RGB IPC stream succesfully opened!\n");

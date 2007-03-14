@@ -125,7 +125,7 @@ void p3_gateway::set_target_to_follow
   impl->m_ac_follow->setSpeed(speed);
   //
   impl->m_ac_follow->setGoalRel(  
-                      target.magnitude()
+                      target.magnitude()*1000.0
                     , target.orientation().deg()
                     , false, false
                     );

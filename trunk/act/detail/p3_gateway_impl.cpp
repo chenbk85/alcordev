@@ -31,8 +31,10 @@ struct p3_gateway_impl
 
   //FOLLOW ActionGroup ---------------------
   auto_ptr<ArActionGroup>         m_follow;
+ 
+
   //keep a pointer to set the current target
-  auto_ptr<ArActionGotoStraight>  m_ac_follow;
+  ArActionGotoStraight*  m_ac_follow;
 
   //WANDER ActionGroup ---------------------
   auto_ptr<ArActionGroup>         m_wander;
@@ -175,19 +177,24 @@ inline void p3_gateway_impl::init_follow_action()
   m_follow->addAction(new ArActionStallRecover, 100);
 
   //This action lets you drive toward the target.
-  m_ac_follow.reset(new ArActionGotoStraight("target",200) );
+  //m_ac_follow.reset(new ArActionGotoStraight("target",200) );
+
+   m_ac_follow=new ArActionGotoStraight("target",200);
 
   //drive toward the target
-  m_follow->addAction(m_ac_follow.get(), 40);
+  m_follow->addAction(m_ac_follow, 50);
 
   // avoid things closer to us
-  m_follow->addAction(new ArActionAvoidFront("Avoid Front Near", 200, 0), 60);
+  m_follow->addAction(new ArActionAvoidFront("Avoid Front Near", 200, 0), 50);
 
   // avoid things further away
   m_follow->addAction(new ArActionAvoidFront("Avoid Front Far",400, 200, 15), 55);
 
   // avoid side
   m_follow->addAction(new ArActionAvoidSide("Side Avoid", 300,5), 55);
+    // keep moving
+
+  //m_follow->addAction(new ArActionConstantVelocity("Constant Velocity", 150), 25);
 
 }
 //---------------------------------------------------------------------------
