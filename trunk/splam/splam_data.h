@@ -3,8 +3,6 @@
 //-----------------------------------------------------------------------------------------------
 #include <vector>
 #include "alcor/splam/scan_data.h"
-//#include "alcor/math/pose2d.h"
-#include "alcor/math/point2d.h"
 #include "alcor/math/size2d.h"
 //-----------------------------------------------------------------------------------------------
 using namespace all::math;
@@ -26,19 +24,21 @@ public:
 	~splam_data();
 
 public:	// occupancy grid data
-	map_value_vect	og_cells_;	///< occupancy grid map occupancy value
-	size_t			og_row_;	///< number of occupancy grid map raw... old mapYdimension
-	size_t			og_col_;	///< number of occupancy grid map column... old mapXdimension
+	map_value_vect	og_cells_;		///< occupancy grid map occupancy value
+	size_t			og_row_;		///< number of occupancy grid map raw... old mapYdimension
+	size_t			og_col_;		///< number of occupancy grid map column... old mapXdimension
 	double			og_resolution_;	///< dimesion of occupancy grid map cells... in meters
 
 public:	// path
 	pose_vect		path_;
 
 public:	// laser
+	scan_data		last_scan_;		///< last laser scan
 
 
 public:	// goal
-
+	pose2d			goal_;			///< position to reach in long run
+	pose2d			goal_temp_;		///< position to reach close to the robot
 
 public:	// services
 	/**	
@@ -46,7 +46,7 @@ public:	// services
 	 */
 	point2d	get_position_of(const size2d& temp) const 
 	{
-		return point2d((temp.get_x1() - og_row_/2)*og_resolution_, (temp.get_x2() - og_col_/2)*og_resolution_);
+		return point2d((temp.row_ - og_row_/2)*og_resolution_, (temp.col_ - og_col_/2)*og_resolution_);
 	}	
 
 	/**	
@@ -69,7 +69,15 @@ public:	// services
 	 *	given a cell's coord (raw,col), it returns "true" iff that position is inside the allocated area
 	 *	i.e. 0 <= raw <= RAW and 0 <= col <= COL 
 	 */	
-	bool	in_map(const size2d& temp) const {return temp.get_x1()<og_row_ && temp.get_x2()<og_col_;}	
+	bool	in_map(const size2d& temp) const {return temp.row_<og_row_ && temp.col_<og_col_;}	
+
+	/**
+	 *	that function estimate the nearest metric goal, based only on Occupancy Values and the Frontier-Based
+	 *  approach. Parameters are lvalues of far goal and close goal (usually this->goal_ and this->goal_temp_)
+	 *  return value is true if a goal was found, false elsewhere
+	 */
+	bool	metric_goal_finding(pose2d& goal, pose2d& goal_temp);
+
 
 };
 
