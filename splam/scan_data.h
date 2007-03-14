@@ -2,7 +2,6 @@
 #define SCAN_DATA_H
 //-----------------------------------------------------------------------------------------------
 #include <vector>
-#include "alcor/math/angle.h"
 #include "alcor/math/pose2d.h"
 //-----------------------------------------------------------------------------------------------
 using namespace all::math;
@@ -16,7 +15,6 @@ typedef	scan_values::iterator		scan_values_it;
 
 class scan_data
 {
-	
 public:
 	scan_data();
 	~scan_data();
@@ -32,10 +30,9 @@ public:	// data
 	size_t			scan_step_;		///< 
 
 	// time
-	time_t			tempo_;			///< istante di tempo in cui i dati vengono acquisiti
+	time_t			time_stamp_;			///< istante di tempo in cui i dati vengono acquisiti
 
 public:	// services
-
 };
 
 }//namespace splam

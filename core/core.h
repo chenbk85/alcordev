@@ -23,8 +23,8 @@ eActiveOpen,
 eLinkDown
 }net_state_t;
 //-----------------------------------------------------------------------++
-typedef struct p3dx_t{};
-typedef struct p3at_t{};
+struct p3dx_t{};
+struct p3at_t{};
 
 static const p3dx_t p3dx_tag = p3dx_t();
 static const p3at_t p3at_tag = p3at_t();

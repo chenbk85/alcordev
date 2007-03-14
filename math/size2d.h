@@ -14,42 +14,36 @@ namespace math{
 class size2d
 {
 public:	//ctors
-			size2d():x1_(0),x2_(0){}
-			size2d(size_t a):x1_(a),x2_(a){}
-			size2d(size_t a, size_t b):x1_(a),x2_(b){}
+			size2d():row_(0),col_(0){}
+			size2d(size_t a):row_(a),col_(a){}
+			size2d(size_t a, size_t b):row_(a),col_(b){}
 
-public:	//setters and getters
-	size_t	get_x1() const {return x1_;}
-	size_t	get_x2() const {return x2_;}
-	void	set_x1(size_t	temp){x1_ = temp;}
-	void	set_x2(size_t	temp){x2_ = temp;}
+public: //data stored as a pair of size_t
+	size_t	row_;
+	size_t	col_;
 
 public:	//friends
 	friend	std::ostream&	operator<<(std::ostream& os, size2d temp);
 	friend	std::istream&	operator>>(std::istream& is, size2d& temp);
 	friend	bool operator==(const size2d& a, const size2d& b);
 
-private: //data stored as a pair of size_t
-	size_t	x1_;
-	size_t	x2_;
-
 };//class size2d
 
 inline	std::ostream&	operator<<(std::ostream& os, size2d temp)
 {
-	os<< temp.x1_ << " "<< temp.x2_;
+	os<< temp.row_ << " "<< temp.col_;
 	return os;
 }
 
 inline	std::istream&	operator>>(std::istream& is, size2d& temp)
 {
-	is >> temp.x1_ >> temp.x2_; 
+	is >> temp.row_ >> temp.col_; 
 	return is;
 }
 
 bool inline	operator==(const size2d& a, const size2d& b)
 {
-	return (a.x1_ == b.x1_) && (a.x2_ == b.x2_);
+	return (a.row_ == b.row_) && (a.col_ == b.col_);
 }
 
 const size_t size_max = static_cast<size_t>(-1);

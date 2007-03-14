@@ -29,11 +29,11 @@ public:		// thread side
 	void				stop(){this->stopRunning();}
 
 private:	// hokuyo urg laser
-	std::vector<int>    laser_mask;
+	std::vector<int>    laser_mask_;
 	void				set_laser_mask(std::pair<double,double>);
 	void				filter();			//le precondizioni è che lo urg_scan_data_t sia già pieno
 	scan_data			current_scan_;		//
-	scan_data			last_scan_;			//
+	scan_data			previous_scan_;			//
 	ArMutex				scan_data_mutex_;	//
 	size_t				scan_count_;		//number of current scan
 	int					laser_com_port_;	//
@@ -48,39 +48,38 @@ private:	// Mutex
 	ArMutex				splam_data_mutex_;
 	ArMutex				pmap_mutex_;
 
-private:	// Data Acquisition
+private:	// data Acquisition
 	void				acquire_all();
-	void				acquire_laser_scan();	//internal
-	void				acquire_odometry();	//internal
+	void				acquire_laser_scan();	// internal
+	void				acquire_odometry();		// internal
 	void				estimate_odometry();
 
-public:		// Data Processing
+public:		// data Processing
 	void				slam_process();
 	void				fill_slam_data();
 
 private:	// ...
 	pmap_wrap			pmap_wrap_;
 	splam_data			splam_data_;
-	value_iteration		value_iteration_;
+	//value_iteration		value_iteration_;
 
-public:		// Data Broadcasting
-	void				start_server();
-	void				stop_server();
+public:		// data Broadcasting
+	void				start_server();			// 
+	void				stop_server();			// 
 	void				broadcast_splam_data();
 	void				update_pose_on_robot();
 	void				maps(ArServerClient* ,ArNetPacket*);
 	void				others(ArServerClient* ,ArNetPacket*);
-
 private:
-	functor				maps_callback;
-	functor				others_callback;
 	ArServerBase		server_;
 	ip_address_t		server_address_;
-	boost::shared_ptr<splam_data_net>	splam_data_net_;
-	bool				odoPresent_;
+	functor				maps_callback;
+	functor				others_callback;
+	//boost::shared_ptr<splam_data_net>	splam_data_net_;
+	//bool				odoPresent_;
 
-public:
-	std::ofstream		logfile_;
+public:		// misc
+	//std::ofstream		logfile_;
 	iniWrapper			ini_;
 
 };
@@ -96,16 +95,16 @@ splam_thread_impl::splam_thread_impl( char* name)
 
 	// creo spazio per i vector di mask e di scan
 	int lenghtmask = ini_.GetInt("laser:num_step",0);
-	mask.resize(lenghtmask,1);
-	current_scan_.ranges.resize(lenghtmask,0);
-	splam_data_.scan_ = current_scan_;
-	fill(mask.begin(),mask.end(),1);
+	laser_mask_.resize(lenghtmask,1);
+	current_scan_.ranges_.resize(lenghtmask,0);
+	splam_data_.last_scan_ = current_scan_;
+	fill(laser_mask_.begin(), laser_mask_.end(), 1);
 
 	//inizializzazione dei parametri del robot
-	odoPresent_ = (ini_.GetInt("robot:odo",1) == 1);
+	//odoPresent_ = (ini_.GetInt("robot:odo",1) == 1);
 
 	//inizializzazione della struttura di splam_data_net
-	slamDataNet_ = new splam_data_net(worker_.GetSize());
+	slamDataNet_ = new splam_data_net(worker_.get_size());
 	slamDataNet_->data_ = &splam_data_;
 
 	//inizializzazione dei parametri di connessione del laser
@@ -120,8 +119,6 @@ splam_thread_impl::splam_thread_impl( char* name)
 		//logFile_.open(ini_.GetStringAsChar("laser:logfile","laserlog.txt"),std::ios::out);
 	}
 
-	//inizializzazione della struttura di value_iteration per il goal metrico
-	value_iteration_.Create(ini_.GetInt("mappa:larghezza",0), ini_.GetInt("mappa:altezza",0),ini_.GetDouble("mappa:dim_cella",0.0)*100.0);
 
 	// leggo dal file INI la porta del server
 	port_ = ini_.GetInt("server:port",12321);
@@ -148,6 +145,30 @@ void	splam_thread_impl::others(ArServerClient* client, ArNetPacket* clientPack)
 	// callback vuota, in quanto i dati dello SLAM vanno spediti solo in broadcast
 }
 
+void	splam_thread_impl::start_server()
+{
+	// open the server
+	if (!server_.open(port_))
+	{
+		printf("Could not open server port: %d\n", port_ );
+		throw std::runtime_error("Error in SlamServer::start_server");
+	}
+
+	// add the "splam_data" service
+	server_.addData("Mappa", "Mappa from SLAM module", &maps_callback, "none", "none");
+	server_.addData("Others", "Other data from SLAM module", &others_callback, "none", "none");
+	server_.addData("Victim", "Nuova Vittima Identificata", &victimCB, "none", "none");
+
+	//	run the server thread
+	server_.runAsync();
+}
+
+void	splam_thread_impl::stop_server()
+{
+	server_.stopRunning();
+	server_.join();
+	server_.close();
+}
 
 void*	splam_thread_impl::runThread(void* arg)
 {
