@@ -4,17 +4,12 @@
 #include <vector>
 #include "alcor/splam/scan_data.h"
 #include "alcor/math/size2d.h"
+#include "alcor/math/geom2dtypes.h"
 //-----------------------------------------------------------------------------------------------
 using namespace all::math;
 //-----------------------------------------------------------------------------------------------
 namespace all{
 namespace splam{
-
-typedef	signed char					map_value;
-typedef std::vector<map_value>		map_value_vect;
-typedef map_value_vect::iterator	map_value_vect_it;
-typedef	std::vector<pose2d>			pose_vect;
-typedef pose_vect::iterator			pose_vect_it;
 
 class splam_data
 {
@@ -24,13 +19,13 @@ public:
 	~splam_data();
 
 public:	// occupancy grid data
-	map_value_vect	og_cells_;		///< occupancy grid map occupancy value
+	map_values		og_cells_;		///< occupancy grid map occupancy value
 	size_t			og_row_;		///< number of occupancy grid map raw... old mapYdimension
 	size_t			og_col_;		///< number of occupancy grid map column... old mapXdimension
 	double			og_resolution_;	///< dimesion of occupancy grid map cells... in meters
 
 public:	// path
-	pose_vect		path_;
+	pose2d_vect		path_;
 
 public:	// laser
 	scan_data		last_scan_;		///< last laser scan
@@ -83,6 +78,5 @@ public:	// services
 
 }//namespace splam
 }//namespace all
-
 //-----------------------------------------------------------------------------------------------
 #endif

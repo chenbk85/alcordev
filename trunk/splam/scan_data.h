@@ -3,15 +3,13 @@
 //-----------------------------------------------------------------------------------------------
 #include <vector>
 #include "alcor/math/pose2d.h"
+#include "typedefs.hpp"
 //-----------------------------------------------------------------------------------------------
 using namespace all::math;
+using namespace all::util;
 //-----------------------------------------------------------------------------------------------
 namespace all{
 namespace splam{
-
-typedef double						scan_value;
-typedef	std::vector<scan_value>		scan_values;
-typedef	scan_values::iterator		scan_values_it;
 
 class scan_data
 {
