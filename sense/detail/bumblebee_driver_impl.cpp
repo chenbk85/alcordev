@@ -5,6 +5,7 @@
 #include <boost/config.hpp>
 #include <boost/function.hpp>
 #include <boost/bind.hpp>
+#include <fstream>
 //-------------------------------------------------------------------
 #include "alcor/core/core.h"
 //=============================================================================
@@ -365,6 +366,7 @@ inline core::uint8_sarr bumblebee_driver_impl::get_rgb_left_() const
 //-------------------------------------------------------------------
 inline core::single_sarr bumblebee_driver_impl::get_depthmap_()
 {
+  std::ofstream logfile("beeimpl.txt", std::ios::out); 
 /////////////////////////////////////////////////////////////////////////////////////
   extract_depth16_();
 /////////////////////////////////////////////////////////////////////////////////////
@@ -377,15 +379,17 @@ inline core::single_sarr bumblebee_driver_impl::get_depthmap_()
   std::memset(depth_image_sptr_.get(), 0, pixelnum * sizeof(core::single_t));
   //
   valid_count_ = 0;
-  int k = 0;
+  int k = (rows_*cols_)-1;
+
   int i = rows_;
 	////Outer loop: rows. Extract rows.
 	for (; i ; --i )
     {
 		row = depth_image_16_.data + (i-1) * pixelinc;
 			//Inner Loop: cols. Extract disparities.
-		for (int j = cols_; j; --j, ++k )
+		for (int j = cols_; j; --j, --k)
         {
+          //logfile << "i: " << i << " j: " << j << " k: " << k << std::endl; 
 			  disparity = row[j-1];
 		// filter invalid points
 		    if ( disparity < 0xFF00 )
@@ -393,13 +397,14 @@ inline core::single_sarr bumblebee_driver_impl::get_depthmap_()
 			    // convert the 16 bit disparity value to floating point x,y,z
 			    triclopsRCD16ToXYZ
 				    ( triclops_context_, i-1, j-1, disparity, &x, &y, &z ) ;
-		      if(z < zbound_)
-            {
+
+		      //if(z < zbound_)
+            //{
               valid_count_++;
               depth_image_sptr_[k]              = x;
               depth_image_sptr_[k+planeinc]     = y;
               depth_image_sptr_[k+planeinc_2]   = z;
-            }
+            //}
 
            }//disparity
         }//inner loop		
@@ -427,7 +432,7 @@ inline core::single_sarr bumblebee_driver_impl::get_depthmap_interleaved_()
 
   //
   valid_count_ = 0;
-  int k = 0;
+  int k = (rows_*cols_*3);
   int i = rows_;
 
 	////Outer loop: rows. Extract rows.
@@ -435,7 +440,7 @@ inline core::single_sarr bumblebee_driver_impl::get_depthmap_interleaved_()
     {
 		row     = depth_image_16_.data + (i-1) * pixelinc;
 			//Inner Loop: cols. Extract disparities.
-	  for (int j = cols_; j; --j, ++k )
+	  for (int j = cols_; j; --j, k-=3 )
         {
 			  disparity = row[j-1];
 		// filter invalid points
@@ -444,13 +449,13 @@ inline core::single_sarr bumblebee_driver_impl::get_depthmap_interleaved_()
 			    // convert the 16 bit disparity value to floating point x,y,z
 			    triclopsRCD16ToXYZ
 				    ( triclops_context_, i-1, j-1, disparity, &x, &y, &z ) ;
-		      if(z < 10)
-            {
+		      //if(z < 10)
+        //    {
               valid_count_++;
               depth_image_sptr_[k]     = x;
               depth_image_sptr_[k+1]   = y;
               depth_image_sptr_[k+2]   = z;
-            }
+            //}
 
            }//disparity
         }//inner loop		
@@ -471,8 +476,9 @@ inline core::single_sarr bumblebee_driver_impl::get_depthmap_sandbox_320_()
   std::memset(depth_image_sptr_.get(), 0, pixelnum * sizeof(core::single_t));
   //
   valid_count_ = 0;
+  const size_t  total_floats = indices320.cols_times_rows;
   ///
-  for (int i = 0; i < indices320.cols_times_rows ; ++i)
+  for (int i = 0, k = 0; i < total_floats ; ++i, k+=3)
   {
     disparity  = depth_image_16_.data[i];
     if(disparity < 0xFF00)
@@ -482,9 +488,9 @@ inline core::single_sarr bumblebee_driver_impl::get_depthmap_sandbox_320_()
       //if(z < zbound_)
          //{
            valid_count_++;
-           depth_image_sptr_[i]     = x;
-           depth_image_sptr_[i+1]   = y;
-           depth_image_sptr_[i+2]   = z;
+           depth_image_sptr_[k]     = x;
+           depth_image_sptr_[k+1]   = y;
+           depth_image_sptr_[k+2]   = z;
          //}
     }
   }
