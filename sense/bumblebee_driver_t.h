@@ -90,7 +90,6 @@ public:
 
 	///Grabs Stereo Color Image.
 	bool grab();
-
   ///
   long serialnum () const;
 	///
@@ -105,6 +104,8 @@ public:
   float center_col() const;
   ///
   std::string name() const;
+  ///
+  void set_zbound(float);
 
   ///
   size_t  color_buffer_size() const;
@@ -121,6 +122,8 @@ public:
   all::core::single_sarr get_depth_buffer( bool shared = true);
   ///
   all::core::single_sarr get_depth_buffer(core::interleaved_t, bool shared = true);
+  ///
+  all::core::single_sarr get_depth_buffer_sandbox_(bool shared = true);
 
 protected:
 	///PIMPL Idiom

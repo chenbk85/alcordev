@@ -69,7 +69,7 @@ private:
 };
 
   typedef boost::shared_ptr<directed_perception_ptu_t> directed_perception_sptr;
-
+  typedef boost::shared_ptr<directed_perception_ptu_t> directed_perception_ptr_t;
 }}
 
 #endif //directed_perception_ptu_t_H_INCLUDED

@@ -27,8 +27,8 @@ struct pinhole_t
       core::dconstants::rad_to_deg(std::asin(delta_row / focal));
 
 
-  ptangle.pan  = delta_pan;
-  ptangle.tilt = delta_pitch;
+  ptangle.pan  = -delta_pan;
+  ptangle.tilt = -delta_pitch;
   };
 
   ///---------------------------------------------------------------------

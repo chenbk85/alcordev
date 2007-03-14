@@ -2,6 +2,10 @@
 #include "digiclops.h"
 #include "pnmutils.h"
 //-------------------------------------------------------------------
+#include <boost/config.hpp>
+#include <boost/function.hpp>
+#include <boost/bind.hpp>
+//-------------------------------------------------------------------
 #include "alcor/core/core.h"
 //=============================================================================
 #include <windows.h>
@@ -62,14 +66,38 @@ protected:
    bool handleDigiclopsError( 
       DigiclopsError error, const char* pszFunction, ... ) const;
 };
-
 //=============================================================================
-//-------------------------------------------------------------------
+template <int ROWS, int COLS>
+class image_indices_t
+{
+  public:
+  BOOST_STATIC_CONSTANT(size_t, cols_times_rows=COLS*ROWS);
+
+  unsigned int i [cols_times_rows];
+  unsigned int j [cols_times_rows];
+
+  image_indices_t()
+  {
+    for (unsigned int ii = 0,k =0; ii < ROWS; ++ii)
+      for(unsigned int jj = 0; jj < COLS; ++jj, ++k)
+      {
+        i[k] = ii;
+        j[k] = jj;
+      }
+  }
+};
+//=============================================================================
+
 namespace all{ namespace sense { namespace detail {
+//-------------------------------------------------------------------
+typedef image_indices_t<240, 320> image_indices_320;
+typedef image_indices_t<480, 640> image_indices_640;
 //-------------------------------------------------------------------
 class bumblebee_driver_impl {
 public:
-  bumblebee_driver_impl():valid_count_(0)
+  bumblebee_driver_impl():
+            valid_count_(0)
+          , zbound_(10.0f)
   {};
 
   bool init_digiclops_context_(DigiclopsSerialNumber, std::string& digiclopsfile
@@ -94,6 +122,14 @@ public:
   int		  rows_;
   int		  cols_;
 
+  ///
+  size_t planeinc;
+  size_t planeinc_2;
+  size_t pixelnum;
+  size_t valid_count_;
+
+  float zbound_;
+
   boost::shared_ptr<Settings> settings_sptr;
 
   core::uint8_sarr get_rgb_right_() const ;
@@ -103,6 +139,17 @@ public:
   core::single_sarr get_depthmap_();
   core::single_sarr get_depthmap_interleaved_();
 
+  //
+  boost::function<core::single_sarr (void)>  get_depthmap_sandbox_;
+  //  
+  image_indices_320 indices320;
+  core::single_sarr get_depthmap_sandbox_320_();
+  //  
+  image_indices_640 indices640;
+  core::single_sarr get_depthmap_sandbox_640_();
+
+  //
+  void extract_depth16_();
 
   //data
   ///
@@ -116,14 +163,6 @@ public:
   ///
   TriclopsImage16     depth_image_16_;
 
-  ///
-  size_t planeinc;
-  size_t planeinc_2;
-  size_t pixelnum;
-
-  size_t valid_count_;
-
-
   ///Triclops Context
   TriclopsContext     triclops_context_;
   ///Digiclops Context
@@ -135,12 +174,12 @@ public:
   all::core::uint8_sarr   right_image_sptr_;
   ///
   all::core::single_sarr  depth_image_sptr_;
+  //all::core::single_sarr  pcloud_ptr_;
 
   bool handle_digiclops_error(char*, DigiclopsError);
   bool handle_triclops_error(char*, TriclopsError);
 
   };
-//###########################################################################
 //###########################################################################
 ////-------------------------------------------------------------------
 //-------------------------------------------------------------------
@@ -163,7 +202,6 @@ inline bool bumblebee_driver_impl::init_digiclops_context_(
  de = digiclopsSetImageTypes( digiclops_context_,  ALL_IMAGES );
  bok = bok && handle_digiclops_error( "digiclopsSetImageTypes()", de );
 
- 	//printf("Setting Resolution and Color Processing\n");
 		//     // set the Digiclops resolution
 	de = digiclopsSetImageResolution( digiclops_context_,  DIGICLOPS_FULL);
  bok = bok && handle_digiclops_error( "digiclopsSetImageResolution()", de );
@@ -185,7 +223,7 @@ inline bool bumblebee_driver_impl::init_digiclops_context_(
     drate =DIGICLOPS_FRAMERATE_100;
    break;
  default:
-    //drate =DIGICLOPS_FRAMERATE_025;
+    drate =DIGICLOPS_FRAMERATE_050;
    break;
  }
 
@@ -213,6 +251,15 @@ inline bool bumblebee_driver_impl::init_triclops_context_(std::string& triclopsf
 
 	printf ("Triclops Configuration Loaded.\n");
 
+  TriclopsBool is_subpixel_on = 1;
+  triclopsGetSubpixelInterpolation(triclops_context_, &is_subpixel_on);
+
+  if(is_subpixel_on)
+  {
+    te = triclopsSetSubpixelInterpolation(triclops_context_, 1);
+    bok = bok && handle_triclops_error( "triclopsSetSubpixelInterpolation()", te );
+  }
+
   te = triclopsGetFocalLength(triclops_context_, &focal_);
   bok = bok && handle_triclops_error( "triclopsGetFocalLength()", te );
   
@@ -227,7 +274,11 @@ inline bool bumblebee_driver_impl::init_triclops_context_(std::string& triclopsf
 
   te = triclopsGetResolution(triclops_context_, &rows_, &cols_);
   bok = bok && handle_triclops_error( "triclopsGetResolution()", te );
- 
+
+  if(rows_ == 240)
+    get_depthmap_sandbox_ = boost::bind(&bumblebee_driver_impl::get_depthmap_sandbox_320_, this);
+  else
+    get_depthmap_sandbox_ = boost::bind(&bumblebee_driver_impl::get_depthmap_sandbox_640_, this);
 
   return bok;
 }
@@ -314,53 +365,35 @@ inline core::uint8_sarr bumblebee_driver_impl::get_rgb_left_() const
 //-------------------------------------------------------------------
 inline core::single_sarr bumblebee_driver_impl::get_depthmap_()
 {
-  TriclopsError       te;
-	DigiclopsError		de;
-
-   de = digiclopsExtractTriclopsInput( digiclops_context_, STEREO_IMAGE, &stereo_input_ );
-   handle_digiclops_error( "digiclopsExtractTriclopsInput()", de );
-
-   // preprocessing the images
-   te = triclopsRectify( triclops_context_, &stereo_input_ );
-	handle_triclops_error( "triclopsPreprocess()", te );
-   // stereo processing
-   te = triclopsStereo( triclops_context_ ) ;
-	handle_triclops_error( "triclopsStereo()", te );
-   
-   // retrieve the interpolated depth image from the context
-   te = triclopsGetImage16( 
-      triclops_context_, TriImg16_DISPARITY, TriCam_REFERENCE, &depth_image_16_ );
-   handle_triclops_error( "triclopsGetImage16()", te );
 /////////////////////////////////////////////////////////////////////////////////////
-
-	int pixelinc    = depth_image_16_.rowinc/2;
-
+  extract_depth16_();
+/////////////////////////////////////////////////////////////////////////////////////
+  //
+	const int pixelinc    = depth_image_16_.rowinc/2;
 	unsigned short      disparity ;
-	int		              i, j, k;
 	float	              x, y, z; 
 	unsigned short*     row ;
-
-    //
+  //
   std::memset(depth_image_sptr_.get(), 0, pixelnum * sizeof(core::single_t));
-
   //
   valid_count_ = 0;
-
+  int k = 0;
+  int i = rows_;
 	////Outer loop: rows. Extract rows.
-	for ( i = 0, k = 0; i < rows_; i++ )
+	for (; i ; --i )
     {
-		row     = depth_image_16_.data + i * pixelinc;
+		row = depth_image_16_.data + (i-1) * pixelinc;
 			//Inner Loop: cols. Extract disparities.
-		for ( j = 0; j < cols_; j++, k++ )
+		for (int j = cols_; j; --j, ++k )
         {
-			  disparity = row[j];
+			  disparity = row[j-1];
 		// filter invalid points
 		    if ( disparity < 0xFF00 )
           {
 			    // convert the 16 bit disparity value to floating point x,y,z
 			    triclopsRCD16ToXYZ
-				    ( triclops_context_, i, j, disparity, &x, &y, &z ) ;
-		      if(z < 10)
+				    ( triclops_context_, i-1, j-1, disparity, &x, &y, &z ) ;
+		      if(z < zbound_)
             {
               valid_count_++;
               depth_image_sptr_[k]              = x;
@@ -378,29 +411,14 @@ inline core::single_sarr bumblebee_driver_impl::get_depthmap_()
 //TODO: just a clone of the above code except for the ordering
 inline core::single_sarr bumblebee_driver_impl::get_depthmap_interleaved_()
 {
-  TriclopsError       te;
-	DigiclopsError		de;
 
-   de = digiclopsExtractTriclopsInput( digiclops_context_, STEREO_IMAGE, &stereo_input_ );
-   handle_digiclops_error( "digiclopsExtractTriclopsInput()", de );
-
-   // preprocessing the images
-   te = triclopsRectify( triclops_context_, &stereo_input_ );
-	handle_triclops_error( "triclopsPreprocess()", te );
-   // stereo processing
-   te = triclopsStereo( triclops_context_ ) ;
-	handle_triclops_error( "triclopsStereo()", te );
-   
-   // retrieve the interpolated depth image from the context
-   te = triclopsGetImage16( 
-      triclops_context_, TriImg16_DISPARITY, TriCam_REFERENCE, &depth_image_16_ );
-   handle_triclops_error( "triclopsGetImage16()", te );
+/////////////////////////////////////////////////////////////////////////////////////
+  extract_depth16_();
 /////////////////////////////////////////////////////////////////////////////////////
 
-	int pixelinc    = depth_image_16_.rowinc/2;
+	const int pixelinc    = depth_image_16_.rowinc/2;
 
 	unsigned short      disparity ;
-	int		              i, j, k;
 	float	              x, y, z; 
 	unsigned short*     row ;
 
@@ -409,21 +427,23 @@ inline core::single_sarr bumblebee_driver_impl::get_depthmap_interleaved_()
 
   //
   valid_count_ = 0;
+  int k = 0;
+  int i = rows_;
 
 	////Outer loop: rows. Extract rows.
-	for ( i = 0, k = 0; i < rows_; i++ )
+	for (; i ; --i )
     {
-		row     = depth_image_16_.data + i * pixelinc;
+		row     = depth_image_16_.data + (i-1) * pixelinc;
 			//Inner Loop: cols. Extract disparities.
-		for ( j = 0; j < cols_; j++, k++ )
+	  for (int j = cols_; j; --j, ++k )
         {
-			  disparity = row[j];
+			  disparity = row[j-1];
 		// filter invalid points
 		    if ( disparity < 0xFF00 )
           {
 			    // convert the 16 bit disparity value to floating point x,y,z
 			    triclopsRCD16ToXYZ
-				    ( triclops_context_, i, j, disparity, &x, &y, &z ) ;
+				    ( triclops_context_, i-1, j-1, disparity, &x, &y, &z ) ;
 		      if(z < 10)
             {
               valid_count_++;
@@ -437,6 +457,82 @@ inline core::single_sarr bumblebee_driver_impl::get_depthmap_interleaved_()
     }//outer loop
     
   return depth_image_sptr_;
+}
+//------------------------------------------------------------------------
+//TODO: just a clone of the above code except for the ordering
+inline core::single_sarr bumblebee_driver_impl::get_depthmap_sandbox_320_()
+{
+/////////////////////////////////////////////////////////////////////////////////////
+  extract_depth16_();
+/////////////////////////////////////////////////////////////////////////////////////
+	unsigned short      disparity ;
+	float	              x, y, z; 
+  //
+  std::memset(depth_image_sptr_.get(), 0, pixelnum * sizeof(core::single_t));
+  //
+  valid_count_ = 0;
+  ///
+  for (int i = 0; i < indices320.cols_times_rows ; ++i)
+  {
+    disparity  = depth_image_16_.data[i];
+    if(disparity < 0xFF00)
+    {
+	    triclopsRCD16ToXYZ
+        ( triclops_context_, indices320.i[i], indices320.j[i], disparity, &x, &y, &z ) ;
+      //if(z < zbound_)
+         //{
+           valid_count_++;
+           depth_image_sptr_[i]     = x;
+           depth_image_sptr_[i+1]   = y;
+           depth_image_sptr_[i+2]   = z;
+         //}
+    }
+  }
+  return depth_image_sptr_;
+}
+//------------------------------------------------------------------------
+//TODO: just a clone of the above code except for the ordering
+inline core::single_sarr bumblebee_driver_impl::get_depthmap_sandbox_640_()
+{
+/////////////////////////////////////////////////////////////////////////////////////
+  extract_depth16_();
+/////////////////////////////////////////////////////////////////////////////////////
+	unsigned short      disparity ;
+	float	              x, y, z; 
+  //
+  std::memset(depth_image_sptr_.get(), 0, pixelnum * sizeof(core::single_t));
+  //
+  valid_count_ = 0;
+  ///
+  for (int i = 0; i < indices640.cols_times_rows ; ++i)
+  {
+    disparity  = depth_image_16_.data[i];
+    if(disparity < 0xFF00)
+    {
+	    triclopsRCD16ToXYZ
+        ( triclops_context_, indices320.i[i], indices320.j[i], disparity, &x, &y, &z ) ;
+      //if(z < zbound_)
+         //{
+           valid_count_++;
+           depth_image_sptr_[i]     = x;
+           depth_image_sptr_[i+1]   = y;
+           depth_image_sptr_[i+2]   = z;
+         //}
+    }
+  }
+  return depth_image_sptr_;
+}
+//-------------------------------------------------------------------
+  //
+inline  void bumblebee_driver_impl::extract_depth16_()
+{
+  digiclopsExtractTriclopsInput( digiclops_context_, STEREO_IMAGE, &stereo_input_ );
+  triclopsRectify( triclops_context_, &stereo_input_ );
+  // stereo processing
+  triclopsStereo( triclops_context_ ) ;
+  // retrieve the interpolated depth image from the context
+  triclopsGetImage16( 
+    triclops_context_, TriImg16_DISPARITY, TriCam_REFERENCE, &depth_image_16_ );
 }
 //-------------------------------------------------------------------
 inline bool bumblebee_driver_impl::handle_digiclops_error(char* function, 

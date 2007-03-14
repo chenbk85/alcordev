@@ -77,6 +77,12 @@ std::string bumblebee_driver_t::name() const
   return params._name;
 }
 //------------------------------------------------------------------+
+///
+void bumblebee_driver_t::set_zbound(float izbound)
+{
+  impl->zbound_ = izbound;
+}
+//------------------------------------------------------------------+
 bool  bumblebee_driver_t::grab()
 {
   return impl->grab_();
@@ -142,6 +148,12 @@ all::core::uint8_sarr bumblebee_driver_t::get_color_buffer(core::right_img_t , b
 all::core::single_sarr bumblebee_driver_t::get_depth_buffer(bool shared)
 {
   return impl->get_depthmap_();
+}
+//------------------------------------------------------------------+
+///
+all::core::single_sarr bumblebee_driver_t::get_depth_buffer_sandbox_(bool shared)
+{
+  return impl->get_depthmap_sandbox_();
 }
 //------------------------------------------------------------------+
 ///  
