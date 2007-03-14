@@ -121,14 +121,16 @@ void p3_gateway::enable_follow_mode()
 void p3_gateway::set_target_to_follow 
     (const math::point2d& target, double speed)
 {
+  impl->m_robot->lock();
   //
   impl->m_ac_follow->setSpeed(speed);
-  //
+  //setEncoderGoalRel
   impl->m_ac_follow->setGoalRel(  
                       target.magnitude()*1000.0
                     , target.orientation().deg()
                     , false, false
                     );
+  impl->m_robot->unlock();
 }
 //---------------------------------------------------------------------------
   }}//all::act

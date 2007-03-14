@@ -43,7 +43,7 @@ struct pinhole_t
     core::dconstants::rad_to_deg(std::asin(delta_row / focal))
     );
 
-  return delta_pitch;
+  return -delta_pitch;
   };
   ///---------------------------------------------------------------------
    double delta_pan_from_pixel(double col) 
