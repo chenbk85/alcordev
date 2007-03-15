@@ -82,7 +82,7 @@ namespace all{namespace act{
     boost::shared_ptr<detail::p3_gateway_impl> impl;
     e_robot_model robot_model_;
 
-	iniWrapper ini_;
+	  iniWrapper ini_;
   };
 //---------------------------------------------------------------------------
   typedef boost::shared_ptr<p3_gateway>  p3_gateway_ptr_t;
