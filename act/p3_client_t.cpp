@@ -37,6 +37,16 @@ void p3_client_t::set_user_callback(user_callback_t callback)
   user_callback = callback;
 }
 //-------------------------------------------------------------------
+void p3_client_t::set_slam_localized(const math::pose2d& slam_pose)
+{
+  p3_server_data_t temp;
+  temp.pose = slam_pose;
+  core::net_packet_ptr_t packet(new core::net_packet_t());
+  temp.pack(packet);
+  send_command("setSlamPose",packet);
+}
+
+//-------------------------------------------------------------------
 ///
 void p3_client_t::set_vel(double mmpersecs)
 {

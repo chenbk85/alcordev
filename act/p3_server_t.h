@@ -20,6 +20,8 @@ public:
 
 private:
   ///
+  void set_slam_localized(client_connection_ptr_t, net_packet_ptr_t);
+  ///
   void set_vel(client_connection_ptr_t, net_packet_ptr_t);
   ///
   void enable_wander(client_connection_ptr_t, net_packet_ptr_t);
@@ -39,6 +41,8 @@ private:
   p3_gateway_ptr_t   p3_;
   ///
   p3_server_data_t  p3_data_;
+  ///
+  p3_server_data_t  p3_slam_data_;
 };
 //-------------------------------------------------------------------
 typedef boost::shared_ptr<p3_server_t>  p3_server_ptr_t;
