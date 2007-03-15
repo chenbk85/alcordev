@@ -107,6 +107,11 @@ public:
   ///
   void set_zbound(float);
 
+  ///Set the output format for the depth map
+  void set_interleaved();
+  ///Set the output format for the depth map (default)
+  void set_planar();
+
   ///
   size_t  color_buffer_size() const;
   ///
@@ -121,9 +126,9 @@ public:
 	///
   all::core::single_sarr get_depth_buffer( bool shared = true);
   ///
-  all::core::single_sarr get_depth_buffer(core::interleaved_t, bool shared = true);
-  ///
-  all::core::single_sarr get_depth_buffer_sandbox_(bool shared = true);
+  //all::core::single_sarr get_depth_buffer(core::interleaved_t, bool shared = true);
+  /////
+  //all::core::single_sarr get_depth_buffer_sandbox_(bool shared = true);
 
 protected:
 	///PIMPL Idiom

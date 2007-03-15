@@ -83,6 +83,18 @@ void bumblebee_driver_t::set_zbound(float izbound)
   impl->zbound_ = izbound;
 }
 //------------------------------------------------------------------+
+///
+void bumblebee_driver_t::set_interleaved()
+{
+  impl->set_interleaved_();
+}
+//------------------------------------------------------------------+
+///
+void bumblebee_driver_t::set_planar()
+{
+  impl->set_planar_();
+}
+//------------------------------------------------------------------+
 bool  bumblebee_driver_t::grab()
 {
   return impl->grab_();
@@ -147,22 +159,9 @@ all::core::uint8_sarr bumblebee_driver_t::get_color_buffer(core::right_img_t , b
 ///
 all::core::single_sarr bumblebee_driver_t::get_depth_buffer(bool shared)
 {
-  return impl->get_depthmap_();
+  return impl->get_depthmap_buffer_();
 }
 //------------------------------------------------------------------+
-///
-all::core::single_sarr bumblebee_driver_t::get_depth_buffer_sandbox_(bool shared)
-{
-  return impl->get_depthmap_sandbox_();
-}
-//------------------------------------------------------------------+
-///  
-all::core::single_sarr bumblebee_driver_t::get_depth_buffer(core::interleaved_t, bool shared)
-{
-  return impl->get_depthmap_interleaved_();
-}
-//------------------------------------------------------------------+
-
 //###################################################################
 bool bumblebee_parameters_t::load(const std::string& confname)
 {

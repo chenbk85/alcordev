@@ -99,6 +99,7 @@ public:
   bumblebee_driver_impl():
             valid_count_(0)
           , zbound_(10.0f)
+          , is_depth16_new(false)
   {};
 
   bool init_digiclops_context_(DigiclopsSerialNumber, std::string& digiclopsfile
@@ -108,7 +109,10 @@ public:
   bool init_grabbing_();
 
   void allocate_buffers_();
-
+  ///
+  void set_interleaved_();
+  ///
+  void set_planar_();
   ///
   bool grab_();
 
@@ -137,20 +141,21 @@ public:
 
   core::uint8_sarr get_rgb_left_() const ;
 
-  core::single_sarr get_depthmap_();
-  core::single_sarr get_depthmap_interleaved_();
-
   //
-  boost::function<core::single_sarr (void)>  get_depthmap_sandbox_;
+  boost::function<core::single_sarr (void)>  get_depthmap_buffer_;
   //  
   image_indices_320 indices320;
-  core::single_sarr get_depthmap_sandbox_320_();
+  core::single_sarr get_depthmap_sandbox_320_planar_();
+  core::single_sarr get_depthmap_sandbox_320_interleaved_();
+  
   //  
   image_indices_640 indices640;
-  core::single_sarr get_depthmap_sandbox_640_();
+  core::single_sarr get_depthmap_sandbox_640_planar_();
+  core::single_sarr get_depthmap_sandbox_640_interleaved_();
 
   //
   void extract_depth16_();
+  bool is_depth16_new;
 
   //data
   ///
@@ -276,10 +281,12 @@ inline bool bumblebee_driver_impl::init_triclops_context_(std::string& triclopsf
   te = triclopsGetResolution(triclops_context_, &rows_, &cols_);
   bok = bok && handle_triclops_error( "triclopsGetResolution()", te );
 
+
+  //defaul is planar...
   if(rows_ == 240)
-    get_depthmap_sandbox_ = boost::bind(&bumblebee_driver_impl::get_depthmap_sandbox_320_, this);
+    get_depthmap_buffer_ = boost::bind(&bumblebee_driver_impl::get_depthmap_sandbox_320_planar_, this);
   else
-    get_depthmap_sandbox_ = boost::bind(&bumblebee_driver_impl::get_depthmap_sandbox_640_, this);
+    get_depthmap_buffer_ = boost::bind(&bumblebee_driver_impl::get_depthmap_sandbox_640_planar_, this);
 
   return bok;
 }
@@ -300,6 +307,24 @@ inline void bumblebee_driver_impl::allocate_buffers_()
   pixelnum =  planeinc*3;
 }
 //-------------------------------------------------------------------
+inline void bumblebee_driver_impl::set_interleaved_()
+{
+  //defaul is planar...
+  if(rows_ == 240)
+    get_depthmap_buffer_ = boost::bind(&bumblebee_driver_impl::get_depthmap_sandbox_320_interleaved_, this);
+  else
+    get_depthmap_buffer_ = boost::bind(&bumblebee_driver_impl::get_depthmap_sandbox_640_interleaved_, this);
+}
+//-------------------------------------------------------------------
+inline void bumblebee_driver_impl::set_planar_()
+{
+  //defaul is planar...
+  if(rows_ == 240)
+    get_depthmap_buffer_ = boost::bind(&bumblebee_driver_impl::get_depthmap_sandbox_320_planar_, this);
+  else
+    get_depthmap_buffer_ = boost::bind(&bumblebee_driver_impl::get_depthmap_sandbox_640_planar_, this);
+}
+//-------------------------------------------------------------------
 inline bool bumblebee_driver_impl::grab_()
 {
   bool b_ok = true;
@@ -309,6 +334,8 @@ inline bool bumblebee_driver_impl::grab_()
 
   b_ok = b_ok && ( left_color_proc_() );
   b_ok = b_ok && ( right_color_proc_() );
+  
+  is_depth16_new = true;
 
   return b_ok;
 }
@@ -363,112 +390,201 @@ inline core::uint8_sarr bumblebee_driver_impl::get_rgb_left_() const
 {
   return left_image_sptr_;
 }
+//###########################################################################
+//###########################################################################
 //-------------------------------------------------------------------
-inline core::single_sarr bumblebee_driver_impl::get_depthmap_()
-{
-  std::ofstream logfile("beeimpl.txt", std::ios::out); 
-/////////////////////////////////////////////////////////////////////////////////////
-  extract_depth16_();
-/////////////////////////////////////////////////////////////////////////////////////
-  //
-	const int pixelinc    = depth_image_16_.rowinc/2;
-	unsigned short      disparity ;
-	float	              x, y, z; 
-	unsigned short*     row ;
-  //
-  std::memset(depth_image_sptr_.get(), 0, pixelnum * sizeof(core::single_t));
-  //
-  valid_count_ = 0;
-  int k = (rows_*cols_)-1;
-
-  int i = rows_;
-	////Outer loop: rows. Extract rows.
-	for (; i ; --i )
-    {
-		row = depth_image_16_.data + (i-1) * pixelinc;
-			//Inner Loop: cols. Extract disparities.
-		for (int j = cols_; j; --j, --k)
-        {
-          //logfile << "i: " << i << " j: " << j << " k: " << k << std::endl; 
-			  disparity = row[j-1];
-		// filter invalid points
-		    if ( disparity < 0xFF00 )
-          {
-			    // convert the 16 bit disparity value to floating point x,y,z
-			    triclopsRCD16ToXYZ
-				    ( triclops_context_, i-1, j-1, disparity, &x, &y, &z ) ;
-
-		      //if(z < zbound_)
-            //{
-              valid_count_++;
-              depth_image_sptr_[k]              = x;
-              depth_image_sptr_[k+planeinc]     = y;
-              depth_image_sptr_[k+planeinc_2]   = z;
-            //}
-
-           }//disparity
-        }//inner loop		
-    }//outer loop
-    
-  return depth_image_sptr_;
-}
+//inline core::single_sarr bumblebee_driver_impl::get_depthmap_()
+//{
+//  std::ofstream logfile("beeimpl.txt", std::ios::out); 
+///////////////////////////////////////////////////////////////////////////////////////
+//  if(is_depth16_new)
+//  {
+//  extract_depth16_();
+//  is_depth16_new = false;
+//  }
+///////////////////////////////////////////////////////////////////////////////////////
+//  //
+//	const int pixelinc    = depth_image_16_.rowinc/2;
+//	unsigned short      disparity ;
+//	float	              x, y, z; 
+//	unsigned short*     row ;
+//  //
+//  std::memset(depth_image_sptr_.get(), 0, pixelnum * sizeof(core::single_t));
+//  //
+//  valid_count_ = 0;
+//  int k = (rows_*cols_)-1;
+//
+//  int i = rows_;
+//	////Outer loop: rows. Extract rows.
+//	for (; i ; --i )
+//    {
+//		row = depth_image_16_.data + (i-1) * pixelinc;
+//			//Inner Loop: cols. Extract disparities.
+//		for (int j = cols_; j; --j, --k)
+//        {
+//          //logfile << "i: " << i << " j: " << j << " k: " << k << std::endl; 
+//			  disparity = row[j-1];
+//		// filter invalid points
+//		    if ( disparity < 0xFF00 )
+//          {
+//			    // convert the 16 bit disparity value to floating point x,y,z
+//			    triclopsRCD16ToXYZ
+//				    ( triclops_context_, i-1, j-1, disparity, &x, &y, &z ) ;
+//
+//		      //if(z < zbound_)
+//            //{
+//              valid_count_++;
+//              depth_image_sptr_[k]              = x;
+//              depth_image_sptr_[k+planeinc]     = y;
+//              depth_image_sptr_[k+planeinc_2]   = z;
+//            //}
+//
+//           }//disparity
+//        }//inner loop		
+//    }//outer loop
+//    
+//  return depth_image_sptr_;
+//}
 //-------------------------------------------------------------------
+////TODO: just a clone of the above code except for the ordering
+//inline core::single_sarr bumblebee_driver_impl::get_depthmap_interleaved_()
+//{
+//
+///////////////////////////////////////////////////////////////////////////////////////
+//  if(is_depth16_new)
+//  {
+//  extract_depth16_();
+//  is_depth16_new = false;
+//  }
+///////////////////////////////////////////////////////////////////////////////////////
+//
+//	const int pixelinc    = depth_image_16_.rowinc/2;
+//
+//	unsigned short      disparity ;
+//	float	              x, y, z; 
+//	unsigned short*     row ;
+//
+//    //
+//  std::memset(depth_image_sptr_.get(), 0, pixelnum * sizeof(core::single_t));
+//
+//  //
+//  valid_count_ = 0;
+//  int k = (rows_*cols_*3);
+//  int i = rows_;
+//
+//	////Outer loop: rows. Extract rows.
+//	for (; i ; --i )
+//    {
+//		row     = depth_image_16_.data + (i-1) * pixelinc;
+//			//Inner Loop: cols. Extract disparities.
+//	  for (int j = cols_; j; --j, k-=3 )
+//        {
+//			  disparity = row[j-1];
+//		// filter invalid points
+//		    if ( disparity < 0xFF00 )
+//          {
+//			    // convert the 16 bit disparity value to floating point x,y,z
+//			    triclopsRCD16ToXYZ
+//				    ( triclops_context_, i-1, j-1, disparity, &x, &y, &z ) ;
+//		      //if(z < 10)
+//        //    {
+//              valid_count_++;
+//              depth_image_sptr_[k]     = x;
+//              depth_image_sptr_[k+1]   = y;
+//              depth_image_sptr_[k+2]   = z;
+//            //}
+//
+//           }//disparity
+//        }//inner loop		
+//    }//outer loop
+//    
+//  return depth_image_sptr_;
+//}
+//------------------------------------------------------------------------
 //TODO: just a clone of the above code except for the ordering
-inline core::single_sarr bumblebee_driver_impl::get_depthmap_interleaved_()
+inline core::single_sarr bumblebee_driver_impl::get_depthmap_sandbox_320_planar_()
 {
-
 /////////////////////////////////////////////////////////////////////////////////////
+  if(is_depth16_new)
+  {
   extract_depth16_();
+  is_depth16_new = false;
+  }
 /////////////////////////////////////////////////////////////////////////////////////
-
-	const int pixelinc    = depth_image_16_.rowinc/2;
-
 	unsigned short      disparity ;
 	float	              x, y, z; 
-	unsigned short*     row ;
-
-    //
+  //
   std::memset(depth_image_sptr_.get(), 0, pixelnum * sizeof(core::single_t));
-
   //
   valid_count_ = 0;
-  int k = (rows_*cols_*3);
-  int i = rows_;
-
-	////Outer loop: rows. Extract rows.
-	for (; i ; --i )
+  const size_t  total_floats = indices320.cols_times_rows;
+  ///
+  for (int i = 0, k = 0; i < total_floats ; ++i, ++k)
+  {
+    disparity  = depth_image_16_.data[i];
+    if(disparity < 0xFF00)
     {
-		row     = depth_image_16_.data + (i-1) * pixelinc;
-			//Inner Loop: cols. Extract disparities.
-	  for (int j = cols_; j; --j, k-=3 )
-        {
-			  disparity = row[j-1];
-		// filter invalid points
-		    if ( disparity < 0xFF00 )
-          {
-			    // convert the 16 bit disparity value to floating point x,y,z
-			    triclopsRCD16ToXYZ
-				    ( triclops_context_, i-1, j-1, disparity, &x, &y, &z ) ;
-		      //if(z < 10)
-        //    {
-              valid_count_++;
-              depth_image_sptr_[k]     = x;
-              depth_image_sptr_[k+1]   = y;
-              depth_image_sptr_[k+2]   = z;
-            //}
+	    triclopsRCD16ToXYZ
+        ( triclops_context_, indices320.i[i], indices320.j[i], disparity, &x, &y, &z ) ;
+      //if(z < zbound_)
+         //{
+           valid_count_++;
+           depth_image_sptr_[k]            = x;
+           depth_image_sptr_[k+planeinc]   = y;
+           depth_image_sptr_[k+planeinc_2] = z;
 
-           }//disparity
-        }//inner loop		
-    }//outer loop
-    
+
+         //}
+    }
+  }
   return depth_image_sptr_;
 }
 //------------------------------------------------------------------------
 //TODO: just a clone of the above code except for the ordering
-inline core::single_sarr bumblebee_driver_impl::get_depthmap_sandbox_320_()
+inline core::single_sarr bumblebee_driver_impl::get_depthmap_sandbox_640_planar_()
 {
 /////////////////////////////////////////////////////////////////////////////////////
+  if(is_depth16_new)
+  {
   extract_depth16_();
+  is_depth16_new = false;
+  }
+/////////////////////////////////////////////////////////////////////////////////////
+	unsigned short      disparity ;
+	float	              x, y, z; 
+  //
+  std::memset(depth_image_sptr_.get(), 0, pixelnum * sizeof(core::single_t));
+  //
+  valid_count_ = 0;
+  ///
+  for (int i = 0; i < indices640.cols_times_rows ; ++i)
+  {
+    disparity  = depth_image_16_.data[i];
+    if(disparity < 0xFF00)
+    {
+	    triclopsRCD16ToXYZ
+        ( triclops_context_, indices320.i[i], indices320.j[i], disparity, &x, &y, &z ) ;
+      //if(z < zbound_)
+         //{
+           valid_count_++;
+           depth_image_sptr_[i]     = x;
+           depth_image_sptr_[i+1]   = y;
+           depth_image_sptr_[i+2]   = z;
+         //}
+    }
+  }
+  return depth_image_sptr_;
+}
+//------------------------------------------------------------------------
+//TODO: just a clone of the above code except for the ordering
+inline core::single_sarr bumblebee_driver_impl::get_depthmap_sandbox_320_interleaved_()
+{
+/////////////////////////////////////////////////////////////////////////////////////
+  if(is_depth16_new)
+  {
+  extract_depth16_();
+  is_depth16_new = false;
+  }
 /////////////////////////////////////////////////////////////////////////////////////
 	unsigned short      disparity ;
 	float	              x, y, z; 
@@ -498,34 +614,38 @@ inline core::single_sarr bumblebee_driver_impl::get_depthmap_sandbox_320_()
 }
 //------------------------------------------------------------------------
 //TODO: just a clone of the above code except for the ordering
-inline core::single_sarr bumblebee_driver_impl::get_depthmap_sandbox_640_()
+inline core::single_sarr bumblebee_driver_impl::get_depthmap_sandbox_640_interleaved_()
 {
 /////////////////////////////////////////////////////////////////////////////////////
-  extract_depth16_();
-/////////////////////////////////////////////////////////////////////////////////////
-	unsigned short      disparity ;
-	float	              x, y, z; 
-  //
-  std::memset(depth_image_sptr_.get(), 0, pixelnum * sizeof(core::single_t));
-  //
-  valid_count_ = 0;
-  ///
-  for (int i = 0; i < indices640.cols_times_rows ; ++i)
+  if(is_depth16_new)
   {
-    disparity  = depth_image_16_.data[i];
-    if(disparity < 0xFF00)
-    {
-	    triclopsRCD16ToXYZ
-        ( triclops_context_, indices320.i[i], indices320.j[i], disparity, &x, &y, &z ) ;
-      //if(z < zbound_)
-         //{
-           valid_count_++;
-           depth_image_sptr_[i]     = x;
-           depth_image_sptr_[i+1]   = y;
-           depth_image_sptr_[i+2]   = z;
-         //}
-    }
+  extract_depth16_();
+  is_depth16_new = false;
   }
+/////////////////////////////////////////////////////////////////////////////////////
+	//unsigned short      disparity ;
+	//float	              x, y, z; 
+ // //
+ // std::memset(depth_image_sptr_.get(), 0, pixelnum * sizeof(core::single_t));
+ // //
+ // valid_count_ = 0;
+ // ///
+ // for (int i = 0; i < indices640.cols_times_rows ; ++i)
+ // {
+ //   disparity  = depth_image_16_.data[i];
+ //   if(disparity < 0xFF00)
+ //   {
+	//    triclopsRCD16ToXYZ
+ //       ( triclops_context_, indices320.i[i], indices320.j[i], disparity, &x, &y, &z ) ;
+ //     //if(z < zbound_)
+ //        //{
+ //          valid_count_++;
+ //          depth_image_sptr_[i]     = x;
+ //          depth_image_sptr_[i+1]   = y;
+ //          depth_image_sptr_[i+2]   = z;
+ //        //}
+ //   }
+ // }
   return depth_image_sptr_;
 }
 //-------------------------------------------------------------------
