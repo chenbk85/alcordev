@@ -1,5 +1,6 @@
 #include "p3_gateway.h"
 #include "detail/p3_gateway_impl.cpp"
+#include "alcor/core/iniWrapper.h"
 
 //---------------------------------------------------------------------------
 namespace all{namespace act{
@@ -25,10 +26,13 @@ p3_gateway::~p3_gateway()
 //---------------------------------------------------------------------------
 bool p3_gateway::open(std::string inifile)
 {
+  iniWrapper ini;
+  if ( ini.Load(inifile.c_str()) ) 
   if ( ini_.Load(inifile.c_str()) ) 
   {
     bool is_p3dx = true;
 
+    if(ini.GetInt("config:p3dx", 1))
     if(ini_.GetInt("config:p3dx", 1))
     {
       robot_model_ = p3DX;
@@ -39,11 +43,14 @@ bool p3_gateway::open(std::string inifile)
       robot_model_ = p3AT;
     }
 
+    impl.reset(new detail::p3_gateway_impl(is_p3dx));
     impl.reset(new detail::p3_gateway_impl(is_p3dx, ini_));
 
+    if(ini.GetInt("config:serialmode", 1))
     if(ini_.GetInt("config:serialmode", 1))
     {
       printf("Opening serial connection\n");
+      char* port = ini.GetStringAsChar("config:comport","COM5");
       char* port = ini_.GetStringAsChar("config:comport","COM5");
       return (impl->serial_connect(port));
     }
@@ -120,16 +127,17 @@ void p3_gateway::enable_follow_mode()
 void p3_gateway::set_target_to_follow 
     (const math::point2d& target, double speed)
 {
-  //impl->m_robot->lock();
+  printf("Target dist: %f theta: %f\n", target.magnitude()*1000.0, target.orientation().deg());
   //
-  //impl->m_ac_follow->setSpeed(100);
-  //setEncoderGoalRel
+  printf("Speed: %f\n", speed);
   impl->m_ac_follow->setGoalRel(  
                       target.magnitude()*1000.0
                     , target.orientation().deg()
                     , false, true
                     );
   //impl->m_robot->unlock();
+
+  printf("set_target_to_follow .. out!!\n\n");
 }
 //---------------------------------------------------------------------------
   }}//all::act
