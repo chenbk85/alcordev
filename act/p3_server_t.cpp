@@ -27,7 +27,7 @@ void p3_server_t::register_()
   add_command_handler("enableStop",   boost::bind(&p3_server_t::enable_stop, this, _1, _2));
   add_command_handler("enableWander",   boost::bind(&p3_server_t::enable_wander, this, _1, _2));
   add_command_handler("enableFollow",   boost::bind(&p3_server_t::enable_follow, this, _1, _2));
-  add_command_handler("setTarget",   boost::bind(&p3_server_t::set_vel, this, _1, _2));
+  add_command_handler("setTarget",   boost::bind(&p3_server_t::set_target, this, _1, _2));
 }
 //-------------------------------------------------------------------
 ///

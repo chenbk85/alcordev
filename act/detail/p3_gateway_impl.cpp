@@ -193,7 +193,8 @@ inline void p3_gateway_impl::init_follow_action(iniWrapper& ini)
   priority = ini.GetInt("p3at_follow_straight:priority", 50);
 
    m_ac_follow=new ArActionGotoStraight("target", velocity);
-
+   m_ac_follow->setCloseDist(10);
+   m_ac_follow->setGoalRel(0,0,false, false);
 
   ////drive toward the target
   m_follow->addAction(m_ac_follow, priority);
