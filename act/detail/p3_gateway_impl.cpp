@@ -6,12 +6,13 @@
 using std::auto_ptr;
 //---------------------------------------------------------------------------
 #include "alcor/core/core.h"
+#include "alcor/core/iniWrapper.h"
 //---------------------------------------------------------------------------
 namespace all { namespace act { namespace detail {
 struct p3_gateway_impl
 {
   ///weird... no better solution now...
-  p3_gateway_impl(bool is_p3dx);
+  p3_gateway_impl(bool is_p3dx, iniWrapper&);
 
   ~p3_gateway_impl();
 
@@ -25,7 +26,7 @@ struct p3_gateway_impl
   void robot_run();
 
   //[ACTIONS]
-  void init_follow_action();
+  void init_follow_action(iniWrapper&);
   void init_wander_action();
   void init_stop_action();
 
@@ -54,12 +55,14 @@ struct p3_gateway_impl
 //###########################################################################
 //IMPL
 //###########################################################################
-inline p3_gateway_impl::p3_gateway_impl(bool is_p3dx)
+inline p3_gateway_impl::p3_gateway_impl(bool is_p3dx, iniWrapper& ini)
 {
   	//Mandatory init ..
 	Aria::init();
 	//
 	m_robot = new ArRobot;
+
+	m_robot->logActions();
 
   if (is_p3dx)
     m_robot->loadParamFile("config/p3dx.p");
@@ -75,10 +78,11 @@ inline p3_gateway_impl::p3_gateway_impl(bool is_p3dx)
   init_wander_action();
 
   ///Follow
-  init_follow_action();
+  init_follow_action(ini);
 
 	//Starts with actions deactivated ...
 	m_robot->deactivateActions();
+
 }  
 //---------------------------------------------------------------------------
 inline p3_gateway_impl::~p3_gateway_impl()
@@ -150,6 +154,9 @@ inline void p3_gateway_impl::init_stop_action()
 //---------------------------------------------------------------------------
 inline void p3_gateway_impl::init_wander_action()
 {
+
+	int velocity, turn, priority, distance;
+
   m_wander.reset(new 	ArActionGroupStop(m_robot));
 
   //TODO enable external ini files...
@@ -168,9 +175,12 @@ inline void p3_gateway_impl::init_wander_action()
   m_wander->addAction(new ArActionConstantVelocity("Constant Velocity", 150), 25);
 }
 //---------------------------------------------------------------------------
-inline void p3_gateway_impl::init_follow_action()
+inline void p3_gateway_impl::init_follow_action(iniWrapper& ini)
 {
-  //TODO: enable external ini files...
+  
+	int velocity, turn, priority, distance;
+	
+	//TODO: enable external ini files...
   m_follow.reset(new ArActionGroup(m_robot));
 
   // if we're stalled we want to back up and recover
@@ -179,20 +189,39 @@ inline void p3_gateway_impl::init_follow_action()
   //This action lets you drive toward the target.
   //m_ac_follow.reset(new ArActionGotoStraight("target",200) );
 
-   m_ac_follow=new ArActionGotoStraight("target",200);
+  velocity = ini.GetInt("p3at_follow_straight:velocity", 200);
+  priority = ini.GetInt("p3at_follow_straight:priority", 50);
 
-  //drive toward the target
-  m_follow->addAction(m_ac_follow, 50);
+   m_ac_follow=new ArActionGotoStraight("target", velocity);
+
+
+  ////drive toward the target
+  m_follow->addAction(m_ac_follow, priority);
+
+  distance = ini.GetInt("p3at_follow_near:distance", 200);
+  velocity = ini.GetInt("p3at_follow_near:velocity", 0);
+  turn = ini.GetInt("p3at_follow_near:turn", 15);
+  priority = ini.GetInt("p3at_follow_near:priority", 60);
+  
 
   // avoid things closer to us
-  m_follow->addAction(new ArActionAvoidFront("Avoid Front Near", 200, 0), 50);
+  m_follow->addAction(new ArActionAvoidFront("Avoid Front Near", distance, velocity, turn), priority);
+
+  distance = ini.GetInt("p3at_follow_far:distance", 400);
+  velocity = ini.GetInt("p3at_follow_far:velocity", 200);
+  turn = ini.GetInt("p3at_follow_far:turn", 15);
+  priority = ini.GetInt("p3at_follow_far:priority", 60);
 
   // avoid things further away
-  m_follow->addAction(new ArActionAvoidFront("Avoid Front Far",400, 200, 15), 55);
+  m_follow->addAction(new ArActionAvoidFront("Avoid Front Far", distance, velocity, turn), priority);
+
+  distance = ini.GetInt("p3at_follow_far:distance", 300);
+  turn = ini.GetInt("p3at_follow_far:turn", 5);
+  priority = ini.GetInt("p3at_follow_far:priority", 60);
 
   // avoid side
-  m_follow->addAction(new ArActionAvoidSide("Side Avoid", 300,5), 55);
-    // keep moving
+  m_follow->addAction(new ArActionAvoidSide("Side Avoid", distance, turn), priority);
+  //  // keep moving
 
   //m_follow->addAction(new ArActionConstantVelocity("Constant Velocity", 150), 25);
 
