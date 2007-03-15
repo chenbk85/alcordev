@@ -63,6 +63,13 @@ public:	//setters and getters
 	void	set_x1(double val){x_ = val;}
 	void	set_x2(double val){y_ = val;}
 
+  //(re-set the point. modulo e angolo)
+  void  set(double mod, angle dir)
+    {
+      x_ = mod*dir.cos();
+      y_ = mod*dir.sin();
+    }
+
 public:	//unary operators
 	const point2d	operator-() const {return point2d(-x_,-y_);}
 
