@@ -58,7 +58,7 @@ urg_multi_scan_t urg_laser_t::get_scan_vector() {
 }
 
 all::math::angle urg_laser_t::step2angle(int step) {
-	return all::math::angle(360.0/1024.0)*(static_cast<double>(step) - 384.0), all::math::deg_tag);
+	return all::math::angle((360.0/1024.0)*(static_cast<double>(step) - 384.0), all::math::deg_tag);
 }
 
 int urg_laser_t::angle2step(all::math::angle a) {
