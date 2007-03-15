@@ -2,6 +2,7 @@
 #define SPLAM_DATA_H
 //-----------------------------------------------------------------------------------------------
 #include <vector>
+#include <boost/shared_ptr.hpp>
 #include "alcor/splam/scan_data.h"
 #include "alcor/math/size2d.h"
 #include "alcor/math/geom2dtypes.h"
@@ -75,6 +76,8 @@ public:	// services
 
 
 };
+
+typedef	boost::shared_ptr<splam_data>	splam_data_ptr;
 
 }//namespace splam
 }//namespace all

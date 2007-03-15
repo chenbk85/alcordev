@@ -32,11 +32,11 @@ public:
 	~splam_data_net();
 
 public:
-	TGeneric<CRLE>*					runLenght_;
-	boost::shared_ptr<splam_data>	data_;
-	BYTE							header_;
-	BYTE*							target_;
-	long							target_lenght;
+	TGeneric<CRLE>*		runLenght_;
+	splam_data_ptr		data_;
+	BYTE				header_;
+	BYTE*				target_;
+	long				target_lenght;
 
 
 
@@ -46,6 +46,8 @@ public:
 	void	import_others(ArNetPacket*);
 	void	pack_others(ArNetPacket*);
 };
+
+typedef boost::shared_ptr<splam_data_net>	splam_data_net_ptr;
 
 }//namespace splam
 }//namespace all

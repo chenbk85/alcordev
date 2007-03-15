@@ -20,6 +20,8 @@ typedef int_vect::iterator			int_vect_it;
 typedef std::vector<double>			double_vect;
 typedef double_vect::iterator		double_vect_it;
 
+typedef std::pair<double,double>	double_pair;
+
 }//namespace util
 }//namespace all
 //---------------------------------------------------------------------------

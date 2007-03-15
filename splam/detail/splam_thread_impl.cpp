@@ -2,7 +2,7 @@
 #include "ArNetworking.h"
 #include "alcor/core/core.h"
 #include "alcor/sense/urg_laser_t.hpp"
-//#include "alcor/act/p3dx_client_t.h"
+#include "alcor/act/p3_client_t.h"
 #include "alcor/core/iniWrapper.h"
 #include "alcor/splam/splam_data.h"
 #include "alcor/splam/scan_data.h"
@@ -10,7 +10,7 @@
 #include "pmap_wrap.h"
 //-----------------------------------------------------------------------------------------------
 using namespace all::core;
-//using namespace all::act;
+using namespace all::act;
 using namespace all::sense;
 //-----------------------------------------------------------------------------------------------
 namespace all{
@@ -22,7 +22,7 @@ public:		// typedefs
 	typedef ArFunctor2C<splam_thread_impl,ArServerClient*, ArNetPacket*>	functor;
 
 public:		// ctor, dtor, copy ctor, copy assign
-	splam_thread_impl(const char* name = "./config/splam.ini");
+	splam_thread_impl(const char* name = "config/splam.ini");
 	~splam_thread_impl();
 
 public:		// thread side
@@ -32,25 +32,25 @@ public:		// thread side
 private:	// hokuyo urg laser
 	urg_laser_t			urg_laser_;
 	urg_scan_data_ptr	urg_scan_data_ptr_;
-	int_vect		    laser_mask_;
-	void				set_laser_mask(std::pair<double,double>);
-	void				filter();			//le precondizioni è che lo urg_scan_data_t sia già pieno
+	//int_vect		    laser_mask_;		// to do...
+	//void				set_laser_mask(double_pair);	// to do...
+	//void				filter();			// to do...
 	scan_data			current_scan_;		//
-	scan_data			previous_scan_;			//
+	scan_data			previous_scan_;		//
 	ArMutex				scan_data_mutex_;	//
 	size_t				scan_count_;		//number of current scan
-	size_t				urg_step_start_;	//
-	size_t				urg_step_end_;		//
-	size_t				urg_cc_;			//
+	int					urg_step_start_;	//
+	int					urg_step_end_;		//
+	int					urg_cc_;			//
 
 public:		// Pioneer Robot (p3dx or p3at)
-	//boost::shared_ptr<p3dx_client_t>		robot_;
+	p3_client_ptr_t		robot_;
 
 private:	// data Acquisition
 	void				acquire_all();
 	void				acquire_laser_scan();	// internal
 	void				acquire_odometry();		// internal
-	void				estimate_odometry();
+	//void				estimate_odometry();	// to do...
 
 public:		// data Processing
 	void				slam_process();
@@ -58,8 +58,8 @@ public:		// data Processing
 
 private:	// splam
 	pmap_wrap			pmap_wrap_;
-	boost::shared_ptr<splam_data>		splam_data_;
-	boost::shared_ptr<splam_data_net>	splam_data_net_;
+	splam_data_ptr		splam_data_;
+	splam_data_net_ptr	splam_data_net_;
 	ArMutex				splam_data_mutex_;
 	ArMutex				pmap_mutex_;
 
@@ -91,8 +91,6 @@ splam_thread_impl::splam_thread_impl( const char* name)
 	,pmap_wrap_(name)
 	,scan_count_(0)
 	,server_started_(false)
-	,urg_scan_data_ptr_(0)
-
 {
 		// ARIA initialization
 	Aria::init();
@@ -115,11 +113,10 @@ splam_thread_impl::splam_thread_impl( const char* name)
 		throw std::runtime_error("cannot connect laser");
 	
 		// robot client
-	//robot = all::act::create_p3dx_client();
-	//odoPresent_ = (ini_.GetInt("robot:odo",1) == 1);
-	//robot->Run();
+	robot_.reset(new p3_client_t("config/p3_conf.ini"));
+	robot_->run_async();
 
-	// server IP initialization... to start server clients must call "splam_thread::start_server()"
+		// server IP initialization... to start server clients must call "splam_thread::start_server()"
 	server_address_.hostname = "127.0.0.1";
 	server_address_.port = ini_.GetInt("server:port",12321);
 }
@@ -195,7 +192,7 @@ void splam_thread_impl::acquire_laser_scan()
 		if(*it < 20)
 			*it = 0;
 	current_scan_.start_angle_ = urg_laser_t::step2angle(urg_step_start_) ;
-	current_scan_.scan_step_ = urg_laser_t::resolution(urg_cc_);
+	current_scan_.angle_step_ = urg_laser_t::resolution(urg_cc_);
 	current_scan_.scan_step_ = scan_count_;
 	current_scan_.time_stamp_ = clock();
 
@@ -210,22 +207,8 @@ void splam_thread_impl::acquire_odometry()
 	// lock
 	scan_data_mutex_.lock();
 
-	//acquisizione odometria del Robot e riempimento del campo pos_odometrica della struttura scan_data
-	if((odoPresent_) && (robot->net_state() == all::core::eActiveOpen))
-	{
-		current_scan_.pos_odometrica = pose2d_to_pose2_t(robot->get_odometry());
-		current_scan_.pos_odometrica.pos.x/=1000;
-		current_scan_.pos_odometrica.pos.y/=1000;
-	}else{
-		if(scan_count_ < 2)
-		{
-			current_scan_.pos_odometrica.pos.x = 0;
-			current_scan_.pos_odometrica.pos.y = 0;
-			current_scan_.pos_odometrica.rot   = 0;
-		}else{
-			estimate_odometry();
-		}
-	}
+	// odometry
+	current_scan_.odo_pose_ = robot_->get_odometry();
 
 	// unlock
 	scan_data_mutex_.unlock();
