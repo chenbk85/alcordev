@@ -23,6 +23,7 @@ class urg_laser_t {
 public:
 	static all::math::angle step2angle(int);
 	static int angle2step(all::math::angle);
+	static all::math::angle resolution(int);
 
 	urg_laser_t(char* ini_file = "config/urg_driver.ini");
 	

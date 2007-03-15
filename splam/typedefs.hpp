@@ -6,7 +6,7 @@
 namespace all{
 namespace util{
 
-typedef double						scan_value;
+typedef short int					scan_value;
 typedef	std::vector<scan_value>		scan_values;
 typedef	scan_values::iterator		scan_values_it;
 

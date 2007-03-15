@@ -21,7 +21,7 @@ public:
 				pmap_wrap(const char* name);
 				~pmap_wrap();
 				void	fill_splam_data(boost::shared_ptr<splam_data> data);
-	void		process(boost::shared_ptr<scan_data> scan); /// add a scan
+	void		process(scan_data_ptr scan); /// add a scan
 	void		save_map_as_file(const char* filename); ///< save the PGN grayscale OccupancyGrid file 
 	int			get_laser_scan_number() const {return laser_scan_number_;}
 	size_t		get_map_cells() const {return omap_->grid_sx*omap_->grid_sy;} ///< get the number of map cells, RAW*COL

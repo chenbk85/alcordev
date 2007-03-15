@@ -2,6 +2,8 @@
 #define SCAN_DATA_H
 //-----------------------------------------------------------------------------------------------
 #include <vector>
+#include <ctime>
+#include <boost/shared_ptr.hpp>
 #include "alcor/math/pose2d.h"
 #include "typedefs.hpp"
 //-----------------------------------------------------------------------------------------------
@@ -28,10 +30,12 @@ public:	// data
 	size_t			scan_step_;		///< 
 
 	// time
-	time_t			time_stamp_;			///< istante di tempo in cui i dati vengono acquisiti
+	clock_t			time_stamp_;	///< istante di tempo in cui i dati vengono acquisiti
 
 public:	// services
 };
+
+typedef boost::shared_ptr<scan_data> scan_data_ptr;
 
 }//namespace splam
 }//namespace all
