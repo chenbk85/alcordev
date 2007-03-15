@@ -12,6 +12,16 @@ namespace all {
 class urg_scan_data_t {
 
 public:
+	enum
+	{
+		default_start		=	 44,
+		minus_pi			=	128,
+		front				=	384,
+		plus_pi				=	640,
+		default_end			=	725,
+		max_scan_points		=	769
+	};
+
 	static const int MAX_NUM_POINTS = 769;
 
 	urg_scan_data_t();

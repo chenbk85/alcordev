@@ -3,7 +3,7 @@
 #include "detail/urg_laser_impl.cpp"
 
 namespace all {
-	namespace sense {
+namespace sense {
 
 urg_laser_t::urg_laser_t(char* ini_file) {
 	pimpl.reset(new detail::urg_laser_impl(ini_file));
@@ -58,13 +58,16 @@ urg_multi_scan_t urg_laser_t::get_scan_vector() {
 }
 
 all::math::angle urg_laser_t::step2angle(int step) {
-	double deg_angle = (double(360)/double(1024))*(step - 384);
-	all::math::angle a(deg_angle, all::math::deg_tag);
-	return a;
+	return all::math::angle(360.0/1024.0)*(static_cast<double>(step) - 384.0), all::math::deg_tag);
 }
 
 int urg_laser_t::angle2step(all::math::angle a) {
 	return static_cast<int> ((double(1024)/double(360)) * a.deg())+384;
 }
 
-}} //namespaces
+all::math::angle urg_laser_t::resolution (int cc) {
+	return all::math::angle(static_cast<double>(cc)*(360.0/1024.0) , all::math::deg_tag);
+}
+
+} //namespace sense
+} //namespace all

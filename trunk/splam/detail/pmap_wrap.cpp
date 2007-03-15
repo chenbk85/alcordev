@@ -107,7 +107,7 @@ void pmap_wrap::fill_splam_data(boost::shared_ptr<splam_data> data)
 
 }
 
-void pmap_wrap::process(boost::shared_ptr<scan_data> scan)
+void pmap_wrap::process(scan_data_ptr scan)
 {
 	pose2_t current_lodoPose;
 
