@@ -22,11 +22,18 @@ p3_ = p3ptr;
 void p3_server_t::register_()
 {
 	add_command_handler("getData",  boost::bind(&p3_server_t::send_p3_data, this, _1, _2));
+  add_command_handler("setSlamPose",  boost::bind(&p3_server_t::set_slam_localized, this, _1, _2));
   add_command_handler("setVel",   boost::bind(&p3_server_t::set_vel, this, _1, _2));
   add_command_handler("enableStop",   boost::bind(&p3_server_t::enable_stop, this, _1, _2));
   add_command_handler("enableWander",   boost::bind(&p3_server_t::enable_wander, this, _1, _2));
   add_command_handler("enableFollow",   boost::bind(&p3_server_t::enable_follow, this, _1, _2));
   add_command_handler("setTarget",   boost::bind(&p3_server_t::set_vel, this, _1, _2));
+}
+//-------------------------------------------------------------------
+///
+void p3_server_t::set_slam_localized(client_connection_ptr_t, net_packet_ptr_t pkt)
+{
+  p3_slam_data_.import(pkt);
 }
 //-------------------------------------------------------------------
 ///

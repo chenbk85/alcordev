@@ -22,14 +22,18 @@ namespace all { namespace act{
     ///
     typedef boost::function<void (const math::pose2d&)> 
       user_callback_t;
+
     ///the actual method invoked
     user_callback_t user_callback;
   
     ///
     void set_user_callback(user_callback_t);
-
-    //[remote methods]
+  
+    ///
+     //[remote methods]
   public:
+    ///
+    void set_slam_localized(const math::pose2d&);
     ///
     void set_vel(double mmpersecs);
     ///
