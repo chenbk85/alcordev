@@ -123,7 +123,6 @@ void p3_gateway::enable_follow_mode()
 void p3_gateway::set_target_to_follow 
     (const math::point2d& target, double speed)
 {
-  //impl->m_follow->
   printf("Target dist: %f theta: %f\n", target.magnitude()*1000.0, target.orientation().deg());
   //
   printf("Speed: %f\n", speed);
@@ -136,7 +135,7 @@ void p3_gateway::set_target_to_follow
                     );
   impl->m_robot->unlock();
 
-  printf("set_target_to_follow .. out!!\n\n");
+  //printf("set_target_to_follow .. out!!\n\n");
 }
 //---------------------------------------------------------------------------
   ///
@@ -147,9 +146,12 @@ void p3_gateway::enable_goto_mode()
   printf("Goto Action Enabled.\n");
 }
 //---------------------------------------------------------------------------
-void p3_gateway::set_goto(const math::point2d& target, double speed)
+void p3_gateway::set_goto(const math::point2d& target, double mmpersecs)
 {
-  impl->set_goto_pose(target, speed);
+  printf("Goal dist: %f theta: %f\n", target.magnitude()*1000.0, target.orientation().deg());
+  printf("Speed: %f\n", mmpersecs);
+
+  impl->set_goto_pose(target, mmpersecs);
 }
 //---------------------------------------------------------------------------
   }}//all::act

@@ -50,8 +50,8 @@ struct p3_gateway_impl
 	auto_ptr<ArActionGroup>         m_stop;
 
   //GOTO ACtionGroup -----------------------
-  auto_ptr<ArActionGroup>           m_goto;
-  auto_ptr<ArActionGoto>          m_action_goto;
+  auto_ptr<ArActionGroup>     m_goto;
+  auto_ptr<ArActionGoto>      m_action_goto;
   //----------------------------------------
   ///connections
 	ArTcpConnection 	  m_tcpConn;
@@ -274,20 +274,21 @@ inline void p3_gateway_impl::set_goto_pose(const math::point2d& reltarget , doub
 {
   //pose is meters, degree (relative pose)
   //ArPose is mm, degrees
-  m_robot->lock();
-  ArPose current = m_robot->getPose();
-
-  //TODO: correct with relative
+  m_robot->lock();  
+  //correct with relative
   ArPose newgoal;
+  ArPose current = m_robot->getPose();
   //
   double xoffset = reltarget.get_x1()*reltarget.orientation().cos();
   double yoffset = reltarget.get_x2()*reltarget.orientation().sin();
   //
   newgoal.setX(current.getX() + xoffset);
   newgoal.setY(current.getY() + yoffset);
-  newgoal.setTh(reltarget.orientation().deg() + current.getTh());
+  newgoal.setTh(ArMath::addAngle(reltarget.orientation().deg(), current.getTh() ));
   //
   m_action_goto->setGoal(newgoal);
+  m_action_goto->setSpeed(mmpersecs);
+
   //
   m_robot->unlock();
 }
