@@ -139,5 +139,18 @@ void p3_gateway::set_target_to_follow
   printf("set_target_to_follow .. out!!\n\n");
 }
 //---------------------------------------------------------------------------
+  ///
+void p3_gateway::enable_goto_mode()
+{
+  impl->m_robot->clearDirectMotion();
+  impl->m_goto->activateExclusive();
+  printf("Goto Action Enabled.\n");
+}
+//---------------------------------------------------------------------------
+void p3_gateway::set_goto(const math::point2d& target, double speed)
+{
+  impl->set_goto_pose(target, speed);
+}
+//---------------------------------------------------------------------------
   }}//all::act
 //---------------------------------------------------------------------------

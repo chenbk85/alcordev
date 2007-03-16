@@ -78,6 +78,11 @@ namespace all{namespace act{
     void set_target_to_follow 
       (const math::point2d& target, double speed = 100);
 
+    ///
+    void enable_goto_mode();
+    ///
+    void set_goto(const math::point2d& target, double speed);
+
   private:
     boost::shared_ptr<detail::p3_gateway_impl> impl;
     e_robot_model robot_model_;

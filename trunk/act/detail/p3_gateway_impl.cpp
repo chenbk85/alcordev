@@ -7,6 +7,7 @@ using std::auto_ptr;
 //---------------------------------------------------------------------------
 #include "alcor/core/core.h"
 #include "alcor/core/iniWrapper.h"
+#include "alcor/math/point2d.h"
 //---------------------------------------------------------------------------
 namespace all { namespace act { namespace detail {
 struct p3_gateway_impl
@@ -29,9 +30,11 @@ struct p3_gateway_impl
   void init_robot_settings(iniWrapper&);
 
   //[ACTIONS]
-  void init_follow_action(iniWrapper&);
-  void init_wander_action();
-  void init_stop_action();
+  void init_follow_action(iniWrapper&);//follow
+  void init_wander_action();//wander
+  void init_stop_action();//stop
+  void init_goto_action();//goto
+  void set_goto_pose(const math::point2d& reltarget , double mmpersecs);//set_goto
 
   //FOLLOW ActionGroup ---------------------
   auto_ptr<ArActionGroup>         m_follow;
@@ -46,6 +49,10 @@ struct p3_gateway_impl
   //STOP ActionGroup -----------------------
 	auto_ptr<ArActionGroup>         m_stop;
 
+  //GOTO ACtionGroup -----------------------
+  auto_ptr<ArActionGroup>           m_goto;
+  auto_ptr<ArActionGoto>          m_action_goto;
+  //----------------------------------------
   ///connections
 	ArTcpConnection 	  m_tcpConn;
 	ArSerialConnection 	m_serialConn;	
@@ -149,7 +156,7 @@ inline bool p3_gateway_impl::blocking_connect()
   return true;
 }
 //---------------------------------------------------------------------------
-inline void init_robot_settings(iniWrapper& ini)
+inline void p3_gateway_impl::init_robot_settings(iniWrapper& ini)
 {
   m_robot->setRotVelMax(15);
 }
@@ -196,7 +203,7 @@ inline void p3_gateway_impl::init_follow_action(iniWrapper& ini)
   // if we're stalled we want to back up and recover
   m_follow->addAction(new ArActionStallRecover, 100);
 
-  m_follow->addAction( new ArActionLimiterForwards limiter("limiter", 150, 0, 0, 1.3), 90);
+  m_follow->addAction( new ArActionLimiterForwards("limiter", 150, 0, 0, 1.3), 90);
 
 				   //double stopDistance = 250,
 				   //double slowDistance = 1000,
@@ -212,7 +219,7 @@ inline void p3_gateway_impl::init_follow_action(iniWrapper& ini)
   m_ac_follow->setSpeed(0);
 
   ////drive toward the target
-  m_follow->addAction(m_ac_follow, priority);
+  m_follow->addAction(m_ac_follow.get(), priority);
 
   //distance = ini.GetInt("p3at_follow_near:distance", 100);
   //velocity = ini.GetInt("p3at_follow_near:velocity", 0);
@@ -240,6 +247,49 @@ inline void p3_gateway_impl::init_follow_action(iniWrapper& ini)
 
    //m_ac_follow->setGoalRel(0,0,false, false);
   //  // keep moving
+}
+//---------------------------------------------------------------------------
+inline void p3_gateway_impl::init_goto_action()
+{
+	int velocity, turn, priority, distance;
+
+  m_goto.reset(new ArActionGroup(m_robot));
+
+  // if we're stalled we want to back up and recover
+  m_goto->addAction(new ArActionStallRecover, 100);
+
+    // turn to avoid things closer to us
+  m_goto->addAction(new ArActionAvoidFront("Avoid Front Near", 225, 0), 95);
+
+  // turn avoid things further away
+  m_goto->addAction(new ArActionAvoidFront, 90);
+
+  //goal, closeDist, speed, speedToTurn, turn
+  m_action_goto.reset( new ArActionGoto("goto",ArPose(), 10, 200, 150,7) );
+  m_robot->addAction(m_action_goto.get(), 50);
+
+}
+//---------------------------------------------------------------------------
+inline void p3_gateway_impl::set_goto_pose(const math::point2d& reltarget , double mmpersecs)
+{
+  //pose is meters, degree (relative pose)
+  //ArPose is mm, degrees
+  m_robot->lock();
+  ArPose current = m_robot->getPose();
+
+  //TODO: correct with relative
+  ArPose newgoal;
+  //
+  double xoffset = reltarget.get_x1()*reltarget.orientation().cos();
+  double yoffset = reltarget.get_x2()*reltarget.orientation().sin();
+  //
+  newgoal.setX(current.getX() + xoffset);
+  newgoal.setY(current.getY() + yoffset);
+  newgoal.setTh(reltarget.orientation().deg() + current.getTh());
+  //
+  m_action_goto->setGoal(newgoal);
+  //
+  m_robot->unlock();
 }
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
