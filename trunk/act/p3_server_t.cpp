@@ -105,7 +105,7 @@ void p3_server_t::set_goto(client_connection_ptr_t, net_packet_ptr_t pkt)
   printf("p3_server_t::set_goto: mod: %f orient: %f mmpersec: %f\n", mod, orient, mmpersecs);
   math::point2d target(mod, math::angle(orient,math::deg_tag) );
 
-  p3_->set_goto(target, mmpersecs);
+  p3_->set_relative_goto(target, mmpersecs);
 }
 //-------------------------------------------------------------------
 }}//all::act

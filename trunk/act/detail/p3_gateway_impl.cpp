@@ -35,7 +35,7 @@ struct p3_gateway_impl
 
   void init_wander_action();//wander
   void init_stop_action();//stop
-  void init_goto_action();//goto
+  void init_goto_action(iniWrapper&);//goto
   void set_goto_pose(const math::point2d& reltarget , double mmpersecs);//set_goto
 
 
@@ -96,7 +96,7 @@ inline p3_gateway_impl::p3_gateway_impl(bool is_p3dx, iniWrapper& ini)
   init_follow_action(ini);
 
   ///
-  init_goto_action();
+  init_goto_action(ini);
 
   //
 	m_robot->logActions();
@@ -253,28 +253,23 @@ inline void p3_gateway_impl::init_follow_action(iniWrapper& ini)
   //  // keep moving
 }
 //---------------------------------------------------------------------------
-inline void p3_gateway_impl::init_goto_action()
+inline void p3_gateway_impl::init_goto_action(iniWrapper& ini)
 {
 	int velocity, turn, priority, distance;
 
   m_goto.reset(new ArActionGroup(m_robot));
 
   // if we're stalled we want to back up and recover
-  //m_goto->addAction(new ArActionStallRecover, 100);
+  m_goto->addAction(new ArActionStallRecover, 100);
 
-    // turn to avoid things closer to us
-  m_goto->addAction(new ArActionAvoidFront("Avoid Front Near", 200, 0), 95);
+     //turn to avoid things closer to us
+  m_goto->addAction(new ArActionAvoidFront("Avoid Front Near", 100, 0, 5), 95);
 
   // turn avoid things further away
-  //m_goto->addAction(new ArActionAvoidFront("front",300, 100,5), 90);
+  m_goto->addAction(new ArActionAvoidFront("front",350, 100, 5), 90);
 
-  ////goal, closeDist, speed, speedToTurn, turn
-  //m_action_goto.reset( new ArActionGoto("goto", ArPose(), 10, 200, 150,7) );
-  /////  
-  //m_robot->addAction(m_action_goto.get(), 50);
-
-  //goal, closeDist, speed, speedToTurn, turn
-  //m_action_goto.reset( new ArActionGoto("goto", ArPose(), 10, 200, 150,7) );
+  //// avoid side
+  m_goto->addAction(new ArActionAvoidSide("Side Avoid", 150, 5), 80);
   /////  
   m_goto->addAction(new ArActionGoto("mygoto", ArPose(), 100, 200, 100,5), 50 );
 }
