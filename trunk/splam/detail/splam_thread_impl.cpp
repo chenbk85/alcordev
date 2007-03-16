@@ -32,8 +32,15 @@ public:		// thread side
 private:	// hokuyo urg laser
 	urg_laser_t			urg_laser_;
 	urg_scan_data_ptr	urg_scan_data_ptr_;
-	//int_vect		    laser_mask_;		// to do...
-	//void				set_laser_mask(double_pair);	// to do...
+	int_vect		    laser_mask_;								
+	bool				set_laser_mask(double_pair);		// angles are GRADS
+	bool				set_laser_mask(angle_pair);			// done
+	bool				set_laser_mask(size2d);				// done
+	bool				set_laser_mask(int,int);			// done
+	bool				set_laser_mask(int_pair_vect);		// to do...
+	//bool				set_laser_mask(double_pair_vect);	// to do...
+	//bool				set_laser_mask(angle_pair_vect);	// to do...
+	//bool				set_laser_mask(sizes2d);			// to do...
 	//void				filter();			// to do...
 	scan_data			current_scan_;		//
 	scan_data			previous_scan_;		//
@@ -103,9 +110,9 @@ splam_thread_impl::splam_thread_impl( const char* name)
 
 		// laser initialization and connection
 	int lenghtmask = ini_.GetInt("laser:num_step",0);
-	laser_mask_.resize(lenghtmask,1);
+	//laser_mask_.resize(lenghtmask,1);
+	//fill(laser_mask_.begin(), laser_mask_.end(), 1);
 	current_scan_.ranges_.resize(lenghtmask,0);
-	fill(laser_mask_.begin(), laser_mask_.end(), 1);
 	urg_step_start_	= ini_.GetInt("laser:start_step", urg_scan_data_t::default_start);
 	urg_step_end_	= ini_.GetInt("laser:end_step", urg_scan_data_t::default_end);
 	urg_cc_	= ini_.GetInt("laser:cc", 1);
@@ -207,12 +214,59 @@ void splam_thread_impl::acquire_odometry()
 	// lock
 	scan_data_mutex_.lock();
 
-	// odometry
+	// odometry (to do: if robot hasn't a dead reckoning system, odo should be estimated from scan alignment)
 	current_scan_.odo_pose_ = robot_->get_odometry();
 
 	// unlock
 	scan_data_mutex_.unlock();
 }
+
+//void splam_thread_impl::filter()
+//{
+//	scan_data_mutex_.lock();
+//	for (size_t i=0; i<laser_mask_.size();++i)
+//		current_scan_.ranges_[i]= laser_mask_.at(i)* current_scan_.ranges_[i];
+//	scan_data_mutex_.unlock();
+//}
+
+bool splam_thread_impl::set_laser_mask(double_pair temp)
+{
+	return set_laser_mask(std::make_pair<angle,angle>(angle(temp.first,deg_tag), angle(temp.second,deg_tag)));
+}
+
+bool splam_thread_impl::set_laser_mask(angle_pair temp)
+{
+	return set_laser_mask(urg_laser_t::angle2step(temp.first), urg_laser_t::angle2step(temp.second));
+}
+
+bool splam_thread_impl::set_laser_mask(size2d temp)
+{
+	return set_laser_mask(static_cast<int>(temp.row_), static_cast<int>(temp.col_));
+}
+
+bool splam_thread_impl::set_laser_mask(int first, int last)
+{
+	if (first<urg_step_start_ || last>urg_step_end_)
+		return false;
+	std::fill(laser_mask_.begin()+first-urg_step_start_, laser_mask_.begin()+last+1-urg_step_start_, 0);
+	return true;
+}
+
+bool splam_thread_impl::set_laser_mask(int_pair_vect temp)
+{
+	int inizio = urg_laser_t::angle2step(;
+	//VectPairDoubleIT    it;
+	//int inizio;
+	//int fine;
+	//for(it = vect.begin();   it != vect.end();   ++it)
+	//{
+	//	inizio=UrgDriver::Instance()->AngleToScanStep(it->first);
+	//	fine= UrgDriver::Instance()->AngleToScanStep(it->second);
+	//	if(inizio < fine)
+	//		fill( mask.begin()+inizio,mask.begin()+fine,0);
+	//} 
+}
+
 
 void*	splam_thread_impl::runThread(void* arg)
 {
