@@ -81,7 +81,7 @@ namespace all{namespace act{
     ///
     void enable_goto_mode();
     ///
-    void set_goto(const math::point2d& target, double mmpersecs);
+    void set_relative_goto(const math::point2d& target, double mmpersecs);
 
   private:
     boost::shared_ptr<detail::p3_gateway_impl> impl;

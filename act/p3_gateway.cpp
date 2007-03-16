@@ -147,7 +147,7 @@ void p3_gateway::enable_goto_mode()
   impl->m_robot->unlock(); 
 }
 //---------------------------------------------------------------------------
-void p3_gateway::set_goto(const math::point2d& target, double mmpersecs)
+void p3_gateway::set_relative_goto(const math::point2d& target, double mmpersecs)
 {
   printf("Goal dist: %f theta: %f\n", target.magnitude()*1000.0, target.orientation().deg());
   printf("Speed: %f\n", mmpersecs);
