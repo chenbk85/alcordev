@@ -47,6 +47,13 @@ namespace all { namespace act{
     void set_target_to_follow 
       (const math::point2d& target, double speed = 100);
 
+    ///
+    void enable_goto_mode();
+    ///only when in follow_mode.
+    ///distance (mt) e offset angolare dal target (gradi)
+    void set_relative_goto
+      (const math::point2d& target, double mmpersecs = 100);
+
   private:
     ///
 	  void update_p3_data(net_packet_ptr_t);

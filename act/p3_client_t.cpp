@@ -84,6 +84,26 @@ void p3_client_t::set_target_to_follow
   send_command("setTarget", packet);
 }
 //-------------------------------------------------------------------
+    ///
+void p3_client_t::enable_goto_mode()
+{
+    send_command("enableGoto");
+}
+//-------------------------------------------------------------------
+///only when in goto_mode.
+///distance (mt) e offset angolare dal target (gradi)
+void p3_client_t::set_relative_goto
+  (const math::point2d& target, double mmpersecs)
+{
+  core::net_packet_ptr_t packet(new core::net_packet_t());
+
+  packet->double_to_buf(target.magnitude());
+  packet->double_to_buf(target.orientation().deg());
+  packet->double_to_buf(mmpersecs);
+    
+  send_command("setGoto", packet);
+}
+//-------------------------------------------------------------------
 ///
 void p3_client_t::connected_callback()
 {

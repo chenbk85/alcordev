@@ -31,6 +31,10 @@ private:
   void enable_follow(client_connection_ptr_t, net_packet_ptr_t);
   ///
   void set_target(client_connection_ptr_t, net_packet_ptr_t);
+  ///
+  void enable_goto(client_connection_ptr_t, net_packet_ptr_t);
+  //
+  void set_goto(client_connection_ptr_t, net_packet_ptr_t);
 
   ///
   void send_p3_data(client_connection_ptr_t, net_packet_ptr_t);
