@@ -21,6 +21,12 @@ typedef std::vector<double>			double_vect;
 typedef double_vect::iterator		double_vect_it;
 
 typedef std::pair<double,double>	double_pair;
+typedef std::vector<double_pair>	double_pair_vect;
+typedef double_pair_vect::iterator	double_pair_vect_it;
+
+typedef std::pair<int,int>			int_pair;
+typedef std::vector<int_pair>		int_pair_vect;
+typedef int_pair_vect::iterator		int_pair_vect_it;
 
 }//namespace util
 }//namespace all
