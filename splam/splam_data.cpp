@@ -6,17 +6,18 @@ using namespace all::util;
 namespace all{
 namespace splam{
 
-void	splam_data::metric_goal_finding(goal_t* temp)
+void	splam_data::metric_goal_finding(goal_t* goal_temp)
 {
+	//// STEP 1: STRUCTURE INITIALIZATION
+
+	// variables definitions and initializations
 	value_iteration vi(og_row_, og_col_, static_cast<int>(og_resolution_*100.0));
 	size2d curr_coord = get_current_coord();
-	
-	//Calcolo del Goal temporaneo, del GoalPath e del Goal Definitivo
 	size2d sizee = vi.get_size();
-	int i,j;
+	size_t i,j;
 	int temp;
 
-	//primo passaggio, serve per porre a zero le zone unknown
+	// primo passaggio, serve per porre a zero le zone unknown
 	for(i=0;i<sizee.row_;++i)
 	{
 		for(j=0;j<sizee.col_;++j)
@@ -29,34 +30,33 @@ void	splam_data::metric_goal_finding(goal_t* temp)
 		}
 	}
 
-	//secondo passaggio, serve per porre a infinito i muri e le zone troppo vicine ai muri
+	// secondo passaggio, serve per porre a infinito i muri e le zone troppo vicine ai muri
 	for(i=0;i<sizee.row_;++i)
 		for(j=0;j<sizee.col_;++j)
 			if(og_cells_[i*sizee.col_+j]>0)
-				vi.set_untouch_area(i,j,0.30/og_resolution_);
+				vi.set_untouch_area(i,j,static_cast<int>(0.30/og_resolution_));
 
-	//ultima condizione: il robot non può trovarsi in aree inaccessibili
+	// ultima condizione: il robot non può trovarsi in aree inaccessibili
 	for(i=curr_coord.row_-1;i<=curr_coord.row_+1;++i)
 		for(j=curr_coord.col_-1;j<=curr_coord.col_+1;++j)
 			if(in_map(i,j))
-				vi.set_row_col(i,j,100000000,(og_cells_[i*sizee.col_+j]+128.0));
+				vi.set_row_col(i,j,100000000,(static_cast<int>(og_cells_[i*sizee.col_+j])+128));
 
+	//// STEP 2: LOOP
+
+	// loop
+	value_iteration_info info=vi.loop();
+
+	//// STEP 3: CALCULATE UNEXPLORED PATH
+
+
+	todo...
 }
 
 
 
 void	splam_thread_impl::GoalFinding()
 {
-
-	////STEP 2: loop
-	value_iteration_info info=vi.loop();
-
-	//for(i=0;i<sizee.first;++i)
-	//{
-	//	for(j=0;j<sizee.second;++j)
-	//		tempazzo << vi.get_row_col(i,j).value<<" ";
-	//	tempazzo << endl;
-	//}
 
 
 	//STEP 3: CALCULATE UNEXPLORED PATH
@@ -113,6 +113,6 @@ void	splam_thread_impl::GoalFinding()
 }
 
 
-//
+
 }//namespace splam
 }//namespace all

@@ -18,7 +18,7 @@ struct attention_fov_t
 	angle	horizontal_fov_;	// symmetric assumption
 	double	near_;				// closest attention distance 
 	double	far_;				// farest attention distance
-}
+};
 
 struct observation_data_t
 {

@@ -107,13 +107,13 @@ void pmap_wrap::fill_slam_data(splam_data_ptr data)
 
 }
 
-void pmap_wrap::process(scan_data_ scan)
+void pmap_wrap::process(const scan_data& scan)
 {
 	pose2_t current_lodoPose;
 
-	std::copy(scan->ranges_.begin(), scan->ranges_.end(), laser_scan_data_);
+	std::copy(scan.ranges_.begin(), scan.ranges_.end(), laser_scan_data_);
 
-	current_lodoPose = lodo_add_scan(lodo_,pose2d_to_pose2_t(scan->odo_pose_),laser_scan_number_,laser_scan_data_);
+	current_lodoPose = lodo_add_scan(lodo_,pose2d_to_pose2_t(scan.odo_pose_),laser_scan_number_,laser_scan_data_);
 	pmap_update(pmap_, pose2_add(pose2d_to_pose2_t(offset_laser_pose_), current_lodoPose), laser_scan_number_, laser_scan_data_);	
 	
 }
