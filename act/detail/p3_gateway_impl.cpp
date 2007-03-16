@@ -25,6 +25,9 @@ struct p3_gateway_impl
   ///
   void robot_run();
 
+  //[Limits]
+  void init_robot_settings(iniWrapper&);
+
   //[ACTIONS]
   void init_follow_action(iniWrapper&);
   void init_wander_action();
@@ -35,7 +38,7 @@ struct p3_gateway_impl
  
 
   //keep a pointer to set the current target
-  ArActionGotoStraight*  m_ac_follow;
+  auto_ptr<ArActionGotoStraight>  m_ac_follow;
 
   //WANDER ActionGroup ---------------------
   auto_ptr<ArActionGroup>         m_wander;
@@ -69,6 +72,9 @@ inline p3_gateway_impl::p3_gateway_impl(bool is_p3dx, iniWrapper& ini)
 
   //Connect  sonars al robot
   m_robot->addRangeDevice(&m_sonar);
+
+  ///
+   init_robot_settings(ini);
 
   //Init actions
   ///Stop
@@ -143,6 +149,10 @@ inline bool p3_gateway_impl::blocking_connect()
   return true;
 }
 //---------------------------------------------------------------------------
+inline void init_robot_settings(iniWrapper& ini)
+{
+  m_robot->setRotVelMax(15);
+}
 //---------------------------------------------------------------------------
 //ACTIONS!!
 //---------------------------------------------------------------------------
@@ -183,28 +193,31 @@ inline void p3_gateway_impl::init_follow_action(iniWrapper& ini)
 	//TODO: enable external ini files...
   m_follow.reset(new ArActionGroup(m_robot));
 
-	//printf("init_follow_action2\n");
   // if we're stalled we want to back up and recover
   m_follow->addAction(new ArActionStallRecover, 100);
 
-	//printf("init_follow_action3\n");
-  velocity = ini.GetInt("p3at_follow_straight:velocity", 200);
+  m_follow->addAction( new ArActionLimiterForwards limiter("limiter", 150, 0, 0, 1.3), 90);
+
+				   //double stopDistance = 250,
+				   //double slowDistance = 1000,
+				   //double slowSpeed = 200,
+				   //double widthRatio = 1);
+
+  velocity = ini.GetInt("p3at_follow_straight:velocity", 0);
   priority = ini.GetInt("p3at_follow_straight:priority", 50);
 
   	//printf("init_follow_action4\n");
-   m_ac_follow = new ArActionGotoStraight("target", velocity);
-   m_ac_follow->setCloseDist(1);
-   m_ac_follow->setSpeed(0);
+  m_ac_follow.reset(new ArActionGotoStraight("target", velocity) );
+  m_ac_follow->setCloseDist(100);
+  m_ac_follow->setSpeed(0);
 
-
-	//printf("init_follow_action5\n");
   ////drive toward the target
   m_follow->addAction(m_ac_follow, priority);
 
-  distance = ini.GetInt("p3at_follow_near:distance", 200);
-  velocity = ini.GetInt("p3at_follow_near:velocity", 0);
-  turn = ini.GetInt("p3at_follow_near:turn", 5);
-  priority = ini.GetInt("p3at_follow_near:priority", 60);
+  //distance = ini.GetInt("p3at_follow_near:distance", 100);
+  //velocity = ini.GetInt("p3at_follow_near:velocity", 0);
+  //turn = ini.GetInt("p3at_follow_near:turn", 5);
+  //priority = ini.GetInt("p3at_follow_near:priority", 60);
   
 	//printf("init_follow_action6");
   // avoid things closer to us
@@ -213,7 +226,7 @@ inline void p3_gateway_impl::init_follow_action(iniWrapper& ini)
   distance = ini.GetInt("p3at_follow_far:distance", 300);
   velocity = ini.GetInt("p3at_follow_far:velocity", 150);
   turn = ini.GetInt("p3at_follow_far:turn", 5);
-  priority = ini.GetInt("p3at_follow_far:priority", 60);
+  priority = ini.GetInt("p3at_follow_far:priority", 70);
 
   // avoid things further away
   m_follow->addAction(new ArActionAvoidFront("Avoid Front Far", distance, velocity, turn), priority);
