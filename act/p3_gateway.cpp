@@ -121,29 +121,30 @@ void p3_gateway::enable_follow_mode()
 }
 //---------------------------------------------------------------------------
 void p3_gateway::set_target_to_follow 
-    (const math::point2d& target, double speed)
+    (const math::point2d& target, double mmpersecs)
 {
-  printf("Target dist: %f theta: %f\n", target.magnitude()*1000.0, target.orientation().deg());
-  //
-  printf("Speed: %f\n", speed);
-  impl->m_ac_follow->setSpeed(speed);
-  impl->m_robot->lock();
-  impl->m_ac_follow->setGoalRel(  
-                      target.magnitude()*1000.0
-                    , target.orientation().deg()
-                    , false, false
-                    );
-  impl->m_robot->unlock();
-
-  //printf("set_target_to_follow .. out!!\n\n");
+  impl->set_target(target, mmpersecs);
 }
 //---------------------------------------------------------------------------
   ///
 void p3_gateway::enable_goto_mode()
 {
+  impl->m_robot->lock(); 
+
+  ArActionGoto* mygoto = 
+    (ArActionGoto*) impl->m_robot->findAction("mygoto");
+
+  if(mygoto)
+  {
+    //starts stopped .... (maybe)
+    mygoto->setSpeed(0);
+  }
+
   impl->m_robot->clearDirectMotion();
   impl->m_goto->activateExclusive();
   printf("Goto Action Enabled.\n");
+
+  impl->m_robot->unlock(); 
 }
 //---------------------------------------------------------------------------
 void p3_gateway::set_goto(const math::point2d& target, double mmpersecs)

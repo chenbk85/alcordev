@@ -31,10 +31,13 @@ struct p3_gateway_impl
 
   //[ACTIONS]
   void init_follow_action(iniWrapper&);//follow
+  void set_target(const math::point2d& reltarget , double mmpersecs);//set_follow
+
   void init_wander_action();//wander
   void init_stop_action();//stop
   void init_goto_action();//goto
   void set_goto_pose(const math::point2d& reltarget , double mmpersecs);//set_goto
+
 
   //FOLLOW ActionGroup ---------------------
   auto_ptr<ArActionGroup>         m_follow;
@@ -80,7 +83,7 @@ inline p3_gateway_impl::p3_gateway_impl(bool is_p3dx, iniWrapper& ini)
   m_robot->addRangeDevice(&m_sonar);
 
   ///
-   init_robot_settings(ini);
+ init_robot_settings(ini);
 
   //Init actions
   ///Stop
@@ -218,13 +221,9 @@ inline void p3_gateway_impl::init_follow_action(iniWrapper& ini)
   velocity = ini.GetInt("p3at_follow_straight:velocity", 0);
   priority = ini.GetInt("p3at_follow_straight:priority", 50);
 
-  	//printf("init_follow_action4\n");
-  m_ac_follow.reset(new ArActionGotoStraight("target", velocity) );
-  m_ac_follow->setCloseDist(100);
-  m_ac_follow->setSpeed(0);
-
   ////drive toward the target
-  m_follow->addAction(m_ac_follow.get(), priority);
+  m_follow->addAction(new ArActionGotoStraight("myfollowtarget", 0) ,priority);
+
 
   //distance = ini.GetInt("p3at_follow_near:distance", 100);
   //velocity = ini.GetInt("p3at_follow_near:velocity", 0);
@@ -267,21 +266,62 @@ inline void p3_gateway_impl::init_goto_action()
   m_goto->addAction(new ArActionAvoidFront("Avoid Front Near", 200, 0), 95);
 
   // turn avoid things further away
-  //m_goto->addAction(new ArActionAvoidFront, 90);
+  //m_goto->addAction(new ArActionAvoidFront("front",300, 100,5), 90);
+
+  ////goal, closeDist, speed, speedToTurn, turn
+  //m_action_goto.reset( new ArActionGoto("goto", ArPose(), 10, 200, 150,7) );
+  /////  
+  //m_robot->addAction(m_action_goto.get(), 50);
 
   //goal, closeDist, speed, speedToTurn, turn
-  m_action_goto.reset( new ArActionGoto("goto", ArPose(), 10, 200, 150,7) );
-  ///  
-  m_robot->addAction(m_action_goto.get(), 50);
+  //m_action_goto.reset( new ArActionGoto("goto", ArPose(), 10, 200, 150,7) );
+  /////  
+  m_goto->addAction(new ArActionGoto("mygoto", ArPose(), 100, 200, 100,5), 50 );
+}
+//---------------------------------------------------------------------------
+inline void p3_gateway_impl::set_target(const math::point2d& reltarget , double mmpersecs)
+{
+  m_robot->lock(); 
+  ArActionGotoStraight* mygoto 
+    = (ArActionGotoStraight*) m_robot->findAction("myfollowtarget");
 
+  if(mygoto)
+  {
+
+  printf(
+      "Target dist: %f theta: %f\n", 
+      reltarget.magnitude()*1000.0
+    , reltarget.orientation().deg());
+
+  //
+  printf("Speed: %f\n", mmpersecs);
+  //
+  mygoto->setSpeed(mmpersecs);
+
+  mygoto->setGoalRel(  
+                    reltarget.magnitude()*1000.0
+                  , reltarget.orientation().deg()
+                  , false, false
+                  );
+  }
+
+  m_robot->unlock();
 }
 //---------------------------------------------------------------------------
 inline void p3_gateway_impl::set_goto_pose(const math::point2d& reltarget , double mmpersecs)
-{
+{   
+  m_robot->lock(); 
+  ArActionGoto* mygoto = (ArActionGoto*) m_robot->findAction("mygoto");
+
+  if(mygoto)
+  {
+  //m_goto->activate();
   printf("p3_gateway_impl::set_goto_pose\n");
+  //m_action_goto->cancelGoal();
+  //
   //pose is meters, degree (relative pose)
   //ArPose is mm, degrees
-  m_robot->lock();  
+ 
   //correct with relative
   ArPose newgoal;
   ArPose current = m_robot->getPose();
@@ -293,14 +333,18 @@ inline void p3_gateway_impl::set_goto_pose(const math::point2d& reltarget , doub
   newgoal.setY(static_cast<int>(current.getY() + yoffset*1000.0));
   newgoal.setTh(ArMath::addAngle(reltarget.orientation().deg(), current.getTh() ));
   //
-  m_action_goto->setGoal(newgoal);
-  m_action_goto->setSpeed(mmpersecs);
+  mygoto->setGoal(newgoal);
+  mygoto->setSpeed(mmpersecs);
 
   //
   printf("ArCurrentPose: X: %.2f Y %.2f\n", current.getX(), current.getY());
   printf("ArGoal: X: %.2f Y %.2f\n", newgoal.getX(), newgoal.getY());
 
+  mygoto->log();
+  //m_action_goto->log();
+  //m_goto->activate();
   //
+  }  
   m_robot->unlock();
 }
 //---------------------------------------------------------------------------
