@@ -24,7 +24,9 @@ public:
 	enum
 	{
 		broken_data	=	0,
-		valid_data	=	1,
+		slam_data_only,
+		slam_and_saliency,
+		full_data
 	};
 
 public:

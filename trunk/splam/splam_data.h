@@ -12,6 +12,17 @@ using namespace all::math;
 namespace all{
 namespace splam{
 
+struct	goal_t
+{
+	bool		is_valid_;
+	pose2d		goal_far_;
+	pose2d		goal_near_;
+	angle		head_direction_;
+	angle		relative_head_direction_;
+};
+
+typedef	boost::shared_ptr<goal_t>	goal_ptr_t;
+
 class splam_data
 {
 	
@@ -31,10 +42,8 @@ public:	// path
 public:	// laser
 	scan_data		last_scan_;		///< last laser scan
 
-
 public:	// goal
-	pose2d			goal_;			///< position to reach in long run
-	pose2d			goal_temp_;		///< position to reach close to the robot
+	goal_t			goal_;
 
 public:	// services
 	/**	
@@ -68,13 +77,21 @@ public:	// services
 	bool	in_map(const size2d& temp) const {return temp.row_<og_row_ && temp.col_<og_col_;}	
 
 	/**
-	 *	that function estimate the nearest metric goal, based only on Occupancy Values and the Frontier-Based
-	 *  approach. Parameters are lvalues of far goal and close goal (usually this->goal_ and this->goal_temp_)
-	 *  return value is true if a goal was found, false elsewhere
+	 *	that function estimates the nearest metric goal, based only on Occupancy Values and the Frontier-Based
+	 *  approach.
 	 */
-	bool	metric_goal_finding(pose2d& goal, pose2d& goal_temp);
+	void	metric_goal_finding(goal_ptr_t);
 
+	/**
+	 *	that function calculates next saliency goal and return TRUE if in that position the Recognition activity
+	 *	should be launched
+	 */
+	bool	saliency_goal_finding(goal_ptr_t);
 
+	/**
+	 *	
+	 */
+	void	build_saliency_map();
 };
 
 typedef	boost::shared_ptr<splam_data>	splam_data_ptr;

@@ -58,11 +58,11 @@ pose2d pmap_wrap::get_current_position() const
 }
 
 /**
- *  Function fill_splam_data fills the splam_data object passed ad a shared pointer.
+ *  Function fill_slam_data fills the splam_data object passed ad a shared pointer.
  *  Not all splam_data object can be filled by pmap_wrap... what is filled here is:
  *  1) 
  */
-void pmap_wrap::fill_splam_data(boost::shared_ptr<splam_data> data)
+void pmap_wrap::fill_slam_data(splam_data_ptr data)
 {
 	pmap_sample_t*	best_sample;
 	pmap_scan_t*	scann;
