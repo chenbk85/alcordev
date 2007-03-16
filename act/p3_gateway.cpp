@@ -32,7 +32,6 @@ bool p3_gateway::open(std::string inifile)
   {
     bool is_p3dx = true;
 
-    if(ini.GetInt("config:p3dx", 1))
     if(ini_.GetInt("config:p3dx", 1))
     {
       robot_model_ = p3DX;
@@ -43,7 +42,6 @@ bool p3_gateway::open(std::string inifile)
       robot_model_ = p3AT;
     }
 
-    //impl.reset(new detail::p3_gateway_impl(is_p3dxm, ini));
     impl.reset(new detail::p3_gateway_impl(is_p3dx, ini_));
 
     if(ini_.GetInt("config:serialmode", 1))

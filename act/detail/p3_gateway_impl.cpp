@@ -179,53 +179,54 @@ inline void p3_gateway_impl::init_follow_action(iniWrapper& ini)
 {
   
 	int velocity, turn, priority, distance;
-	
+	//printf("init_follow_action\n");
 	//TODO: enable external ini files...
   m_follow.reset(new ArActionGroup(m_robot));
 
+	//printf("init_follow_action2\n");
   // if we're stalled we want to back up and recover
   m_follow->addAction(new ArActionStallRecover, 100);
 
-  //This action lets you drive toward the target.
-  //m_ac_follow.reset(new ArActionGotoStraight("target",200) );
-
+	//printf("init_follow_action3\n");
   velocity = ini.GetInt("p3at_follow_straight:velocity", 200);
   priority = ini.GetInt("p3at_follow_straight:priority", 50);
 
-   m_ac_follow=new ArActionGotoStraight("target", velocity);
-   m_ac_follow->setCloseDist(10);
-   m_ac_follow->setGoalRel(0,0,false, false);
+  	//printf("init_follow_action4\n");
+   m_ac_follow = new ArActionGotoStraight("target", velocity);
+   m_ac_follow->setCloseDist(1);
+   m_ac_follow->setSpeed(0);
 
+
+	//printf("init_follow_action5\n");
   ////drive toward the target
   m_follow->addAction(m_ac_follow, priority);
 
   distance = ini.GetInt("p3at_follow_near:distance", 200);
   velocity = ini.GetInt("p3at_follow_near:velocity", 0);
-  turn = ini.GetInt("p3at_follow_near:turn", 15);
+  turn = ini.GetInt("p3at_follow_near:turn", 5);
   priority = ini.GetInt("p3at_follow_near:priority", 60);
   
-
+	//printf("init_follow_action6");
   // avoid things closer to us
-  m_follow->addAction(new ArActionAvoidFront("Avoid Front Near", distance, velocity, turn), priority);
+  //m_follow->addAction(new ArActionAvoidFront("Avoid Front Near", distance, velocity, turn), priority);
 
-  distance = ini.GetInt("p3at_follow_far:distance", 400);
-  velocity = ini.GetInt("p3at_follow_far:velocity", 200);
-  turn = ini.GetInt("p3at_follow_far:turn", 15);
+  distance = ini.GetInt("p3at_follow_far:distance", 300);
+  velocity = ini.GetInt("p3at_follow_far:velocity", 150);
+  turn = ini.GetInt("p3at_follow_far:turn", 5);
   priority = ini.GetInt("p3at_follow_far:priority", 60);
 
   // avoid things further away
   m_follow->addAction(new ArActionAvoidFront("Avoid Front Far", distance, velocity, turn), priority);
 
-  distance = ini.GetInt("p3at_follow_far:distance", 300);
-  turn = ini.GetInt("p3at_follow_far:turn", 5);
-  priority = ini.GetInt("p3at_follow_far:priority", 60);
+  //distance = ini.GetInt("p3at_follow_far:distance", 300);
+  //turn = ini.GetInt("p3at_follow_far:turn", 5);
+  //priority = ini.GetInt("p3at_follow_far:priority", 60);
 
-  // avoid side
-  m_follow->addAction(new ArActionAvoidSide("Side Avoid", distance, turn), priority);
+  //// avoid side
+  //m_follow->addAction(new ArActionAvoidSide("Side Avoid", distance, turn), priority);
+
+   //m_ac_follow->setGoalRel(0,0,false, false);
   //  // keep moving
-
-  //m_follow->addAction(new ArActionConstantVelocity("Constant Velocity", 150), 25);
-
 }
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
