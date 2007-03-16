@@ -107,7 +107,7 @@ void pmap_wrap::fill_slam_data(splam_data_ptr data)
 
 }
 
-void pmap_wrap::process(scan_data_ptr scan)
+void pmap_wrap::process(scan_data_ scan)
 {
 	pose2_t current_lodoPose;
 
