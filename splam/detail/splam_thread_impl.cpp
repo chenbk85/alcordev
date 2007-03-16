@@ -33,17 +33,16 @@ private:	// hokuyo urg laser
 	urg_laser_t			urg_laser_;
 	urg_scan_data_ptr	urg_scan_data_ptr_;
 	int_vect		    laser_mask_;								
-	bool				set_laser_mask(double_pair);		// angles are GRADS
-	bool				set_laser_mask(angle_pair);			// done
-	bool				set_laser_mask(size2d);				// done
-	bool				set_laser_mask(int,int);			// done
-	bool				set_laser_mask(int_pair_vect);		// to do...
+	//bool				set_laser_mask(double_pair);		// angles are GRADS
+	//bool				set_laser_mask(angle_pair);			// done
+	//bool				set_laser_mask(size2d);				// done
+	//bool				set_laser_mask(int,int);			// done
+	//bool				set_laser_mask(int_pair_vect);		// done
 	//bool				set_laser_mask(double_pair_vect);	// to do...
 	//bool				set_laser_mask(angle_pair_vect);	// to do...
 	//bool				set_laser_mask(sizes2d);			// to do...
 	//void				filter();			// to do...
-	scan_data			current_scan_;		//
-	scan_data			previous_scan_;		//
+	scan_data_ptr		current_scan_;		//
 	ArMutex				scan_data_mutex_;	//
 	size_t				scan_count_;		//number of current scan
 	int					urg_step_start_;	//
@@ -52,16 +51,7 @@ private:	// hokuyo urg laser
 
 public:		// Pioneer Robot (p3dx or p3at)
 	p3_client_ptr_t		robot_;
-
-private:	// data Acquisition
-	void				acquire_all();
 	void				acquire_laser_scan();	// internal
-	void				acquire_odometry();		// internal
-	//void				estimate_odometry();	// to do...
-
-public:		// data Processing
-	void				slam_process();
-	void				fill_splam_data();
 
 private:	// splam
 	pmap_wrap			pmap_wrap_;
@@ -74,7 +64,6 @@ public:		// data Broadcasting
 	void				start_server();			// 
 	void				stop_server();			// 
 	void				broadcast_splam_data();
-	void				update_pose_on_robot();
 	void				maps(ArServerClient* ,ArNetPacket*);
 	void				others(ArServerClient* ,ArNetPacket*);
 private:
@@ -104,15 +93,16 @@ splam_thread_impl::splam_thread_impl( const char* name)
 
 		// splam_data initialization
 	splam_data_.reset(new splam_data);
-	splam_data_->last_scan_ = current_scan_;
+	splam_data_->last_scan_ = *current_scan_.get();
 	splam_data_net_.reset(new splam_data_net(pmap_wrap_.get_map_cells()));
 	splam_data_net_->data_ = splam_data_;
 
 		// laser initialization and connection
+	current_scan_ = splam_data_->last_scan_;
 	int lenghtmask = ini_.GetInt("laser:num_step",0);
 	//laser_mask_.resize(lenghtmask,1);
 	//fill(laser_mask_.begin(), laser_mask_.end(), 1);
-	current_scan_.ranges_.resize(lenghtmask,0);
+	current_scan_->ranges_.resize(lenghtmask,0);
 	urg_step_start_	= ini_.GetInt("laser:start_step", urg_scan_data_t::default_start);
 	urg_step_end_	= ini_.GetInt("laser:end_step", urg_scan_data_t::default_end);
 	urg_cc_	= ini_.GetInt("laser:cc", 1);
@@ -173,52 +163,33 @@ void	splam_thread_impl::stop_server()
 	server_started_ = false;
 }
 
-void splam_thread_impl::acquire_all()
-{
-	// laser
-	acquire_laser_scan();
-
-	// odometry
-	acquire_odometry();
-}
-
 void splam_thread_impl::acquire_laser_scan()
 {
-	// lock
-	scan_data_mutex_.lock();
-
-	// save last scan
-	if(scan_count_ != 0)
-		previous_scan_ = current_scan_;
-	
 	// scan acquisition from laser and filling of scan_data structure
 	urg_scan_data_ptr_ = urg_laser_.do_scan(urg_step_start_, urg_step_end_, urg_cc_);
 
-	current_scan_.ranges_  = urg_scan_data_ptr_->scan_points;
-	for (scan_values_it it=current_scan_.ranges_.begin(); it!=current_scan_.ranges_.end();++it)
+	current_scan_->ranges_  = urg_scan_data_ptr_->scan_points;
+	for (scan_values_it it=current_scan_->ranges_.begin(); it!=current_scan_->ranges_.end();++it)
 		if(*it < 20)
 			*it = 0;
-	current_scan_.start_angle_ = urg_laser_t::step2angle(urg_step_start_) ;
-	current_scan_.angle_step_ = urg_laser_t::resolution(urg_cc_);
-	current_scan_.scan_step_ = scan_count_;
-	current_scan_.time_stamp_ = clock();
+	current_scan_->start_angle_ = urg_laser_t::step2angle(urg_step_start_) ;
+	current_scan_->angle_step_ = urg_laser_t::resolution(urg_cc_);
+	current_scan_->scan_step_ = scan_count_;
+	current_scan_->time_stamp_ = clock();
 
 	scan_count_++;
-	
-	// unlock
-	scan_data_mutex_.unlock();
 }
 
-void splam_thread_impl::acquire_odometry()
+void	splam_thread_impl::broadcast_splam_data()
 {
-	// lock
-	scan_data_mutex_.lock();
-
-	// odometry (to do: if robot hasn't a dead reckoning system, odo should be estimated from scan alignment)
-	current_scan_.odo_pose_ = robot_->get_odometry();
-
-	// unlock
-	scan_data_mutex_.unlock();
+	ArNetPacket og_map_packet;
+	ArNetPacket others_packet;
+	splam_data_net_->header_ = splam_data_net::full_data;
+	splam_data_net_->pack_og_map(&og_map_packet);
+	splam_data_net_->pack_others(&others_packet);
+	server_.broadcastPacketTcp(&og_map_packet,"Mappa");
+	ArUtil::sleep(100);
+	server_.broadcastPacketTcp(&others_packet,"Others");
 }
 
 //void splam_thread_impl::filter()
@@ -228,47 +199,64 @@ void splam_thread_impl::acquire_odometry()
 //		current_scan_.ranges_[i]= laser_mask_.at(i)* current_scan_.ranges_[i];
 //	scan_data_mutex_.unlock();
 //}
-
-bool splam_thread_impl::set_laser_mask(double_pair temp)
-{
-	return set_laser_mask(std::make_pair<angle,angle>(angle(temp.first,deg_tag), angle(temp.second,deg_tag)));
-}
-
-bool splam_thread_impl::set_laser_mask(angle_pair temp)
-{
-	return set_laser_mask(urg_laser_t::angle2step(temp.first), urg_laser_t::angle2step(temp.second));
-}
-
-bool splam_thread_impl::set_laser_mask(size2d temp)
-{
-	return set_laser_mask(static_cast<int>(temp.row_), static_cast<int>(temp.col_));
-}
-
-bool splam_thread_impl::set_laser_mask(int first, int last)
-{
-	if (first<urg_step_start_ || last>urg_step_end_)
-		return false;
-	std::fill(laser_mask_.begin()+first-urg_step_start_, laser_mask_.begin()+last+1-urg_step_start_, 0);
-	return true;
-}
-
-bool splam_thread_impl::set_laser_mask(int_pair_vect temp)
-{
-	bool returnvalue = true;
-	for(int_pair_vect_it it=temp.begin(); it!=temp.end();++it)
-		returnvalue = returnvalue && set_laser_mask(it->first, it->second);
-	return returnvalue;
-}
+//
+//bool splam_thread_impl::set_laser_mask(double_pair temp)
+//{
+//	return set_laser_mask(std::make_pair<angle,angle>(angle(temp.first,deg_tag), angle(temp.second,deg_tag)));
+//}
+//
+//bool splam_thread_impl::set_laser_mask(angle_pair temp)
+//{
+//	return set_laser_mask(urg_laser_t::angle2step(temp.first), urg_laser_t::angle2step(temp.second));
+//}
+//
+//bool splam_thread_impl::set_laser_mask(size2d temp)
+//{
+//	return set_laser_mask(static_cast<int>(temp.row_), static_cast<int>(temp.col_));
+//}
+//
+//bool splam_thread_impl::set_laser_mask(int first, int last)
+//{
+//	if (first<urg_step_start_ || last>urg_step_end_)
+//		return false;
+//	std::fill(laser_mask_.begin()+first-urg_step_start_, laser_mask_.begin()+last+1-urg_step_start_, 0);
+//	return true;
+//}
+//
+//bool splam_thread_impl::set_laser_mask(int_pair_vect temp)
+//{
+//	bool returnvalue = true;
+//	for(int_pair_vect_it it=temp.begin(); it!=temp.end();++it)
+//		returnvalue = returnvalue && set_laser_mask(it->first, it->second);
+//	return returnvalue;
+//}
 
 void*	splam_thread_impl::runThread(void* arg)
 {
 	while(this->ArASyncTask::getRunning())
 	{
-		acquire_all();
-		slam_process();
-		fill_splam_data();
+		// laser scan acquisition
+		acquire_laser_scan();
+
+		// odometry acquisition
+		current_scan_->odo_pose_ = robot_->get_odometry();
+
+		// slam processing
+		pmap_wrap_.process(current_scan_);
+
+		// filling slam_data
+		pmap_wrap_.fill_slam_data(splam_data_);
+
+		// saliency & goalfinding
+		splam_data_->
+
+		// splam data broadcasting
 		broadcast_splam_data();
-		update_pose_on_robot();
+
+		// p3_server updating with localized coord
+		robot_->set_slam_localized(pmap_wrap_.get_current_position());
+
+		// processor yielding and heartbeat
 		ArUtil::sleep(1);
 		cout << "splam_thread_impl IS RUNNING....................................." << endl;
 	}
