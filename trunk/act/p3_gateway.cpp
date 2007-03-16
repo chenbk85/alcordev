@@ -123,6 +123,7 @@ void p3_gateway::enable_follow_mode()
 void p3_gateway::set_target_to_follow 
     (const math::point2d& target, double speed)
 {
+  //impl->m_follow->
   printf("Target dist: %f theta: %f\n", target.magnitude()*1000.0, target.orientation().deg());
   //
   printf("Speed: %f\n", speed);
