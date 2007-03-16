@@ -61,7 +61,7 @@ private:	// data Acquisition
 
 public:		// data Processing
 	void				slam_process();
-	void				fill_slam_data();
+	void				fill_splam_data();
 
 private:	// splam
 	pmap_wrap			pmap_wrap_;
@@ -254,19 +254,11 @@ bool splam_thread_impl::set_laser_mask(int first, int last)
 
 bool splam_thread_impl::set_laser_mask(int_pair_vect temp)
 {
-	int inizio = urg_laser_t::angle2step(;
-	//VectPairDoubleIT    it;
-	//int inizio;
-	//int fine;
-	//for(it = vect.begin();   it != vect.end();   ++it)
-	//{
-	//	inizio=UrgDriver::Instance()->AngleToScanStep(it->first);
-	//	fine= UrgDriver::Instance()->AngleToScanStep(it->second);
-	//	if(inizio < fine)
-	//		fill( mask.begin()+inizio,mask.begin()+fine,0);
-	//} 
+	bool returnvalue = true;
+	for(int_pair_vect_it it=temp.begin(); it!=temp.end();++it)
+		returnvalue = returnvalue && set_laser_mask(it->first, it->second);
+	return returnvalue;
 }
-
 
 void*	splam_thread_impl::runThread(void* arg)
 {
@@ -274,8 +266,8 @@ void*	splam_thread_impl::runThread(void* arg)
 	{
 		acquire_all();
 		slam_process();
-		fill_slam_data();
-		broadcast_slam_data();
+		fill_splam_data();
+		broadcast_splam_data();
 		update_pose_on_robot();
 		ArUtil::sleep(1);
 		cout << "splam_thread_impl IS RUNNING....................................." << endl;
