@@ -59,7 +59,7 @@ struct p3_gateway_impl
   ///Sonars
 	ArSonarDevice		    m_sonar;
   ///
-	ArRobot*      m_robot;	
+	ArRobot*          m_robot;	
 };
 
 //###########################################################################
@@ -72,7 +72,6 @@ inline p3_gateway_impl::p3_gateway_impl(bool is_p3dx, iniWrapper& ini)
 	//
 	m_robot = new ArRobot;
 
-	m_robot->logActions();
 
   if (is_p3dx)
     m_robot->loadParamFile("config/p3dx.p");
@@ -92,6 +91,12 @@ inline p3_gateway_impl::p3_gateway_impl(bool is_p3dx, iniWrapper& ini)
 
   ///Follow
   init_follow_action(ini);
+
+  ///
+  init_goto_action();
+
+  //
+	m_robot->logActions();
 
 	//Starts with actions deactivated ...
 	m_robot->deactivateActions();
@@ -158,7 +163,7 @@ inline bool p3_gateway_impl::blocking_connect()
 //---------------------------------------------------------------------------
 inline void p3_gateway_impl::init_robot_settings(iniWrapper& ini)
 {
-  m_robot->setRotVelMax(15);
+  m_robot->setRotVelMax(10);
 }
 //---------------------------------------------------------------------------
 //ACTIONS!!
@@ -203,7 +208,7 @@ inline void p3_gateway_impl::init_follow_action(iniWrapper& ini)
   // if we're stalled we want to back up and recover
   m_follow->addAction(new ArActionStallRecover, 100);
 
-  m_follow->addAction( new ArActionLimiterForwards("limiter", 150, 0, 0, 1.3), 90);
+  //m_follow->addAction( new ArActionLimiterForwards("limiter", 150, 0, 0, 1.3), 90);
 
 				   //double stopDistance = 250,
 				   //double slowDistance = 1000,
@@ -256,22 +261,24 @@ inline void p3_gateway_impl::init_goto_action()
   m_goto.reset(new ArActionGroup(m_robot));
 
   // if we're stalled we want to back up and recover
-  m_goto->addAction(new ArActionStallRecover, 100);
+  //m_goto->addAction(new ArActionStallRecover, 100);
 
     // turn to avoid things closer to us
-  m_goto->addAction(new ArActionAvoidFront("Avoid Front Near", 225, 0), 95);
+  m_goto->addAction(new ArActionAvoidFront("Avoid Front Near", 200, 0), 95);
 
   // turn avoid things further away
-  m_goto->addAction(new ArActionAvoidFront, 90);
+  //m_goto->addAction(new ArActionAvoidFront, 90);
 
   //goal, closeDist, speed, speedToTurn, turn
-  m_action_goto.reset( new ArActionGoto("goto",ArPose(), 10, 200, 150,7) );
+  m_action_goto.reset( new ArActionGoto("goto", ArPose(), 10, 200, 150,7) );
+  ///  
   m_robot->addAction(m_action_goto.get(), 50);
 
 }
 //---------------------------------------------------------------------------
 inline void p3_gateway_impl::set_goto_pose(const math::point2d& reltarget , double mmpersecs)
 {
+  printf("p3_gateway_impl::set_goto_pose\n");
   //pose is meters, degree (relative pose)
   //ArPose is mm, degrees
   m_robot->lock();  
@@ -279,15 +286,19 @@ inline void p3_gateway_impl::set_goto_pose(const math::point2d& reltarget , doub
   ArPose newgoal;
   ArPose current = m_robot->getPose();
   //
-  double xoffset = reltarget.get_x1()*reltarget.orientation().cos();
-  double yoffset = reltarget.get_x2()*reltarget.orientation().sin();
+  double xoffset = reltarget.magnitude()*reltarget.orientation().cos();
+  double yoffset = reltarget.magnitude()*reltarget.orientation().sin();
   //
-  newgoal.setX(current.getX() + xoffset);
-  newgoal.setY(current.getY() + yoffset);
+  newgoal.setX(static_cast<int>(current.getX() + xoffset*1000.0));
+  newgoal.setY(static_cast<int>(current.getY() + yoffset*1000.0));
   newgoal.setTh(ArMath::addAngle(reltarget.orientation().deg(), current.getTh() ));
   //
   m_action_goto->setGoal(newgoal);
   m_action_goto->setSpeed(mmpersecs);
+
+  //
+  printf("ArCurrentPose: X: %.2f Y %.2f\n", current.getX(), current.getY());
+  printf("ArGoal: X: %.2f Y %.2f\n", newgoal.getX(), newgoal.getY());
 
   //
   m_robot->unlock();
