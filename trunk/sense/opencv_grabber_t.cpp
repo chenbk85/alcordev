@@ -31,6 +31,7 @@ all::sense::opencv_grabber_t::opencv_grabber_t(int cam)
 		<< CV_SUBMINOR_VERSION
 		<< endl; 
 
+
     //default
     get_color_buffer = boost::bind(&all::sense::opencv_grabber_t::get_color_buffer_original_,
                                  this,
@@ -90,6 +91,8 @@ bool all::sense::opencv_grabber_t::open_(core::camera_mode_t, int in_cam)
       cout <<"Unable to open camera " << m_cam_id << " for capture!\n" ;
       return false;
   }
+  cvSetCaptureProperty(m_capture, CV_CAP_PROP_DIALOG_SOURCE, 0);
+  cvSetCaptureProperty(m_capture, CV_CAP_PROP_DIALOG_FORMAT, 0);
 
   return internal_open_();
 

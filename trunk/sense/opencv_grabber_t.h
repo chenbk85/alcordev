@@ -23,6 +23,21 @@ namespace all {
 //graylevel=1;0-> originale da telecamera 1->scala di grigio
 //camid=-1;misterioso .. è il numero della telecamera ..
 //interleaved=1;1 per avere il buffer immagine ilv
+//format=640480;320240
+//-------------------------------------------------------------------------++
+//To set format directly, put width and hight in one integer and use
+//CV_CAP_PROP_FRAME_WIDTH_HEIGHT:
+//
+//cvSetCaptureProperty(capture, CV_CAP_PROP_FRAME_WIDTH_HEIGHT, 640480 )
+//or
+//cvSetCaptureProperty(capture, CV_CAP_PROP_FRAME_WIDTH_HEIGHT, 320280 )??
+//...
+//
+//Or to use the built in dialogs:
+//cvSetCaptureProperty(capture, CV_CAP_PROP_DIALOG_COMPRESSION, 0 );
+//cvSetCaptureProperty(capture, CV_CAP_PROP_DIALOG_SOURCE, 0 );
+//cvSetCaptureProperty(capture, CV_CAP_PROP_DIALOG_DISPLAY, 0 );
+//cvSetCaptureProperty(capture, CV_CAP_PROP_DIALOG_FORMAT, 0 );
 //-------------------------------------------------------------------------++
 ///
 class all::sense::opencv_grabber_t 

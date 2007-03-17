@@ -9,9 +9,6 @@
 //---------------------------------------------------------------------------
 namespace all { namespace core{
 //---------------------------------------------------------------------------
-
-  //typedef std::pair<double, double> pantilt_angle_t;
-
 ///
 struct pantilt_angle_t
 {
