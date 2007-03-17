@@ -30,8 +30,8 @@ struct observation_data_t
 struct attention_data_t
 {
 	size_t				scan_count_;
-	pantilt_angle_t		head_direction_;
-	std::vector<observation_data_t>	observazion_;
+	pantilt_angle_t		bearing_;
+	std::vector<observation_data_t>	observations_;
 };
 
 }//namespace core
