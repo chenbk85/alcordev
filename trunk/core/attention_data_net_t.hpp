@@ -30,7 +30,7 @@ inline void attention_data_net_t::import(core::net_packet_ptr_t pkt)
   attention_data_.bearing_.set_tilt (math::deg_tag,pkt->buf_to_double());
 
   //
-  int numobservations = static_cast<size_t>(pkt->buf_to_int() );
+  int numobservations = static_cast<size_t>( pkt->buf_to_int() );
 
   //prepare storage
   attention_data_.observations_.resize(numobservations);
