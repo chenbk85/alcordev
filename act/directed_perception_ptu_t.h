@@ -2,7 +2,7 @@
 #define directed_perception_ptu_t_H_INCLUDED
 
 #pragma comment (lib, "directed_perception_ptu.lib")
-#include <boost\enable_shared_from_this.hpp>
+//#include <boost\enable_shared_from_this.hpp>
 
 ///forward
 namespace lti{
@@ -21,13 +21,13 @@ static const slaved_t     slaved    = slaved_t();
 
 namespace all { namespace act {
 
-  class directed_perception_ptu_t : public boost::enable_shared_from_this<directed_perception_ptu_t>
+  class directed_perception_ptu_t //: public boost::enable_shared_from_this<directed_perception_ptu_t>
 {
 public:
   directed_perception_ptu_t();
   ~directed_perception_ptu_t();  
 
-  boost::shared_ptr<directed_perception_ptu_t> getshared(){return shared_from_this();};
+  //boost::shared_ptr<directed_perception_ptu_t> getshared(){return shared_from_this();};
 
   bool open(const std::string& ini);
 
@@ -56,7 +56,8 @@ public:
   ///just a quicck guess
   double get_tilt() const;
   ///
-  core::pantilt_angle_t get_fast_pantilt() const;
+  core::pantilt_angle_t 
+    get_fast_pantilt() const;
 
 	bool await_command_completion();
 
