@@ -31,7 +31,7 @@ namespace all { namespace core{
 //};
 
 
-
+///pantilt_angle_t
 class pantilt_angle_t
 {
 public:
@@ -50,26 +50,31 @@ public:
   ///
   typedef std::pair<all::math::angle, all::math::angle> value_type;
 
-  ///Setters --------------------------------------------------
+  ///Setters PAN ------------------------------------------------
   void set_pan( math::deg_t,  double);
   ///
   void set_pan( math::rad_t,  double);
+
+  ///Setters TILT -----------------------------------------------
   ///
   void set_tilt( math::deg_t, double);
   ///
   void set_tilt( math::rad_t, double);
 
   ///Pan Getters --------------------------------------------------
-  double get_pan(all::math::deg_t);
+  double get_pan(all::math::deg_t) const;
   ///
-  double get_pan(all::math::rad_t);
+  double get_pan(all::math::rad_t) const;
   ///
+  math::angle get_pan_angle() const;
 
   ///Tilt Getters---------------------------------------------------  
   ///
-  double get_tilt(math::deg_t);
+  double get_tilt(math::deg_t)  const;
   ///
-  double get_tilt(math::rad_t);
+  double get_tilt(math::rad_t)  const;
+  ///
+  math::angle get_tilt_angle() const;
 
 public: //binary operators
  // ///
@@ -82,30 +87,34 @@ private:
   //void swap_(pantilt_angle_t&);
 
 };
-//---------------------------------------------------------------------------
-//inline void pantilt_angle_t::swap_(pantilt_angle_t& other)
-//{
-//  std::swap(pantilt_.first,  other.get_pan());
-//  std::swap(pantilt_.second, other.get_tilt());
-//}
-//###################################################################
 //###################################################################
 //########           IMPLEMENTATION                  ################
 //###################################################################
+
 //Getters  inlined--------------------------------------------------
-inline  double all::core::pantilt_angle_t::get_pan(all::math::deg_t)
+
+//pan
+inline  double pantilt_angle_t::get_pan(all::math::deg_t)  const
     {return pantilt_.first.deg();};
-///
-inline double all::core::pantilt_angle_t::get_pan(all::math::rad_t)
+//pan
+inline double pantilt_angle_t::get_pan(all::math::rad_t)  const
     {return (this->pantilt_).first.rad();};
-///
-inline  double all::core::pantilt_angle_t::get_tilt(math::deg_t)
+
+//pan
+inline math::angle pantilt_angle_t::get_pan_angle() const
+    {return pantilt_.first;};
+
+//---------------------------------------------------------------------------
+//tilt
+inline  double pantilt_angle_t::get_tilt(math::deg_t)  const
     {return this->pantilt_.second.deg();};
-///
-inline  double all::core::pantilt_angle_t::get_tilt(math::rad_t)
+//tilt
+inline  double pantilt_angle_t::get_tilt(math::rad_t)  const
     {return this->pantilt_.second.rad();};
 
-
+//tilt
+inline math::angle pantilt_angle_t::get_tilt_angle() const
+    {return pantilt_.second;};
 //---------------------------------------------------------------------------
 inline pantilt_angle_t::pantilt_angle_t(math::deg_t, double pan, double tilt)
   {
@@ -139,7 +148,11 @@ inline pantilt_angle_t::pantilt_angle_t(const pantilt_angle_t& other)
   ///assign
 inline pantilt_angle_t& pantilt_angle_t::operator=(const pantilt_angle_t& other)
   {
-  //TODO:
+  //pantilt_.first.set_deg ( other.get_pan (math::deg_tag)  );
+  //pantilt_.second.set_deg( other.get_tilt(math::deg_tag)  );
+    //Uso operatore di copia di math::angle  
+    pantilt_.first = other.get_pan_angle();
+    pantilt_.second = other.get_tilt_angle();
 	return *this;    //  nonthrowing operations only
   }
 //---------------------------------------------------------------------------

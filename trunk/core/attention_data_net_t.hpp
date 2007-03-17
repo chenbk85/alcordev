@@ -27,7 +27,7 @@ inline void attention_data_net_t::import(core::net_packet_ptr_t pkt)
 inline void attention_data_net_t::pack( core::net_packet_ptr_t pkt)
 {
   //size_t scan_count_
-  pkt->int_to_buf(attention_data_.scan_count_);
+  pkt->int_to_buf(static_cast<int>(attention_data_.scan_count_ ) );
 
   //pantilt_angle_t  bearing_
   pkt->double_to_buf(attention_data_.bearing_.get_pan(math::deg_tag) );
