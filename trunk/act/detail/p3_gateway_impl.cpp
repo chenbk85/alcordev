@@ -17,6 +17,12 @@ struct p3_gateway_impl
 
   ~p3_gateway_impl();
 
+  typedef enum
+  {
+    P3DX,
+    P3AT
+  }p3_t;
+
 	///Serial Connection
 	bool serial_connect(char*);
 	///TCP Connection
@@ -63,6 +69,8 @@ struct p3_gateway_impl
 	ArSonarDevice		    m_sonar;
   ///
 	ArRobot*          m_robot;	
+  ///
+  p3_t              m_type;
 };
 
 //###########################################################################
@@ -77,7 +85,14 @@ inline p3_gateway_impl::p3_gateway_impl(bool is_p3dx, iniWrapper& ini)
 
 
   if (is_p3dx)
+  {
     m_robot->loadParamFile("config/p3dx.p");
+    m_type = P3DX;
+  }
+  else
+  {
+    m_type = P3AT;
+  }
 
   //Connect  sonars al robot
   m_robot->addRangeDevice(&m_sonar);
@@ -166,7 +181,7 @@ inline bool p3_gateway_impl::blocking_connect()
 //---------------------------------------------------------------------------
 inline void p3_gateway_impl::init_robot_settings(iniWrapper& ini)
 {
-  m_robot->setRotVelMax(10);
+  m_robot->setRotVelMax(5);
 }
 //---------------------------------------------------------------------------
 //ACTIONS!!
@@ -262,16 +277,70 @@ inline void p3_gateway_impl::init_goto_action(iniWrapper& ini)
   // if we're stalled we want to back up and recover
   m_goto->addAction(new ArActionStallRecover, 100);
 
-     //turn to avoid things closer to us
-  m_goto->addAction(new ArActionAvoidFront("Avoid Front Near", 100, 0, 5), 95);
-
+  ///////////////////////////////////////////////////////////////////
+  if(m_type==P3DX)
+  {
+  distance  = ini.GetInt("p3dx:goto:frontnear_distance", 100);
+  velocity  = ini.GetInt("p3dx:goto:frontnear_velocity", 0);
+  turn      = ini.GetInt("p3dx:goto:frontnear_turn", 5);
+  priority  = ini.GetInt("p3dx:goto:frontnear_priority",95);
+  }
+  else
+  {
+  distance  = ini.GetInt("p3at:goto:frontnear_distance", 100);
+  velocity  = ini.GetInt("p3at:goto:frontnear_velocity", 0);
+  turn      = ini.GetInt("p3at:goto:frontnear_turn", 5);
+  priority  = ini.GetInt("p3at:goto:frontnear_priority",95);
+  }
+  // turn avoid things close to us
+  //frontnear_distance, vel, turn
+  m_goto->addAction
+    (new ArActionAvoidFront("avoid_front_near", distance, velocity, turn), priority);
+  ///////////////////////////////////////////////////////////////////
   // turn avoid things further away
-  m_goto->addAction(new ArActionAvoidFront("front",350, 100, 5), 90);
-
+  if(m_type==P3DX)
+  {
+  distance  = ini.GetInt("p3dx:goto:frontfar_distance", 350);
+  velocity  = ini.GetInt("p3dx:goto:frontfar_velocity", 100);
+  turn      = ini.GetInt("p3dx:goto:frontfar_turn", 5);
+  priority  = ini.GetInt("p3dx:goto:frontfar_priority",90);
+  }
+  else
+  {
+  distance  = ini.GetInt("p3at:goto:frontfar_distance", 350);
+  velocity  = ini.GetInt("p3at:goto:frontfar_velocity", 100);
+  turn      = ini.GetInt("p3at:goto:frontfar_turn", 5);
+  priority  = ini.GetInt("p3at:goto:frontfar_priority",90);
+  }
+  m_goto->addAction(new ArActionAvoidFront
+        ("avoid_front_far",distance, velocity, turn), priority);
+  ///////////////////////////////////////////////////////////////////
   //// avoid side
-  m_goto->addAction(new ArActionAvoidSide("Side Avoid", 150, 5), 80);
-  /////  
-  m_goto->addAction(new ArActionGoto("mygoto", ArPose(), 100, 200, 100,5), 50 );
+  m_goto->addAction(new ArActionAvoidSide("side_avoid", 150, 5), 80);
+
+  ///////////////////////////////////////////////////////////////////
+  int speed_to_turn_at = 0;
+  if(m_type==P3DX)
+  {
+  distance  = ini.GetInt("p3dx:goto:mygoto_closedist", 100);
+  velocity  = ini.GetInt("p3dx:goto:mygoto_speed", 200);
+  speed_to_turn_at = 
+    ini.GetInt("p3dx:goto:mygoto_speed_to_turn_at", 100);
+  turn      = ini.GetInt("p3dx:goto:mygoto_turn", 5);
+  priority  = ini.GetInt("p3dx:goto:mygoto_priority",90);
+  }
+  else
+  {
+  distance  = ini.GetInt("p3at:goto:mygoto_closedist", 100);
+  velocity  = ini.GetInt("p3at:goto:mygoto_speed", 200);
+  speed_to_turn_at = 
+    ini.GetInt("p3at:goto:mygoto_speed_to_turn_at", 100);
+  turn      = ini.GetInt("p3at:goto:mygoto_turn", 5);
+  priority  = ini.GetInt("p3at:goto:mygoto_priority",90);
+  }
+  //
+  m_goto->addAction(new ArActionGoto
+    ("mygoto", ArPose(), distance, velocity, speed_to_turn_at, turn), priority );
 }
 //---------------------------------------------------------------------------
 inline void p3_gateway_impl::set_target(const math::point2d& reltarget , double mmpersecs)
@@ -310,10 +379,8 @@ inline void p3_gateway_impl::set_goto_pose(const math::point2d& reltarget , doub
 
   if(mygoto)
   {
-  //m_goto->activate();
   printf("p3_gateway_impl::set_goto_pose\n");
-  //m_action_goto->cancelGoal();
-  //
+
   //pose is meters, degree (relative pose)
   //ArPose is mm, degrees
  
@@ -336,8 +403,6 @@ inline void p3_gateway_impl::set_goto_pose(const math::point2d& reltarget , doub
   printf("ArGoal: X: %.2f Y %.2f\n", newgoal.getX(), newgoal.getY());
 
   mygoto->log();
-  //m_action_goto->log();
-  //m_goto->activate();
   //
   }  
   m_robot->unlock();
