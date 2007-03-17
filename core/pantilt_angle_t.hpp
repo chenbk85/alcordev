@@ -14,12 +14,14 @@ namespace all { namespace core{
 class pantilt_angle_t
 {
 public:
+  ///default ctor
+  pantilt_angle_t();
   ///ctor from double
   pantilt_angle_t(math::deg_t, double pan = 0, double tilt = 0);
   pantilt_angle_t(math::rad_t, double pan = 0, double tilt = 0);
 
   ///ctor from math::angle
-  pantilt_angle_t(const math::angle&, const math::angle&);
+  pantilt_angle_t(const math::angle& pan, const math::angle& tilt);
 
   ///copy ctor
   pantilt_angle_t(const pantilt_angle_t&);
@@ -96,6 +98,11 @@ inline  double pantilt_angle_t::get_tilt(math::rad_t)  const
 //tilt
 inline math::angle pantilt_angle_t::get_tilt_angle() const
     {return pantilt_.second;};
+
+//---------------------------------------------------------------------------
+inline pantilt_angle_t::pantilt_angle_t()
+{
+}
 //---------------------------------------------------------------------------
 inline pantilt_angle_t::pantilt_angle_t(math::deg_t, double pan, double tilt)
   {
