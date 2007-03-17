@@ -19,11 +19,44 @@ struct attention_data_net_t
   core::attention_data_t attention_data_;
 };
 //-------------------------------------------------------------
+//IMPORT
 inline void attention_data_net_t::import(core::net_packet_ptr_t pkt)
 {
+  //scan_count_
+  attention_data_.scan_count_ = static_cast<size_t>(pkt->buf_to_int());
+
+  //bearing_
+  attention_data_.bearing_.set_pan  (math::deg_tag,pkt->buf_to_double());
+  attention_data_.bearing_.set_tilt (math::deg_tag,pkt->buf_to_double());
+
+  //
+  int numobservations = static_cast<size_t>(pkt->buf_to_int() );
+
+  //prepare storage
+  attention_data_.observations_.resize(numobservations);
+
+  //
+  for (int i=0; i < numobservations; i++)
+  {
+    //
+    core::observation_data_t obsv;
+    //relative_position_
+    obsv.relative_position_.set_x1(pkt->buf_to_double());
+    obsv.relative_position_.set_x2(pkt->buf_to_double());
+    obsv.relative_position_.set_th( pkt->buf_to_double(), math::deg_tag);
+
+    //radius_
+    obsv.radius_  = pkt->buf_to_double();
+
+    //weight_
+    obsv.weight_  = pkt->buf_to_double();
+    //
+    attention_data_.observations_.push_back(obsv);
+  }
 
 }
 //-------------------------------------------------------------
+//PACK
 inline void attention_data_net_t::pack( core::net_packet_ptr_t pkt)
 {
   //size_t scan_count_
@@ -40,6 +73,7 @@ inline void attention_data_net_t::pack( core::net_packet_ptr_t pkt)
   //push how many observations in vector
   pkt->int_to_buf(numobs);
 
+  //push each observation in
   BOOST_FOREACH( all::core::observation_data_t& obs,  attention_data_.observations_)
   { 
     //pose2d relative_position_ 
@@ -53,8 +87,6 @@ inline void attention_data_net_t::pack( core::net_packet_ptr_t pkt)
     pkt->double_to_buf(obs.weight_);
   } 
 
-
-//attention_data_
 }
 //-------------------------------------------------------------
 }}//all::core
