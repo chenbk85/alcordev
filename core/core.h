@@ -17,6 +17,11 @@
 namespace all { 
 	namespace core {
 //-----------------------------------------------------------------------++
+const char VERSION_INFORMATION[] = "alcor library 0.1.0";
+const char AUTHOR_INFORMATION[]  = "Andrea Carbone, Giorgio Ugazio, Stefano Marra";
+//-----------------------------------------------------------------------++
+const std::string relative_bin_config_path = "config";
+//-----------------------------------------------------------------------++
 typedef enum {
 eEstablished,
 eActiveOpen,
@@ -29,7 +34,6 @@ struct p3at_t{};
 static const p3dx_t p3dx_tag = p3dx_t();
 static const p3at_t p3at_tag = p3at_t();
 //-----------------------------------------------------------------------++
-//MYNEW
 ///random tags
 struct interleaved_t {};
 struct planar_t {};
@@ -59,6 +63,7 @@ static const core::video_mode_t   open_video  =
 static const core::camera_mode_t  open_camera = 
 										core::camera_mode_t();
 //---------------------------------------------------------------------------+
+//ANDREA:andrebbero in math ... effettivamente ...
 template<class T>
   class constants 
   {
@@ -147,9 +152,6 @@ struct i_service_handler
 		///Called when server goes down
 		virtual void lost_connection()=0;
 };
-//-------------------------------------------------------------------------++
-const char VERSION_INFORMATION[] = "alcor library 0.0.5";
-const char AUTHOR_INFORMATION[]  = "Andrea Carbone, Giorgio Ugazio, Stefano Marra";
 //-------------------------------------------------------------------------++
 //-------------------------------------------------------------------------++
 //namespace sandbox {

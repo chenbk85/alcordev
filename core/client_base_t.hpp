@@ -4,7 +4,7 @@
 #include <boost/asio.hpp>
 #include <boost/thread.hpp>
 #include <boost/shared_ptr.hpp>
-#include <alcor/core/core.h>
+#include "alcor/core/core.h"
 #include <boost/bind.hpp>
 #include "net_packet_t.hpp"
 #include "detail/tcp_pkt_sender_t.hpp"

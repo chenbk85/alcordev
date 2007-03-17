@@ -33,6 +33,7 @@ inline void attention_data_net_t::import(core::net_packet_ptr_t pkt)
   int numobservations = static_cast<size_t>( pkt->buf_to_int() );
 
   //prepare storage
+  attention_data_.observations_.clear();
   attention_data_.observations_.resize(numobservations);
 
   //
@@ -50,7 +51,8 @@ inline void attention_data_net_t::import(core::net_packet_ptr_t pkt)
 
     //weight_
     obsv.weight_  = pkt->buf_to_double();
-    //
+
+    //push in
     attention_data_.observations_.push_back(obsv);
   }
 

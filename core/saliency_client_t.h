@@ -1,6 +1,8 @@
 #ifndef saliency_client_t_H_INCLUDED
 #define saliency_client_t_H_INCLUDED
 //-------------------------------------------------------------------
+//#pragma comment (lib, "saliency_service.lib")
+//-------------------------------------------------------------------
 #include <alcor/core/client_base_t.hpp>
 #include <boost/shared_ptr.hpp>
 //-------------------------------------------------------------------
