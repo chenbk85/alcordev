@@ -5,17 +5,20 @@
 #include <boost/shared_ptr.hpp>
 //-------------------------------------------------------------------
 #include "alcor/core/attention_data_net_t.hpp"
+//#pragma comment (lib, "saliency_service.lib")
 //-------------------------------------------------------------------
 namespace all { namespace core {
 //-------------------------------------------------------------------
   class saliency_server_t : public server_base_t
   {
   public:
-  ///
+    ///
     saliency_server_t(const char* ini_file); 
 
   private:
-    //
+    ///
+    void register_();
+    ///
     core::attention_data_net_t data;
   };
 

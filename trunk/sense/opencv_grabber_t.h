@@ -18,6 +18,7 @@ namespace all {
 }
 //------------------------- INI -------------------------------------------++
 //[config]
+//usedialog=1;
 //camera=1;camera o videofile?
 //videofile=somevideo.avi;
 //graylevel=1;0-> originale da telecamera 1->scala di grigio
