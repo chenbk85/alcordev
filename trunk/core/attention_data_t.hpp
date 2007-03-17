@@ -2,7 +2,7 @@
 #define attention_data_t_H_INCLUDED
 //---------------------------------------------------------------------------
 #include "alcor/math/pose2d.h"
-#include "alcor/core/pantilt_angle_t.h"
+#include "alcor/core/pantilt_angle_t.hpp"
 //---------------------------------------------------------------------------
 using namespace all::math;
 //---------------------------------------------------------------------------
