@@ -1,35 +1,14 @@
 #pragma once
 //---------------------------------------------------------------------------
 #include "alcor\math\all_math.h"
-
+//---------------------------------------------------------------------------
 #include <utility>
-#include <algorithm>
+//#include <algorithm>
 //---------------------------------------------------------------------------
 //using namespace all;
 //---------------------------------------------------------------------------
 namespace all { namespace core{
 //---------------------------------------------------------------------------
-///
-//struct pantilt_angle_t
-//{
-//  pantilt_angle_t(double pan_ = 0, double tilt_=0):
-//        pan(pan_)
-//      , tilt(tilt_)
-//    {};
-//
-//
-//  pantilt_angle_t& operator=(const pantilt_angle_t& other)
-//  {
-//    pan = other.pan;
-//    tilt = other.tilt;
-//    return *this;
-//  };
-//
-//  double pan;
-//  double tilt;
-//
-//};
-
 
 ///pantilt_angle_t
 class pantilt_angle_t
@@ -54,12 +33,16 @@ public:
   void set_pan( math::deg_t,  double);
   ///
   void set_pan( math::rad_t,  double);
+  ///
+  void set_pan_angle(const math::angle&);
 
   ///Setters TILT -----------------------------------------------
   ///
   void set_tilt( math::deg_t, double);
   ///
   void set_tilt( math::rad_t, double);
+  ///
+  void set_tilt_angle(const math::angle&);
 
   ///Pan Getters --------------------------------------------------
   double get_pan(all::math::deg_t) const;
@@ -77,15 +60,13 @@ public:
   math::angle get_tilt_angle() const;
 
 public: //binary operators
- // ///
-	//pantilt_angle_t&	operator+=(const pantilt_angle_t& temp);
- // ///
- // pantilt_angle_t&	operator-=(const pantilt_angle_t& temp);
+  ///
+	pantilt_angle_t&	operator+=(const pantilt_angle_t& temp);
+  ///
+  pantilt_angle_t&	operator-=(const pantilt_angle_t& temp);
 
 private:
   value_type pantilt_;
-  //void swap_(pantilt_angle_t&);
-
 };
 //###################################################################
 //########           IMPLEMENTATION                  ################
@@ -142,7 +123,8 @@ inline pantilt_angle_t::pantilt_angle_t( const math::angle& pan,
   ///copy ctor
 inline pantilt_angle_t::pantilt_angle_t(const pantilt_angle_t& other)
   {
-
+    pantilt_.first  = other.get_pan_angle();
+    pantilt_.second = other.get_tilt_angle();
   }
 //---------------------------------------------------------------------------
   ///assign
@@ -168,6 +150,12 @@ inline void pantilt_angle_t::set_pan( math::rad_t,double arg)
     pantilt_.first.set_rad(arg);
   }
 //---------------------------------------------------------------------------
+//pan setter
+inline void pantilt_angle_t::set_pan_angle(const math::angle& arg)
+{
+  pantilt_.first = arg;
+}
+//---------------------------------------------------------------------------
   ///
 inline void pantilt_angle_t::set_tilt( math::deg_t,double arg)
   {
@@ -179,23 +167,26 @@ inline void pantilt_angle_t::set_tilt( math::rad_t,double arg)
   {    
     pantilt_.second.set_rad(arg);
   }
-
+//---------------------------------------------------------------------------
+//tilt setter
+inline void pantilt_angle_t::set_tilt_angle(const math::angle& arg)
+{
+  pantilt_.second = arg;
+}
 ////---------------------------------------------------------------------------
-//inline pantilt_angle_t&	pantilt_angle_t::operator+=(const pantilt_angle_t& other)
-//  {
-//    //casino con gli overload
-//    //TODO: creare temporanei?
-//    //pantilt_.first+= (math::angle)other.get_pan();
-//    //pantilt_.second+= (math::angle)other.get_tilt();
-//    return *this;
-//  }
+inline pantilt_angle_t&	pantilt_angle_t::operator+=(const pantilt_angle_t& other)
+  {
+    pantilt_.first  += other.get_pan_angle();
+    pantilt_.second += other.get_tilt_angle();
+    return *this;
+  }
 ////---------------------------------------------------------------------------
-//inline pantilt_angle_t&	pantilt_angle_t::operator-=(const pantilt_angle_t& other)
-//  {
-//    //pantilt_.first-= other;
-//    //pantilt_.second-= other;    
-//    return *this;
-//  }
+inline pantilt_angle_t&	pantilt_angle_t::operator-=(const pantilt_angle_t& other)
+  {
+    pantilt_.first  -= other.get_pan_angle();
+    pantilt_.second -= other.get_tilt_angle();   
+    return *this;
+  }
 //---------------------------------------------------------------------------
 }}//namespaces
 //---------------------------------------------------------------------------
