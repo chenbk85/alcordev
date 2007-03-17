@@ -40,17 +40,18 @@ inline void attention_data_net_t::pack( core::net_packet_ptr_t pkt)
   //push how many observations in vector
   pkt->int_to_buf(numobs);
 
-  //BOOST_FOREACH( std::vector<observation_data_t>& obs,  attention_data_.observations_)
-  //{ 
-  //  //pose2d relative_position_ 
-  //  pkt->double_to_buf(obs.relative_position_.get_x1());
-  //  pkt->double_to_buf(obs.relative_position_.get_x2());
-  //  pkt->double_to_buf(obs.relative_position_.getTh().deg());
-  //  //double radius_
-  //  pkt->double_to_buf(obs.radius_);
-  //  //double weight_
-  //  pkt->double_to_buf(obs.weight_);
-  //} 
+  BOOST_FOREACH( all::core::observation_data_t& obs,  attention_data_.observations_)
+  { 
+    //pose2d relative_position_ 
+    pkt->double_to_buf(obs.relative_position_.get_x1());
+    pkt->double_to_buf(obs.relative_position_.get_x2());
+    pkt->double_to_buf(obs.relative_position_.getTh().deg());
+
+    //double radius_
+    pkt->double_to_buf(obs.radius_);
+    //double weight_
+    pkt->double_to_buf(obs.weight_);
+  } 
 
 
 //attention_data_
