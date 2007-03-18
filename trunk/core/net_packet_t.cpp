@@ -131,6 +131,14 @@ net_packet_t::~net_packet_t() {
 		delete[] m_data;
 }
 
+//andrea: comodo per creare un net_packet_ptr_t
+boost::shared_ptr <net_packet_t> net_packet_t::create()
+{
+  boost::shared_ptr<net_packet_t> 
+    px(new net_packet_t);
+    return px;
+}
+
 void net_packet_t::set_command(std::string command) {
 	m_command = command;
 }

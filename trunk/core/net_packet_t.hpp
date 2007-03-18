@@ -70,12 +70,7 @@ public:
 	~net_packet_t();
 
   ///andrea: comodo per creare un net_packet_ptr_t
-  static boost::shared_ptr <net_packet_t> create()
-  {
-    boost::shared_ptr<net_packet_t> 
-      px(new net_packet_t);
-      return px;
-  }
+  static boost::shared_ptr <net_packet_t> create();
 
 	//for packet construction from socket data...
 	net_packet_t(net_packet_header_t, const char*, std::size_t);
