@@ -65,8 +65,8 @@ inline void saliency_data_net_t::pack( core::net_packet_ptr_t pkt)
   pkt->int_to_buf(static_cast<int>(saliency_data_.scan_count_ ) );
 
   //pantilt_angle_t  bearing_
-  pkt->double_to_buf(saliency_data_.bearing_.get_pan(math::deg_tag) );
-  pkt->double_to_buf(saliency_data_.bearing_.get_tilt(math::deg_tag) );
+  pkt->double_to_buf(saliency_data_.bearing_.get_pan_angle().deg() );
+  pkt->double_to_buf(saliency_data_.bearing_.get_tilt_angle().deg() );
 
   //how many observations in vector
   int numobs = 
@@ -85,6 +85,7 @@ inline void saliency_data_net_t::pack( core::net_packet_ptr_t pkt)
 
     //double radius_
     pkt->double_to_buf(obs.radius_);
+
     //double weight_
     pkt->double_to_buf(obs.weight_);
   } 
