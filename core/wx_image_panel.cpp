@@ -8,6 +8,7 @@
 // Copyright:   Alcor
 // Licence:     
 /////////////////////////////////////////////////////////////////////////////
+#define WIN32_LEAN_AND_MEAN
 
 #if defined(__GNUG__) && !defined(NO_GCC_PRAGMA)
 #pragma implementation "wx_image_panel.h"
@@ -45,6 +46,7 @@ IMPLEMENT_DYNAMIC_CLASS( wx_image_panel, wxPanel )
 BEGIN_EVENT_TABLE( wx_image_panel, wxPanel )
 
 ////@begin wx_image_panel event table entries
+    EVT_WINDOW_DESTROY( wx_image_panel::OnDestroy )
     EVT_PAINT( wx_image_panel::OnPaint )
 
 ////@end wx_image_panel event table entries
@@ -96,6 +98,17 @@ wx_image_panel::~wx_image_panel()
 
 void wx_image_panel::Init()
 {
+  //link drawing callback
+  stream_dest.set_draw_callback(boost::bind(&wx_image_panel::draw_image_panel, this, _1));
+
+  //create streaming client endpoint
+  stream_ptr  = 
+    new all::core::stream_client_t(stream_dest, "config/trm_stream_client.ini");
+  //run!
+  stream_ptr->run_async();
+
+  //wxMessageBox(_T("stream_ptr created and running"));
+
 ////@begin wx_image_panel member initialisation
 ////@end wx_image_panel member initialisation
 }
@@ -107,6 +120,8 @@ void wx_image_panel::Init()
 void wx_image_panel::CreateControls()
 {    
 ////@begin wx_image_panel content construction
+    // Connect events and objects
+    Connect(ID__IMAGE_PANEL, wxEVT_DESTROY, wxWindowDestroyEventHandler(wx_image_panel::OnDestroy), NULL, this);
 ////@end wx_image_panel content construction
 }
 
@@ -157,3 +172,29 @@ void wx_image_panel::OnPaint( wxPaintEvent& event )
 ////@end wxEVT_PAINT event handler for ID__IMAGE_PANEL in wx_image_panel. 
 }
 
+/*!
+ * wxEVT_DESTROY event handler for ID__IMAGE_PANEL
+ */
+
+void wx_image_panel::OnDestroy( wxWindowDestroyEvent& event )
+{
+  stream_ptr->stop();
+  //delete stream_ptr;
+}
+
+/*!
+ * Drawing Routine (called from stream_dest)
+ */
+void wx_image_panel::draw_image_panel(const core::jpeg_data_t& todraw)
+{
+  wxClientDC dc_client(this);
+
+  //wxPaintDC dc_client(this);
+
+  wxImage cam_image(todraw.width, todraw.height, reinterpret_cast <unsigned char*> (todraw.data.get()), true);
+
+  wxBitmap cam_bmp(cam_image, 24);
+
+  PrepareDC(dc_client);
+  dc_client.DrawBitmap(cam_bmp, 0, 0, false);
+}

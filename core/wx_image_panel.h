@@ -23,6 +23,10 @@
 ////@begin includes
 ////@end includes
 
+#include "alcor/core/wx_stream_dest_t.hpp"
+#include "alcor/core/stream_client_t.hpp"
+#include "alcor/core/core.h"
+
 /*!
  * Forward declarations
  */
@@ -79,6 +83,9 @@ public:
 
 ////@begin wx_image_panel event handler declarations
 
+    /// wxEVT_DESTROY event handler for ID__IMAGE_PANEL
+    void OnDestroy( wxWindowDestroyEvent& event );
+
     /// wxEVT_PAINT event handler for ID__IMAGE_PANEL
     void OnPaint( wxPaintEvent& event );
 
@@ -98,6 +105,14 @@ public:
 
 ////@begin wx_image_panel member variables
 ////@end wx_image_panel member variables
+
+    ///STREAMING OBJECTS!!
+    wx_stream_dest_t            stream_dest;
+    //raw pointer ... seems ... better
+    all::core::stream_client_t* stream_ptr; 
+
+    ///Drawing Routine (called from stream_dest)
+    void draw_image_panel(const core::jpeg_data_t&);
 };
 
 #endif

@@ -12,7 +12,8 @@ class stream_dest_t {
 public:
 	stream_dest_t(){m_data_size = 0;}
 
-	void import_data(all::core::uint8_sarr data, std::size_t data_size) {m_data = data; m_data_size = data_size; process_data();}
+	void import_data(all::core::uint8_sarr data, std::size_t data_size) 
+  {m_data = data; m_data_size = data_size; process_data();}
 
 	virtual void process_data() = 0;
 
