@@ -58,7 +58,7 @@ public:
   ///
   math::angle get_tilt_angle() const;
 
-public: //binary operators
+public: //operator overloading
   ///
 	pantilt_angle_t&	operator+=(const pantilt_angle_t& temp);
   ///
