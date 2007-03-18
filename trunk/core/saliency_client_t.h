@@ -6,7 +6,7 @@
 #include <alcor/core/client_base_t.hpp>
 #include <boost/shared_ptr.hpp>
 //-------------------------------------------------------------------
-#include "alcor/core/attention_data_net_t.hpp"
+#include "alcor/core/saliency_data_net_t.hpp"
 //-------------------------------------------------------------------
 namespace all { namespace core {
 //-------------------------------------------------------------------
@@ -20,7 +20,7 @@ private:
     ///
 	  void connected_callback();
     ///
-    core::attention_data_net_t data;
+    core::saliency_data_net_t data;
 };
 //-------------------------------------------------------------------
 typedef boost::shared_ptr<saliency_client_t>  saliency_client_ptr_t;
