@@ -4,7 +4,7 @@
 #include <alcor/core/server_base_t.hpp>
 #include <boost/shared_ptr.hpp>
 //-------------------------------------------------------------------
-#include "alcor/core/attention_data_net_t.hpp"
+#include "alcor/core/saliency_data_net_t.hpp"
 //#pragma comment (lib, "saliency_service.lib")
 //-------------------------------------------------------------------
 namespace all { namespace core {
@@ -14,12 +14,15 @@ namespace all { namespace core {
   public:
     ///
     saliency_server_t(const char* ini_file); 
+    ///
+    core::saliency_data_net_t data;
 
   private:
     ///
     void register_();
     ///
-    core::attention_data_net_t data;
+      ///
+    void update_saliency_data(client_connection_ptr_t, net_packet_ptr_t);
   };
 
 //-------------------------------------------------------------------
