@@ -20,13 +20,17 @@ public:
     ///
     void reset_data();
     ///
+    void set_scancount(size_t);
+    ///
+    void set_bearing(const all::core::pantilt_angle_t&);
+    ///
     void add_observation(core::observation_data_t&);
     
 private:
     ///
 	  void connected_callback();
     ///
-    core::saliency_data_net_t saliency_data;
+    core::saliency_data_net_t saliency_data_;
 };
 //-------------------------------------------------------------------
 typedef boost::shared_ptr<saliency_client_t>  saliency_client_ptr_t;
