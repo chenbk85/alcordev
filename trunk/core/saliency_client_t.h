@@ -15,12 +15,18 @@ namespace all { namespace core {
 public:
     ///
     saliency_client_t(const char* ini);
-
+    ///
+    void send_saliency_data();
+    ///
+    void reset_data();
+    ///
+    void add_observation(core::observation_data_t&);
+    
 private:
     ///
 	  void connected_callback();
     ///
-    core::saliency_data_net_t data;
+    core::saliency_data_net_t saliency_data;
 };
 //-------------------------------------------------------------------
 typedef boost::shared_ptr<saliency_client_t>  saliency_client_ptr_t;

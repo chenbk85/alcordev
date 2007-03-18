@@ -15,13 +15,19 @@ namespace all { namespace core {
     ///
     saliency_server_t(const char* ini_file); 
     ///
-    core::saliency_data_net_t data;
+    typedef boost::function<void (void)> 
+      user_callback_t;
+    ///
+    void set_user_callback(user_callback_t);
+    ///
+    core::saliency_data_net_t saliency_data;
 
   private:
     ///
     void register_();
     ///
-      ///
+    user_callback_t user_callback_;
+    ///
     void update_saliency_data(client_connection_ptr_t, net_packet_ptr_t);
   };
 
