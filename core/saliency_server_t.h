@@ -28,7 +28,7 @@ namespace all { namespace core {
     ///
     user_callback_t user_callback_;
     ///
-    void update_saliency_data(client_connection_ptr_t, net_packet_ptr_t);
+    void update_saliency_data_(client_connection_ptr_t, net_packet_ptr_t);
   };
 
 //-------------------------------------------------------------------

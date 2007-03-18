@@ -23,7 +23,7 @@ namespace all { namespace core {
 //-------------------------------------------------------------------
   void saliency_server_t::register_()
   {
-    add_command_handler("update_saliency",boost::bind(&saliency_server_t::update_saliency_data
+    add_command_handler("update_saliency",boost::bind(&saliency_server_t::update_saliency_data_
       ,this,_1,_2));
   }
   //-------------------------------------------------------------------
@@ -34,7 +34,7 @@ namespace all { namespace core {
   }
 //-------------------------------------------------------------------
 //
-  void saliency_server_t::update_saliency_data(client_connection_ptr_t
+  void saliency_server_t::update_saliency_data_(client_connection_ptr_t
                                               , net_packet_ptr_t packet)
   {
     saliency_data.import(packet);
