@@ -10,6 +10,8 @@ class opencv_data_source_t : public all::core::stream_source_t
 {
 public:	
 	opencv_data_source_t();
+  ///
+  void process_command(core::net_packet_ptr_t){};
 	//
 	void set_quality(unsigned int);
   //
