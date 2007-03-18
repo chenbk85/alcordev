@@ -23,6 +23,22 @@ namespace all { namespace core {
 //-------------------------------------------------------------------
   void saliency_server_t::register_()
   {
+    add_command_handler("update_saliency",boost::bind(&saliency_server_t::update_saliency_data
+      ,this,_1,_2));
+  }
+  //-------------------------------------------------------------------
+      ///
+  void saliency_server_t::set_user_callback(user_callback_t func)
+  {
+    user_callback_ = func;
+  }
+//-------------------------------------------------------------------
+//
+  void saliency_server_t::update_saliency_data(client_connection_ptr_t
+                                              , net_packet_ptr_t packet)
+  {
+    saliency_data.import(packet);
+    user_callback_();
   }
 //-------------------------------------------------------------------
 }}//all::core
