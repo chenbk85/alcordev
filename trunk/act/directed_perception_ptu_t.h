@@ -10,7 +10,7 @@ class directedPerceptionPTU;
 }
 
 #include "alcor/math/angle.h"
-#include "alcor/core/pantilt_angle_t.h"
+#include "alcor/core/pantilt_angle_t.hpp"
 
 //tags
 struct immidiate_t {};
@@ -42,7 +42,9 @@ public:
   ///se wait > 0 è il tempo massimo di attesa in secondi per 
   ///completare il movimento
   bool set_pantilt(float pan, float tilt, float wait = -1);
-
+  ///
+  bool set_pantilt(const core::pantilt_angle_t&, float wait = -1);
+  ///
   bool set_pan(float pan, float wait = -1);
 
   bool set_tilt(float tilt, float wait = -1);

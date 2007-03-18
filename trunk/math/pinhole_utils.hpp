@@ -1,7 +1,7 @@
 #pragma once//oggi sono pigro
 #include <utility>
 #include "alcor/core/core.h"
-#include "alcor/core/pantilt_angle_t.h"
+#include "alcor/core/pantilt_angle_t.hpp"
 #include <cmath>
 #include <boost/config.hpp>
 
@@ -27,8 +27,8 @@ struct pinhole_t
       core::dconstants::rad_to_deg(std::asin(delta_row / focal));
 
 
-  ptangle.pan  = -delta_pan;
-  ptangle.tilt = -delta_pitch;
+  ptangle.set_pan(math::deg_tag, -delta_pan);
+  ptangle.set_tilt(math::deg_tag, -delta_pitch);
   };
 
   ///---------------------------------------------------------------------
