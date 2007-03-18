@@ -14,10 +14,15 @@ namespace all { namespace core {
   public:
     ///
     saliency_server_t(const char* ini_file); 
+
     ///
     typedef boost::function<void (void)> 
       user_callback_t;
-    ///
+    ///    
+    ///si usa così:
+    ///sal_srv.set_user_callback(boost::bind(&object::method, this));
+    ///method è void method(void)
+    ///ma si possono fare tutti i tipi di callback(argomenti...).
     void set_user_callback(user_callback_t);
     ///
     core::saliency_data_net_t saliency_data;

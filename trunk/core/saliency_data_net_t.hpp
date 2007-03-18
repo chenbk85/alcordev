@@ -76,18 +76,18 @@ inline void saliency_data_net_t::pack( core::net_packet_ptr_t pkt)
   pkt->int_to_buf(numobs);
 
   //push each observation in
-  BOOST_FOREACH( all::core::observation_data_t& obs,  saliency_data_.observations_)
+  BOOST_FOREACH( all::core::observation_data_t& obsv,  saliency_data_.observations_)
   { 
     //pose2d relative_position_ 
-    pkt->double_to_buf(obs.relative_position_.get_x1());
-    pkt->double_to_buf(obs.relative_position_.get_x2());
-    pkt->double_to_buf(obs.relative_position_.getTh().deg());
+    pkt->double_to_buf(obsv.relative_position_.get_x1());
+    pkt->double_to_buf(obsv.relative_position_.get_x2());
+    pkt->double_to_buf(obsv.relative_position_.getTh().deg());
 
     //double radius_
-    pkt->double_to_buf(obs.radius_);
+    pkt->double_to_buf(obsv.radius_);
 
     //double weight_
-    pkt->double_to_buf(obs.weight_);
+    pkt->double_to_buf(obsv.weight_);
   } 
 
 }
