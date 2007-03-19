@@ -252,7 +252,7 @@ void*	splam_thread_impl::runThread(void* arg)
 
 		// goal finding
 		//splam_data_->saliency_goal_finding(&splam_data_->goal_)
-		splam_data_->metric_goal_finding(&splam_data_->goal_);
+		splam_data_->metric_goal_finding(splam_data_->goal_);
 
 		// splam data broadcasting
 		broadcast_splam_data();

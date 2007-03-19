@@ -63,6 +63,8 @@ public:	//setters and getters
 	void	set_x1(double val){x_ = val;}
 	void	set_x2(double val){y_ = val;}
 
+	void	reset(){x_=0.0; y_=0.0;}
+
   //(re-set the point. modulo e angolo)
   void  set(double mod, angle dir)
     {

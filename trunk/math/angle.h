@@ -44,6 +44,7 @@ public:	//getters
 	angle	getAbs()	const	{return (data_ > 0 ? (*this) : -(*this));}
 	void	set_rad (double temp)	{data_ =   dconstants::rad_to_deg(temp);fixAngle();}
 	void	set_deg (double temp)	{data_ = temp;fixAngle();}
+	void	reset(){data_=0.0;}
 
 public:	//unary operators
 	const	angle	operator-()	const {return angle(-data_, deg_tag);}

@@ -63,6 +63,8 @@ public:	//setters and getters
 	void	set_th(double val, deg_t) {theta_.set_deg(val);};
 	void	set_th(double val, rad_t) {theta_.set_rad(val);};
 
+	void	reset(){p_.reset();theta_.reset();}
+
 public:	//tools
 	/**
 	 *	function overload
