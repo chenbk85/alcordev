@@ -81,6 +81,12 @@ public:
     /// Creates the controls and sizers
     void CreateControls();
 
+    void clear_selection()
+    {
+      selection_h = 1;
+      selection_w = 1;
+    };
+
 ////@begin wx_image_panel event handler declarations
 
     /// wxEVT_DESTROY event handler for ID__IMAGE_PANEL
@@ -89,9 +95,24 @@ public:
     /// wxEVT_PAINT event handler for ID__IMAGE_PANEL
     void OnPaint( wxPaintEvent& event );
 
+    /// wxEVT_LEFT_UP event handler for ID__IMAGE_PANEL
+    void OnLeftUp( wxMouseEvent& event );
+
+    /// All mouse events event handler for ID__IMAGE_PANEL
+    void OnMouse( wxMouseEvent& event );
+
 ////@end wx_image_panel event handler declarations
 
 ////@begin wx_image_panel member function declarations
+
+    float Get_topleft_x() const { return beginx ; }
+
+    float Get_topleft_y() const { return beginy ; }
+
+    size_t Get_roi_height() const { return selection_h ; }
+
+    size_t Get_roi_width() const { return selection_w ; }
+
 
     /// Retrieves bitmap resources
     wxBitmap GetBitmapResource( const wxString& name );
@@ -104,15 +125,38 @@ public:
     static bool ShowToolTips();
 
 ////@begin wx_image_panel member variables
+public:
+    float beginx;
+    float beginy;
+    size_t selection_h;
+    size_t selection_w;
+private:
+    bool is_dragging;
 ////@end wx_image_panel member variables
 
     ///STREAMING OBJECTS!!
     wx_stream_dest_t            stream_dest;
     //raw pointer ... seems ... better
-    all::core::stream_client_t* stream_ptr; 
+    all::core::stream_client_t* stream_ptr;  
 
-    ///Drawing Routine (called from stream_dest)
-    void draw_image_panel(const core::jpeg_data_t&);
+    ///
+    enum 
+    {
+      ID_TIMER_EVENT = 7117182
+    };
+    ///on_timer
+	  void on_timer_(wxTimerEvent&);
+    ///
+    wxTimer* m_timer;
+
+    ///Drawing Routine 
+    void draw_image_panel(wxDC&);
+
+    ///update_event callback
+    void update_image(const core::jpeg_data_t&); 
+
+    ///
+    core::jpeg_data_t my_jpeg_data;
 };
 
 #endif

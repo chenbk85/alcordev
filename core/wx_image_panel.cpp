@@ -48,9 +48,11 @@ BEGIN_EVENT_TABLE( wx_image_panel, wxPanel )
 ////@begin wx_image_panel event table entries
     EVT_WINDOW_DESTROY( wx_image_panel::OnDestroy )
     EVT_PAINT( wx_image_panel::OnPaint )
+    EVT_LEFT_UP( wx_image_panel::OnLeftUp )
+    EVT_MOUSE_EVENTS( wx_image_panel::OnMouse )
 
 ////@end wx_image_panel event table entries
-
+    EVT_TIMER(wx_image_panel::ID_TIMER_EVENT, wx_image_panel::on_timer_)
 END_EVENT_TABLE()
 
 /*!
@@ -99,7 +101,7 @@ wx_image_panel::~wx_image_panel()
 void wx_image_panel::Init()
 {
   //link drawing callback
-  stream_dest.set_draw_callback(boost::bind(&wx_image_panel::draw_image_panel, this, _1));
+  stream_dest.set_update_callback(boost::bind(&wx_image_panel::update_image, this, _1));
 
   //create streaming client endpoint
   stream_ptr  = 
@@ -110,7 +112,15 @@ void wx_image_panel::Init()
   //wxMessageBox(_T("stream_ptr created and running"));
 
 ////@begin wx_image_panel member initialisation
+    beginx = 0;
+    beginy = 0;
+    is_dragging = false;
+    selection_h = 1;
+    selection_w = 1;
 ////@end wx_image_panel member initialisation
+
+    m_timer = new wxTimer(this, ID_TIMER_EVENT);
+    m_timer->Start(75);
 }
 
 /*!
@@ -166,10 +176,16 @@ wxIcon wx_image_panel::GetIconResource( const wxString& name )
 
 void wx_image_panel::OnPaint( wxPaintEvent& event )
 {
-////@begin wxEVT_PAINT event handler for ID__IMAGE_PANEL in wx_image_panel.
-    // Before editing this code, remove the block markers.
-    wxPaintDC dc(this);
-////@end wxEVT_PAINT event handler for ID__IMAGE_PANEL in wx_image_panel. 
+
+  wxPaintDC dc(this);
+  draw_image_panel(dc);
+
+ if(is_dragging || selection_h>1)
+  {
+    dc.SetPen(*wxGREEN_PEN);
+    dc.SetBrush( *wxTRANSPARENT_BRUSH );
+    dc.DrawRectangle(beginx, beginy,selection_w, selection_h);
+  }
 }
 
 /*!
@@ -185,16 +201,88 @@ void wx_image_panel::OnDestroy( wxWindowDestroyEvent& event )
 /*!
  * Drawing Routine (called from stream_dest)
  */
-void wx_image_panel::draw_image_panel(const core::jpeg_data_t& todraw)
+void wx_image_panel::draw_image_panel(wxDC& dc)
+{     
+  PrepareDC(dc);
+
+  if(my_jpeg_data.size > 0)
+  {
+    wxImage cam_image(my_jpeg_data.width
+                    , my_jpeg_data.height, 
+                    reinterpret_cast <unsigned char*> (my_jpeg_data.data.get())
+                    , true);
+
+    wxBitmap cam_bmp(cam_image, 24);
+
+
+    dc.DrawBitmap(cam_bmp, 0, 0, false);
+  }
+
+}
+
+/*!
+ * Updating Routine (called from stream_dest)
+ */
+void wx_image_panel::update_image(const core::jpeg_data_t& newimage)
 {
-  wxClientDC dc_client(this);
+  if(newimage.size != my_jpeg_data.size)
+  {
+    my_jpeg_data.data.reset(new core::uint8_t[newimage.size]);
+    my_jpeg_data.size = newimage.size;
+    my_jpeg_data.height = newimage.height;
+    my_jpeg_data.width = newimage.width;
+    my_jpeg_data.depth = newimage.depth;
+    //my_jpeg_data.data = newimage.data;    
+    my_jpeg_data.size = newimage.size;
+  }
+  my_jpeg_data.data = newimage.data;
+}
 
-  //wxPaintDC dc_client(this);
 
-  wxImage cam_image(todraw.width, todraw.height, reinterpret_cast <unsigned char*> (todraw.data.get()), true);
+/*!
+ * All mouse events event handler for ID__IMAGE_PANEL
+ */
 
-  wxBitmap cam_bmp(cam_image, 24);
+void wx_image_panel::OnMouse( wxMouseEvent& event )
+{
+  if (event.Dragging())
+  {
+    if(event.LeftIsDown())
+    {
+      if(is_dragging)
+      {
+        selection_h = event.GetY() - beginy;
+        selection_w = event.GetX() - beginx;
+      }
+      else
+      {  
+        beginx = event.GetX();
+        beginy = event.GetY();
+        is_dragging=true;
+        selection_h = 1;
+        selection_w = 1;
+      }
 
-  PrepareDC(dc_client);
-  dc_client.DrawBitmap(cam_bmp, 0, 0, false);
+    }
+  }
+
+}
+
+
+/*!
+ * wxEVT_LEFT_UP event handler for ID__IMAGE_PANEL
+ */
+
+void wx_image_panel::OnLeftUp( wxMouseEvent& event )
+{
+  is_dragging=false;
+
+}
+
+/*!
+ * EVT_TIMER event handler for timer
+ */
+void wx_image_panel::on_timer_(wxTimerEvent&)
+{
+  Refresh(false);
 }

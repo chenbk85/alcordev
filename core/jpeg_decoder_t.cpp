@@ -12,13 +12,13 @@ namespace all { namespace core {
   ///
 void jpeg_decoder_t::set_output_ordering(core::interleaved_t)
 {
-toplanar_=false;
+  toplanar_=false;
 }
 //---------------------------------------------------------------------------
 ///
 void jpeg_decoder_t::set_output_ordering(core::planar_t)
 {
-toplanar_ = true;
+  toplanar_ = true;
 }
 //---------------------------------------------------------------------------
 bool jpeg_decoder_t::decode(  all::core::jpeg_data_t& decoded,
