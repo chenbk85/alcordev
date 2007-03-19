@@ -64,13 +64,15 @@ public:		// data Broadcasting
 	void				start_server();			// 
 	void				stop_server();			// 
 	void				broadcast_splam_data();
-	void				maps(ArServerClient* ,ArNetPacket*);
-	void				others(ArServerClient* ,ArNetPacket*);
+	void				map_cb(ArServerClient* ,ArNetPacket*);
+	void				sal_cb(ArServerClient* ,ArNetPacket*);
+	void				others_cb(ArServerClient* ,ArNetPacket*);
 private:
 	ArServerBase		server_;
 	ip_address_t		server_address_;
 	bool				server_started_;
-	functor				maps_callback;
+	functor				map_callback;
+	functor				sal_callback;
 	functor				others_callback;
 	//bool				odoPresent_;
 
@@ -82,8 +84,9 @@ public:		// misc
 
 splam_thread_impl::splam_thread_impl( const char* name)
 	:ini_(name)
-	,maps_callback(this, &splam_thread_impl::maps)
-	,others_callback(this, &splam_thread_impl::others)
+	,map_callback(this, &splam_thread_impl::map_cb)
+	,sal_callback(this, &splam_thread_impl::sal_cb)
+	,others_callback(this, &splam_thread_impl::others_cb)
 	,pmap_wrap_(name)
 	,scan_count_(0)
 	,server_started_(false)
@@ -125,13 +128,19 @@ splam_thread_impl::~splam_thread_impl()
 	this->join();
 }
 
-void	splam_thread_impl::maps(ArServerClient* client, ArNetPacket* clientPack)
+void	splam_thread_impl::map_cb(ArServerClient* client, ArNetPacket* clientPack)
 {
 	//cout << "Mappa Richiesta :D"<<endl;
 	// empty callback
 }
 
-void	splam_thread_impl::others(ArServerClient* client, ArNetPacket* clientPack)
+void	splam_thread_impl::sal_cb(ArServerClient* client, ArNetPacket* clientPack)
+{
+	//cout << "Mappa Richiesta :D"<<endl;
+	// empty callback
+}
+
+void	splam_thread_impl::others_cb(ArServerClient* client, ArNetPacket* clientPack)
 {
 	//cout << "Altri Dati Richiesti :D"<<endl;
 	// empty callback
@@ -144,7 +153,8 @@ void	splam_thread_impl::start_server()
 		throw std::runtime_error("Error in SlamServer::start_server");
 
 		// add the "splam_data" service
-	server_.addData("Mappa", "Mappa from SLAM module", &maps_callback, "none", "none");
+	server_.addData("Occupancy", "OG from SLAM module", &map_callback, "none", "none");
+	server_.addData("Saliency", "SG from SLAM module", &sal_callback, "none", "none");
 	server_.addData("Others", "Other data from SLAM module", &others_callback, "none", "none");
 
 		// run the server thread
@@ -182,11 +192,15 @@ void splam_thread_impl::acquire_laser_scan()
 void	splam_thread_impl::broadcast_splam_data()
 {
 	ArNetPacket og_map_packet;
+	ArNetPacket sg_map_packet;
 	ArNetPacket others_packet;
 	splam_data_net_->header_ = splam_data_net::full_data;
 	splam_data_net_->pack_og_map(&og_map_packet);
+	splam_data_net_->pack_sg_map(&sg_map_packet);
 	splam_data_net_->pack_others(&others_packet);
-	server_.broadcastPacketTcp(&og_map_packet,"Mappa");
+	server_.broadcastPacketTcp(&og_map_packet,"Occupancy");
+	ArUtil::sleep(100);
+	server_.broadcastPacketTcp(&sg_map_packet,"Saliency");
 	ArUtil::sleep(100);
 	server_.broadcastPacketTcp(&others_packet,"Others");
 }
@@ -252,7 +266,7 @@ void*	splam_thread_impl::runThread(void* arg)
 
 		// goal finding
 		//splam_data_->saliency_goal_finding(&splam_data_->goal_)
-		splam_data_->metric_goal_finding(splam_data_->goal_);
+		splam_data_->metric_goal_finding();
 
 		// splam data broadcasting
 		broadcast_splam_data();

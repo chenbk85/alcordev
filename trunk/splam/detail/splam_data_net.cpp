@@ -21,8 +21,83 @@ splam_data_net::~splam_data_net()
 	delete [] target_;
 }
 
+void	splam_data_net::pack_og_map(ArNetPacket* pack)
+{
+	// mappa
+	// dimensioni e risoluzione
+	pack->byte4ToBuf(data_->og_row_);
+	pack->byte4ToBuf(data_->og_col_);
+	pack->doubleToBuf(data_->og_resolution_);
+	// Data... COMPRESSED!!!!
+	runLenght_->Encode(target_, target_lenght, (BYTE*)(&(*data_->og_cells_.begin())), data_->og_cells_.size());
+	pack->byte4ToBuf(target_lenght);
+	for(size_t size = 0; size<target_lenght; ++size)
+		pack->byteToBuf(target_[size]);
+
+	cout << "true map dimension: "<< data_->og_cells_.size()<< " - coded map dimension: "<< target_lenght<<endl;
+
+}
+
+void	splam_data_net::import_og_map(ArNetPacket* pack)
+{
+	// Mappa
+	data_->og_row_ = pack->bufToByte4();
+	data_->og_col_ = pack->bufToByte4();
+	data_->og_resolution_ = pack->bufToDouble();
+	//Data... COMPRESSED!!!!
+	long source_lenght;
+	target_lenght = pack->bufToByte4();
+	//cout<<"target lenght: "<< target_lenght <<endl;
+	for(size_t size = 0; size<target_lenght; ++size)
+		target_[size] = pack->bufToByte();
+	
+	source_lenght  =  runLenght_->GetMaxDecoded(target_);
+	data_->og_cells_.resize(source_lenght);
+	runLenght_->Decode( (BYTE*)(&(*data_->og_cells_.begin())), source_lenght, target_, target_lenght  );
+
+	cout << "coded map dimension: "<< target_lenght<< " - true map dimension: "<< data_->og_cells_.size()<<endl;
+}
+
+void	splam_data_net::pack_sg_map(ArNetPacket* pack)
+{
+	// mappa
+	// dimensioni e risoluzione
+	pack->byte4ToBuf(data_->sg_row_);
+	pack->byte4ToBuf(data_->sg_col_);
+	pack->doubleToBuf(data_->sg_resolution_);
+	// Data... COMPRESSED!!!!
+	runLenght_->Encode(target_, target_lenght, (BYTE*)(&(*data_->sg_cells_.begin())), data_->sg_cells_.size());
+	pack->byte4ToBuf(target_lenght);
+	for(size_t size = 0; size<target_lenght; ++size)
+		pack->byteToBuf(target_[size]);
+
+	cout << "true saliency map dimension: "<< data_->sg_cells_.size()<< " - coded saliency map dimension: "<< target_lenght<<endl;
+}
+
+void	splam_data_net::import_sg_map(ArNetPacket* pack)
+{
+	// Mappa
+	data_->sg_row_ = pack->bufToByte4();
+	data_->sg_col_ = pack->bufToByte4();
+	data_->sg_resolution_ = pack->bufToDouble();
+	//Data... COMPRESSED!!!!
+	long source_lenght;
+	target_lenght = pack->bufToByte4();
+	//cout<<"target lenght: "<< target_lenght <<endl;
+	for(size_t size = 0; size<target_lenght; ++size)
+		target_[size] = pack->bufToByte();
+	
+	source_lenght  =  runLenght_->GetMaxDecoded(target_);
+	data_->sg_cells_.resize(source_lenght);
+	runLenght_->Decode( (BYTE*)(&(*data_->sg_cells_.begin())), source_lenght, target_, target_lenght  );
+
+	cout << "coded saliency map dimension: "<< target_lenght<< " - true saliency map dimension: "<< data_->sg_cells_.size()<<endl;
+}
+
 void	splam_data_net::pack_others(ArNetPacket* pack)
 {
+	todo...
+
 	pose2d_vect_it	it;
 	int_vect_it		itt;
 	size_t		size;
@@ -84,6 +159,8 @@ void	splam_data_net::pack_others(ArNetPacket* pack)
 
 void	splam_data_net::import_others(ArNetPacket* pack)
 {
+	todo...
+
 	PoseVectIt	it;
 	IntVectIt	itt;
 	size_t size;
@@ -146,50 +223,6 @@ void	splam_data_net::import_others(ArNetPacket* pack)
 	cout << "Pacchetto Others ricevuto!!!"<<endl;
 }
 
-void	splam_data_net::pack_og_map(ArNetPacket* pack)
-{
-	size_t		size;
-	int total_size = 0;
-
-	//mappa
-	//dimensioni e risoluzione
-	pack->byte4ToBuf(data_->mapXdimension_);
-	pack->byte4ToBuf(data_->mapYdimension_);
-	pack->doubleToBuf(data_->mapResolution_);
-	//Data... COMPRESSED!!!!
-	runLenght_->Encode(target_, target_lenght, (BYTE*)(&(*data_->cells_.begin())), data_->cells_.size());
-	pack->byte4ToBuf(target_lenght);
-	for(size = 0; size<target_lenght; ++size)
-		pack->byteToBuf(target_[size]);
-	//total_size += 20 + target_lenght;
-
-	cout << "true map dimension: "<< data_->cells_.size()<< " - coded map dimension: "<< target_lenght<<endl;
-
-}
-
-void	splam_data_net::import_og_map(ArNetPacket* pack)
-{
-	size_t		size;
-
-	// Mappa
-	data_->mapXdimension_ = pack->bufToByte4();
-	data_->mapYdimension_ = pack->bufToByte4();
-	data_->mapResolution_ = pack->bufToDouble();
-	//Data... COMPRESSED!!!!
-	long source_lenght;
-	target_lenght = pack->bufToByte4();
-	//cout<<"target lenght: "<< target_lenght <<endl;
-	for(size = 0; size<target_lenght; ++size)
-		target_[size] = pack->bufToByte();
-	
-	source_lenght  =  runLenght_->GetMaxDecoded(target_);
-	data_->cells_.resize(source_lenght);
-	runLenght_->Decode( (BYTE*)(&(*data_->cells_.begin())), source_lenght, target_, target_lenght  );
-	
-
-	cout << "coded map dimension: "<< target_lenght<< " - true map dimension: "<< data_->cells_.size()<<endl;
-
-}
 
 }//namespace splam
 }//namespace all
