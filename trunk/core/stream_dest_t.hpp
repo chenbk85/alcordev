@@ -26,6 +26,7 @@ protected:
 	std::size_t m_data_size;
 };
 
+typedef boost::shared_ptr<stream_dest_t> stream_dest_ptr;
 }} //namespaces
 
 #endif

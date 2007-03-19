@@ -20,7 +20,7 @@ public:
 	
 	server_base_t();
 
-	//virtual ~server_base_t();
+	virtual ~server_base_t();
 
 	//run server
 	virtual void run();

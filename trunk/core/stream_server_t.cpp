@@ -24,7 +24,7 @@ stream_server_t::stream_server_t(stream_source_ptr stream_source, char* ini_file
 	m_stream_manager.set_packet_size(m_ini_config.GetInt("stream:packet_size", 65000));
 	m_stream_manager.set_frame_rate(m_ini_config.GetInt("stream:frame_rate", 5));
 
-	m_stream_manager.set_get_data_callback(boost::bind(&stream_source_t::get_data, m_stream_source, _1));
+	m_stream_manager.set_get_data_callback(boost::bind(&stream_source_t::get_data, m_stream_source.get(), _1));
 
 	add_command_handler("setFrameRate", boost::bind(&stream_server_t::set_frame_rate_cb, this, _1, _2));
 	add_command_handler("getStreamSetting", boost::bind(&stream_server_t::send_stream_setting_cb, this, _1, _2));
@@ -33,9 +33,13 @@ stream_server_t::stream_server_t(stream_source_ptr stream_source, char* ini_file
 	set_client_disconnect_cb(boost::bind(&stream_server_t::client_disconnect_cb, this, _1));
 
 	//add handler for stream source command
-	set_packet_handler(APPL_PACKET, boost::bind(&stream_source_t::process_command, m_stream_source, _2)); 
+	set_packet_handler(APPL_PACKET, boost::bind(&stream_server_t::process_source_command, this, _1, _2)); 
 
 	m_streaming = false;
+}
+
+stream_server_t::~stream_server_t() {
+	stop_streaming();
 }
 
 
@@ -98,6 +102,10 @@ void stream_server_t::client_disconnect_cb(int num_client) {
 	if (num_client == 0) {
 		stop_streaming();
 	}
+}
+
+void stream_server_t::process_source_command(all::core::client_connection_ptr_t client, all::core::net_packet_ptr_t packet) {
+	m_stream_source->process_command(packet);
 }
 
 

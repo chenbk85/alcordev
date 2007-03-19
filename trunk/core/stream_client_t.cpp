@@ -3,7 +3,7 @@
 namespace all {
 	namespace core {
 
-stream_client_t::stream_client_t(stream_dest_t& stream_dest, char* ini_file) :
+stream_client_t::stream_client_t(stream_dest_ptr stream_dest, char* ini_file) :
 									m_stream_service(),
 									m_udp_socket(m_stream_service),
 									m_stream_manager(m_udp_socket),
@@ -26,9 +26,13 @@ stream_client_t::stream_client_t(stream_dest_t& stream_dest, char* ini_file) :
 	int frame_buffer_size = m_ini_config.GetInt("stream:frame_buffer_size", 5);
 	m_stream_manager.set_frame_buffer(frame_buffer_size);
 
-	m_stream_manager.set_data_ready_callback(boost::bind(&stream_dest_t::import_data, &m_stream_dest, _1, _2));
+	m_stream_manager.set_data_ready_callback(boost::bind(&stream_dest_t::import_data, m_stream_dest.get(), _1, _2));
 
 	m_streaming = false;
+}
+
+stream_client_t::~stream_client_t() {
+	stop_receive();
 }
 
 void stream_client_t::get_stream_setting_cb(net_packet_ptr_t packet) {
@@ -123,6 +127,7 @@ void stream_client_t::handle_disconnect() {
 }
 
 void stream_client_t::stop() {
+	stop_receive();
 	client_base_t::stop();
 }
 
