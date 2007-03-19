@@ -105,14 +105,20 @@ public:
 
 ////@begin wx_image_panel member function declarations
 
-    float Get_topleft_x() const { return beginx ; }
+    float Getget_topleft_x() const { return beginx ; }
+    void Setget_topleft_x(float value) { beginx = value ; }
 
-    float Get_topleft_y() const { return beginy ; }
+    float Getget_topleft_y() const { return beginy ; }
+    void Setget_topleft_y(float value) { beginy = value ; }
 
-    size_t Get_roi_height() const { return selection_h ; }
+    size_t Getget_roi_height() const { return selection_h ; }
+    void Setget_roi_height(size_t value) { selection_h = value ; }
 
-    size_t Get_roi_width() const { return selection_w ; }
+    size_t Getget_roi_width() const { return selection_w ; }
+    void Setget_roi_width(size_t value) { selection_w = value ; }
 
+    bool GetEnableDragging() const { return dragging_enabled ; }
+    void SetEnableDragging(bool value) { dragging_enabled = value ; }
 
     /// Retrieves bitmap resources
     wxBitmap GetBitmapResource( const wxString& name );
@@ -132,6 +138,7 @@ public:
     size_t selection_w;
 private:
     bool is_dragging;
+    bool dragging_enabled;
 ////@end wx_image_panel member variables
 
     ///STREAMING OBJECTS!!
@@ -151,12 +158,15 @@ private:
 
     ///Drawing Routine 
     void draw_image_panel(wxDC&);
+    ///Draw Selection.
+    void draw_model_selection(wxDC&);
 
     ///update_event callback
     void update_image(const core::jpeg_data_t&); 
 
     ///
     core::jpeg_data_t my_jpeg_data;
+
 };
 
 #endif
