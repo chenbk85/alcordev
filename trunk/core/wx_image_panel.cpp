@@ -27,7 +27,7 @@
 
 ////@begin includes
 ////@end includes
-
+#include <wx/dcbuffer.h>
 #include "wx_image_panel.h"
 
 ////@begin XPM images
@@ -117,8 +117,8 @@ void wx_image_panel::Init()
     is_dragging = false;
     selection_h = 1;
     selection_w = 1;
+    dragging_enabled = false;
 ////@end wx_image_panel member initialisation
-
     m_timer = new wxTimer(this, ID_TIMER_EVENT);
     m_timer->Start(75);
 }
@@ -176,15 +176,16 @@ wxIcon wx_image_panel::GetIconResource( const wxString& name )
 
 void wx_image_panel::OnPaint( wxPaintEvent& event )
 {
+  wxBufferedPaintDC dc(this);
 
-  wxPaintDC dc(this);
   draw_image_panel(dc);
 
- if(is_dragging || selection_h>1)
+  if(dragging_enabled)
   {
-    dc.SetPen(*wxGREEN_PEN);
-    dc.SetBrush( *wxTRANSPARENT_BRUSH );
-    dc.DrawRectangle(beginx, beginy,selection_w, selection_h);
+    if(is_dragging || selection_h>1)
+    {
+      draw_model_selection(dc);
+    }
   }
 }
 
@@ -203,7 +204,8 @@ void wx_image_panel::OnDestroy( wxWindowDestroyEvent& event )
  */
 void wx_image_panel::draw_image_panel(wxDC& dc)
 {     
-  PrepareDC(dc);
+
+  //PrepareDC(dc);
 
   if(my_jpeg_data.size > 0)
   {
@@ -211,13 +213,24 @@ void wx_image_panel::draw_image_panel(wxDC& dc)
                     , my_jpeg_data.height, 
                     reinterpret_cast <unsigned char*> (my_jpeg_data.data.get())
                     , true);
-
     wxBitmap cam_bmp(cam_image, 24);
 
+    //wxMemoryDC temp_dc;
+    //temp_dc.SelectObject(cam_bmp);
 
     dc.DrawBitmap(cam_bmp, 0, 0, false);
   }
 
+}
+
+/*!
+ * Draw Selection.
+ */
+void wx_image_panel::draw_model_selection(wxDC& dc)
+{
+  dc.SetPen(*wxGREEN_PEN);
+  dc.SetBrush( *wxTRANSPARENT_BRUSH );
+  dc.DrawRectangle(beginx, beginy,selection_w, selection_h);
 }
 
 /*!
