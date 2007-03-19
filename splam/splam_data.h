@@ -46,6 +46,7 @@ public:	// laser
 	scan_data		last_scan_;		///< last laser scan
 
 public:	// saliency grid data
+	//saliency_path_t	sg_path_;
 	map_values		sg_cells_;		///< saliency grid: spatial saliency value
 	size_t			sg_row_;		
 	size_t			sg_col_;		
@@ -103,13 +104,13 @@ public:	// services
 	 *	that function estimates the nearest metric goal, based only on Occupancy Values and the Frontier-Based
 	 *  approach.
 	 */
-	void	metric_goal_finding(goal_t*);
+	void	metric_goal_finding(goal_t&);
 
 	/**
 	 *	that function calculates next saliency goal and return TRUE if in that position the Recognition activity
 	 *	should be launched
 	 */
-	bool	saliency_goal_finding(goal_t*);
+	bool	saliency_goal_finding(goal_t&);
 
 	/**
 	 *	

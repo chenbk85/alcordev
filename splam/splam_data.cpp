@@ -6,7 +6,7 @@ using namespace all::util;
 namespace all{
 namespace splam{
 
-void	splam_data::metric_goal_finding(goal_t* goal_temp)
+void	splam_data::metric_goal_finding(goal_t& goal_temp)
 {
 	//// STEP 1: STRUCTURE INITIALIZATION
 
@@ -49,7 +49,15 @@ void	splam_data::metric_goal_finding(goal_t* goal_temp)
 
 	//// STEP 3: CALCULATE UNEXPLORED PATH
 
-
+	// structures setting
+	value_iteration_path path;
+	goal_temp.goal_near_ = 0;
+	goal_temp.goal_far_ = 0;
+	if(!vi.get_path(get_current_coord(),path))
+	{
+	
+	}
+	
 	todo...
 }
 
@@ -60,8 +68,6 @@ void	splam_thread_impl::GoalFinding()
 
 
 	//STEP 3: CALCULATE UNEXPLORED PATH
-	ValueIterationPath path;
-	splam_data_.goalPath_.clear();
 	if(vi.get_path(worker_.GetCurrentCoord(), path) == false)
 	{
 		if(splam_data_.path_.empty())

@@ -34,6 +34,8 @@ struct saliency_data_t
 	std::vector<observation_data_t>	observations_;
 };
 
+typedef std::vector<saliency_data_t> saliency_path_t;
+
 }//namespace core
 }//namespace all
 //---------------------------------------------------------------------------
