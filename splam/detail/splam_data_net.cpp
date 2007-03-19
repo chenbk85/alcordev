@@ -1,6 +1,6 @@
 #include <iostream>
 #include "splam_data_net.h"
-#include "typedefs.hpp"
+#include "alcor/splam/typedefs.hpp"
 //---------------------------------------------------------------------------
 using namespace std;
 using namespace all::util;

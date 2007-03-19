@@ -16,12 +16,18 @@ namespace splam{
 
 struct	goal_t
 {
-	bool		is_valid_;
-	pose2d		goal_far_;
-	pose2d		goal_near_;
-	angle		head_direction_;
-	angle		relative_head_direction_;
-	bool		recognition_;
+public:
+	bool			is_valid_;
+	pose2d			goal_far_;
+	pose2d			goal_near_;
+	angle			head_direction_;
+	angle			relative_head_direction_;
+	point2d_vect	path_;
+	bool			recognition_;
+
+public:
+	goal_t()		{reset();}
+	void	reset()	{is_valid_=false; goal_far_.reset(); goal_near_.reset(); head_direction_.reset(); relative_head_direction_.reset(); path_.clear(); recognition_=false;}
 };
 
 typedef	boost::shared_ptr<goal_t>	goal_ptr_t;
@@ -104,13 +110,13 @@ public:	// services
 	 *	that function estimates the nearest metric goal, based only on Occupancy Values and the Frontier-Based
 	 *  approach.
 	 */
-	void	metric_goal_finding(goal_t&);
+	void	metric_goal_finding();
 
 	/**
 	 *	that function calculates next saliency goal and return TRUE if in that position the Recognition activity
 	 *	should be launched
 	 */
-	bool	saliency_goal_finding(goal_t&);
+	bool	saliency_goal_finding();
 
 	/**
 	 *	

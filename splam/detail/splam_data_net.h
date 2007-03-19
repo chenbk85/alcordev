@@ -45,6 +45,8 @@ public:
 public:
 	void	import_og_map(ArNetPacket*);
 	void	pack_og_map(ArNetPacket*);
+	void	import_sg_map(ArNetPacket*);
+	void	pack_sg_map(ArNetPacket*);
 	void	import_others(ArNetPacket*);
 	void	pack_others(ArNetPacket*);
 };

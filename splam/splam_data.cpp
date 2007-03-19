@@ -6,7 +6,7 @@ using namespace all::util;
 namespace all{
 namespace splam{
 
-void	splam_data::metric_goal_finding(goal_t& goal_temp)
+void	splam_data::metric_goal_finding()
 {
 	//// STEP 1: STRUCTURE INITIALIZATION
 
@@ -51,73 +51,36 @@ void	splam_data::metric_goal_finding(goal_t& goal_temp)
 
 	// structures setting
 	value_iteration_path path;
-	goal_temp.goal_near_ = 0;
-	goal_temp.goal_far_ = 0;
+	goal_.reset();
+
 	if(!vi.get_path(get_current_coord(),path))
 	{
-	
-	}
-	
-	todo...
-}
-
-
-
-void	splam_thread_impl::GoalFinding()
-{
-
-
-	//STEP 3: CALCULATE UNEXPLORED PATH
-	if(vi.get_path(worker_.GetCurrentCoord(), path) == false)
-	{
-		if(splam_data_.path_.empty())
-		{
-			splam_data_.goal_.pos.x = 0;
-			splam_data_.goal_.pos.y = 0;
-			splam_data_.goal_.rot = 0;
-		}else{
-			splam_data_.goal_ = splam_data_.path_.back();
-		}
-		splam_data_.goalPath_.push_back(splam_data_.goal_);
+		if(!path_.empty())
+			goal_.goal_far_ = path_.back();
+		goal_.path_.push_back(goal_.goal_far_.getP());
 	}else{
-		ValueIterationPathIt it;
-		for(it=path.begin(); it!=path.end(); ++it)
+		for(value_iteration_path_it it=path.begin(); it!=path.end();++it)
+			goal_.path_.push_back(get_position_of(*it));
+		if(!goal_.path_.empty())
 		{
-			//tempazzo << it->first << " "<< it->second<< endl;
-			splam_data_.goalPath_.push_back(worker_.GetPositionOf(*it));
-		}
-		//tempazzo<< endl << endl;
-
-		if(!splam_data_.goalPath_.empty()){
-			splam_data_.goal_ = splam_data_.goalPath_.back();
+			goal_.goal_far_ = pose2d(goal_.path_.back(),angle(0.0,rad_tag));
 		}else{
-			if(splam_data_.path_.empty())
-			{
-				splam_data_.goal_.pos.x = 0;
-				splam_data_.goal_.pos.y = 0;
-				splam_data_.goal_.rot = 0;
-			}else{
-				splam_data_.goal_ = splam_data_.path_.back();
-			}
-			splam_data_.goalPath_.push_back(splam_data_.goal_);
+			goal_.goal_far_ = get_current_position();
+			goal_.path_.push_back(goal_.goal_far_.getP());
 		}
 	}
-	size_t sizzo = (1.0/splam_data_.mapResolution_);
-	if(splam_data_.goalPath_.size()<sizzo)
-	{
-		splam_data_.goalTemp_ = splam_data_.goal_;
-	}else{
-		splam_data_.goalTemp_ = splam_data_.goalPath_.at(sizzo-1);
-	}
-	//cout << "GOAL PATH CALCOLATO!!!!!!!!!!!!!!!"<<endl;
-	//cout << "SIZE: "<< path.size()<<endl;
-	//size2d curr_coord = worker_.GetCurrentCoord();
-	//cout << "CURRENT COORD: X: "<< curr_coord.first << " Y: "<< curr_coord.second<<endl;
-	//cout << "CURRENT POSITIONS: X: "<<worker_.GetPosition().pos.x << " Y: "<<worker_.GetPosition().pos.y<<endl;
-	//cout << "CURRENT POSITION RECALCULATED: X: "<< worker_.GetPositionOf(curr_coord).pos.x<< " Y: "<<worker_.GetPositionOf(curr_coord).pos.y<<endl;
 
+	size_t sizzo = static_cast<size_t>(1.0/og_resolution_);
+	if(goal_.path_.size()<sizzo)
+		goal_.goal_near_ = goal_.goal_far_;
+	else
+		goal_.goal_near_ = pose2d(goal_.path_.at(sizzo-1),angle(0.0,deg_tag));
+
+	goal_.is_valid_=true;
+	goal_.recognition_ = false;
+	goal_.head_direction_ = (goal_.goal_near_.getP()-get_current_position().getP()).orientation();
+	goal_.relative_head_direction_ = goal_.head_direction_ - get_current_position().getTh();
 }
-
 
 
 }//namespace splam
