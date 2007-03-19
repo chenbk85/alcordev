@@ -41,7 +41,7 @@ void stream_pkt_sender_t::async_send_packet(stream_packet_ptr_t packet) {
 
 void stream_pkt_sender_t::handle_send_packet(const boost::system::error_code& error, std::size_t bytes_transferred, std::string* buffer_ptr) {
 	if (!error) {
-		printf("async send ok\n");
+		//printf("async send ok\n");
 		Sleep(1);
 	}
 	else {
