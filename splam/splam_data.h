@@ -3,11 +3,12 @@
 //-----------------------------------------------------------------------------------------------
 #include <vector>
 #include <boost/shared_ptr.hpp>
-#include "alcor/splam/scan_data.h"
+#include "alcor/core/saliency_data_t.hpp"
 #include "alcor/math/size2d.h"
 #include "alcor/math/pose2d.h"
 #include "alcor/math/point2d.h"
 #include "alcor/math/geom2dtypes.h"
+#include "alcor/splam/scan_data.h"
 //-----------------------------------------------------------------------------------------------
 using namespace all::math;
 //-----------------------------------------------------------------------------------------------
@@ -45,14 +46,14 @@ public:	// occupancy grid data
 	size_t			og_col_;		///< number of occupancy grid map column... old mapXdimension
 	double			og_resolution_;	///< dimension of occupancy grid map cells... in meters
 
-public:	// path
+public:	// paths
 	pose2d_vect		path_;
+	saliency_path_t	observations_;
 
 public:	// laser
 	scan_data		last_scan_;		///< last laser scan
 
 public:	// saliency grid data
-	//saliency_path_t	sg_path_;
 	map_values		sg_cells_;		///< saliency grid: spatial saliency value
 	size_t			sg_row_;		
 	size_t			sg_col_;		
