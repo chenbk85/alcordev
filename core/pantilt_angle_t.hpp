@@ -48,6 +48,9 @@ public:
   ///
   double get_pan(all::math::rad_t) const;
   ///
+  double get_pan_deg() const;
+
+  ///
   math::angle get_pan_angle() const;
 
   ///Tilt Getters---------------------------------------------------  
@@ -55,6 +58,9 @@ public:
   double get_tilt(math::deg_t)  const;
   ///
   double get_tilt(math::rad_t)  const;
+  ///
+  double get_tilt_deg() const;
+
   ///
   math::angle get_tilt_angle() const;
 
@@ -84,6 +90,9 @@ inline double pantilt_angle_t::get_pan(all::math::rad_t)  const
 inline math::angle pantilt_angle_t::get_pan_angle() const
     {return pantilt_.first;};
 
+inline double pantilt_angle_t::get_pan_deg() const
+  {return pantilt_.first.deg();}
+
 //---------------------------------------------------------------------------
 //tilt
 inline  double pantilt_angle_t::get_tilt(math::deg_t)  const
@@ -95,6 +104,9 @@ inline  double pantilt_angle_t::get_tilt(math::rad_t)  const
 //tilt
 inline math::angle pantilt_angle_t::get_tilt_angle() const
     {return pantilt_.second;};
+
+inline double pantilt_angle_t::get_tilt_deg() const
+  {return pantilt_.second.deg();}
 
 //---------------------------------------------------------------------------
 inline pantilt_angle_t::pantilt_angle_t()
@@ -112,8 +124,8 @@ inline pantilt_angle_t::pantilt_angle_t(math::deg_t, double pan, double tilt)
 inline pantilt_angle_t::pantilt_angle_t(math::rad_t, double pan, double tilt)
   {
     pantilt_ = std::make_pair(
-      math::angle(pan, math::deg_tag),
-      math::angle(tilt, math::deg_tag)
+      math::angle(pan, math::rad_tag),
+      math::angle(tilt, math::rad_tag)
       );
   }
 //---------------------------------------------------------------------------

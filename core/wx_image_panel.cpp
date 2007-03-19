@@ -100,8 +100,10 @@ wx_image_panel::~wx_image_panel()
 
 void wx_image_panel::Init()
 {
+  stream_dest.reset(new wx_stream_dest_t);
+
   //link drawing callback
-  stream_dest.set_update_callback(boost::bind(&wx_image_panel::update_image, this, _1));
+  stream_dest->set_update_callback(boost::bind(&wx_image_panel::update_image, this, _1));
 
   //create streaming client endpoint
   stream_ptr  = 

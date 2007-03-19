@@ -142,7 +142,7 @@ private:
 ////@end wx_image_panel member variables
 
     ///STREAMING OBJECTS!!
-    wx_stream_dest_t            stream_dest;
+    boost::shared_ptr<wx_stream_dest_t> stream_dest;
     //raw pointer ... seems ... better
     all::core::stream_client_t* stream_ptr;  
 
