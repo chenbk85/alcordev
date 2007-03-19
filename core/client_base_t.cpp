@@ -25,6 +25,10 @@ client_base_t::client_base_t():
 
 }
 
+client_base_t::~client_base_t() {
+	stop();
+}
+
 void client_base_t::run() {
 	try_connect();
 	m_io_service.run();
@@ -194,7 +198,9 @@ void client_base_t::stop_request(std::string request) {
 }
 
 void client_base_t::send_finalized_packet(net_packet_ptr_t packet) {
-	m_tcp_sender.send_packet(packet);
+	if (m_state == STATE_CONNECTED) {
+		m_tcp_sender.send_packet(packet);
+	}
 }
 
 void client_base_t::in_packet_handler (net_packet_ptr_t packet) {

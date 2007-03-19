@@ -18,6 +18,8 @@ class stream_server_t : public server_base_t {
 public:
 	stream_server_t(stream_source_ptr, char* ini_file = "config/stream_server.ini");
 
+	virtual ~stream_server_t();
+
 	void start_streaming();
 	void stop_streaming();
 
@@ -33,6 +35,8 @@ private:
 
 	void client_connect_cb(client_connection_ptr_t);
 	void client_disconnect_cb(int);
+
+	void process_source_command(all::core::client_connection_ptr_t, all::core::net_packet_ptr_t);
 
 private:
 	

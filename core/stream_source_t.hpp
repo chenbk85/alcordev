@@ -13,7 +13,7 @@ public:
 
 	virtual int get_data(all::core::uint8_ptr*) = 0;
 	
-	virtual void process_command(net_packet_ptr_t) = 0;
+	virtual void process_command(net_packet_ptr_t) {};
 
 private:
 

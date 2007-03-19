@@ -17,7 +17,11 @@ namespace all {
 class stream_client_t : public client_base_t {
 
 public:
-	stream_client_t(stream_dest_t&, char* ini_file ="config/stream_client.ini");
+	stream_client_t(stream_dest_ptr, char* ini_file ="config/stream_client.ini");
+
+	virtual ~stream_client_t();
+
+	
 
 	void start_receive();
 	void stop_receive();
@@ -49,7 +53,7 @@ private:
 
 	detail::in_stream_manager_t m_stream_manager;
 
-	stream_dest_t& m_stream_dest; 
+	stream_dest_ptr m_stream_dest; 
 
 	all::core::ip_address_t m_multicast_address;
 
@@ -58,6 +62,8 @@ private:
 	volatile bool m_streaming;
 
 };
+
+typedef boost::shared_ptr<stream_client_t> stream_client_ptr;
 
 }} //namespaces
 

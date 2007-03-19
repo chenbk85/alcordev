@@ -23,9 +23,9 @@ server_base_t::server_base_t():
 
 }
 
-//server_base_t::~server_base_t() {
-//	m_io_service.post(boost::bind(&server_base_t::stop, this));
-//}
+server_base_t::~server_base_t() {
+	stop();
+}
 
 
 void server_base_t::run() {
