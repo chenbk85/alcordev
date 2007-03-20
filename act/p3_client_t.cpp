@@ -10,8 +10,10 @@ namespace all { namespace act{
 
 		all::core::ip_address_t server_address;
 
-		server_address.hostname = ini.GetStringAsChar("server:address", "localhost");
-		server_address.port = ini.GetInt("server:port", 76543);
+		server_address.hostname = ini.GetStringAsChar("server:hostname", "localhost");
+		server_address.port = ini.GetInt("server:port", 700504);
+
+    printf("Server: %s:%d\n", server_address.hostname.c_str(), server_address.port);
 		set_server_addr(server_address);
 
 	  add_command_handler("serverData", boost::bind(&p3_client_t::update_p3_data, this, _1));
