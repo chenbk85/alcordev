@@ -18,16 +18,7 @@ public:
 	void process_data();
 
   ///
-  //typedef boost::function< void (const core::jpeg_data_t&)> drawing_callback_t;
-
-  ///
   typedef boost::function< void (const core::jpeg_data_t&)> update_callback_t;
-
-  /////
-  //void set_draw_callback(drawing_callback_t draw_)
-  //{
-  //  draw_image_ = draw_;
-  //}
 
   ///
   void set_update_callback(update_callback_t client_update_cb)
@@ -61,9 +52,6 @@ inline void wx_stream_dest_t::process_data()
 
   if (m_decoder.decode(m_image, (m_data.get() + crc_offset), enc_data_size, enc_crc)) 
   {
-  //if(draw_image_)
-  //  draw_image_(m_image);
-
   if(update_)
     update_(m_image);
   }
