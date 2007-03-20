@@ -49,6 +49,7 @@ public:	// occupancy grid data
 public:	// paths
 	pose2d_vect		path_;
 	saliency_path_t	observations_;
+	attention_fov_t	attention_;
 
 public:	// laser
 	scan_data		last_scan_;		///< last laser scan

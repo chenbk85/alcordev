@@ -22,19 +22,24 @@ struct attention_fov_t
 
 struct observation_data_t
 {
-	pose2d	relative_position_;
-	double	radius_;	// in METERS
-	double	weight_;	// probability of being 
+	point2d	relative_position_;	// changed... point2d NON pose2d
+	double	radius_;			// in METERS
+	double	weight_;			// probability of being 
 };
+
+typedef std::vector<observation_data_t>		observation_data_vect_t;
+typedef observation_data_vect_t::iterator	observation_data_vect_it_t;
 
 struct saliency_data_t
 {
-	size_t				scan_count_;
-	pantilt_angle_t		bearing_;
-	std::vector<observation_data_t>	observations_;
+	size_t						scan_count_;
+	pantilt_angle_t				bearing_;
+	observation_data_vect_t		observations_;
+	bool						recognition_;
 };
 
-typedef std::vector<saliency_data_t> saliency_path_t;
+typedef std::vector<saliency_data_t>	saliency_path_t;
+typedef saliency_path_t::iterator		saliency_path_it_t;
 
 }//namespace core
 }//namespace all
