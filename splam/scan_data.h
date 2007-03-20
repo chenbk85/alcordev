@@ -15,10 +15,6 @@ namespace splam{
 
 class scan_data
 {
-public:
-	scan_data();
-	~scan_data();
-
 public:	// data
 	// laser
 	scan_values		ranges_;		///< scan data vector

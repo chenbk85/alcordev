@@ -37,8 +37,8 @@ class splam_data
 {
 	
 public:
-	splam_data();
-	~splam_data();
+	splam_data(){}
+	~splam_data(){}
 
 public:	// occupancy grid data
 	map_values		og_cells_;		///< occupancy grid map occupancy value
@@ -123,7 +123,7 @@ public:	// services
 	/**
 	 *	
 	 */
-	void	build_saliency_map();
+	void	build_saliency_map(){};
 };
 
 typedef	boost::shared_ptr<splam_data>	splam_data_ptr;
