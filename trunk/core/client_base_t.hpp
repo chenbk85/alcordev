@@ -25,7 +25,7 @@ public:
 
 	client_base_t();
 
-	~client_base_t();
+	virtual ~client_base_t();
 
 	//run client and connect to the server
 	virtual void run();
