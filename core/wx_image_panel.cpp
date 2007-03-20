@@ -215,10 +215,8 @@ void wx_image_panel::draw_image_panel(wxDC& dc)
                     , my_jpeg_data.height, 
                     reinterpret_cast <unsigned char*> (my_jpeg_data.data.get())
                     , true);
-    wxBitmap cam_bmp(cam_image, 24);
 
-    //wxMemoryDC temp_dc;
-    //temp_dc.SelectObject(cam_bmp);
+    wxBitmap cam_bmp(cam_image, 24);
 
     dc.DrawBitmap(cam_bmp, 0, 0, false);
   }

@@ -153,8 +153,8 @@ namespace all { namespace core {
                                 , tag::error_of<tag::immediate_mean> 
                                                     > > acc;
 
-    accumulator_set<float, stats<tag::density> > 
-      hist(tag::density::cache_size = 20,tag::density::num_bins = 20);
+    //accumulator_set<float, stats<tag::density> > 
+    //  hist(tag::density::cache_size = 20,tag::density::num_bins = 20);
 
     core::depth_image_t::buffer_type data = 
       depth.get_buffer_sptr();
@@ -162,8 +162,8 @@ namespace all { namespace core {
     point3df_t::value_type  dist;
     point3df_t              point;
 
-    typedef boost::iterator_range<std::vector<std::pair<single_t, single_t> >::iterator >  
-      histogram_type;
+    //typedef boost::iterator_range<std::vector<std::pair<single_t, single_t> >::iterator >  
+    //  histogram_type;
 
     for (size_t it_r = roi.minrow()  ;  it_r < roi.maxrow();  it_r++)
     {
@@ -182,7 +182,7 @@ namespace all { namespace core {
         dist = euclidean_distance(point);
         acc(dist);
         //chist(dist);  
-        hist(dist);
+        //hist(dist);
         }//if
 
       }//inner for
@@ -196,8 +196,8 @@ namespace all { namespace core {
     //histogram_type 
     //  chistogram = p_square_cumulative_distribution(chist);
 
-    histogram_type 
-      histogram = density(hist); 
+    //histogram_type 
+    //  histogram = density(hist); 
 
     //double elapsed = timer.elapsed();
 
