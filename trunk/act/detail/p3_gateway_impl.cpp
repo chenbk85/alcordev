@@ -316,7 +316,22 @@ inline void p3_gateway_impl::init_goto_action(iniWrapper& ini)
         ("avoid_front_far",distance, velocity, turn), priority);
   ///////////////////////////////////////////////////////////////////
   //// avoid side
-  m_goto->addAction(new ArActionAvoidSide("side_avoid", 150, 5), 80);
+  if(m_type==P3DX)
+  {
+  distance  = ini.GetInt("p3dx:side:side_distance", 250);
+  //velocity  = ini.GetInt("p3dx:side:side_velocity", 100);
+  turn      = ini.GetInt("p3dx:side:side_turn", 5);
+  priority  = ini.GetInt("p3dx:side:side_priority",80);
+  }
+  else
+  {
+  //distance  = ini.GetInt("p3at:goto:frontfar_distance", 350);
+  //velocity  = ini.GetInt("p3at:goto:frontfar_velocity", 100);
+  //turn      = ini.GetInt("p3at:goto:frontfar_turn", 5);
+  //priority  = ini.GetInt("p3at:goto:frontfar_priority",90);
+  }
+  printf("goto:side:  distance:%d turn: %d prior: %d\n", distance, turn, priority);
+  m_goto->addAction(new ArActionAvoidSide("side_avoid", distance, turn), priority);
 
   ///////////////////////////////////////////////////////////////////
   int speed_to_turn_at = 0;
