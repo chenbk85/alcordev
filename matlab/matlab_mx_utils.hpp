@@ -80,7 +80,7 @@ static mxArray* create_from_interleaved(typename matlab::traits<T>::const_ptr _s
 					,size_t _width
 					,size_t _channels=3)//depth==num of channels/component
 {
-    //
+  //
 	mwSize dims[] = {_height, _width, _channels};
     ///TODO: mmmh  
 	int ndimensions =( (_channels > 2 ) ? (3) : (2) );

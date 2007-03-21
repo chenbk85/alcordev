@@ -8,13 +8,10 @@
 #include <boost/accumulators/statistics.hpp>
 #include <boost/range/iterator.hpp>
 #include <boost/timer.hpp>
-//#include "alcor.extern/gil/core/gil_all.hpp"
 //---------------------------------------------------------------------------+
 #include <boost/numeric/ublas/vector.hpp>
 //---------------------------------------------------------------------------+
 #include <utility>
-//---------------------------------------------------------------------------+
-//namespace boost::numeric::ublas = ublas
 //---------------------------------------------------------------------------+
 namespace all { namespace core {
 //---------------------------------------------------------------------------+
