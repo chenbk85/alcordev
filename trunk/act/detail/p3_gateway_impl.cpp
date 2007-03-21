@@ -280,17 +280,17 @@ inline void p3_gateway_impl::init_goto_action(iniWrapper& ini)
   ///////////////////////////////////////////////////////////////////
   if(m_type==P3DX)
   {
-  distance  = ini.GetInt("p3dx:goto:frontnear_distance", 100);
-  velocity  = ini.GetInt("p3dx:goto:frontnear_velocity", 0);
-  turn      = ini.GetInt("p3dx:goto:frontnear_turn", 5);
-  priority  = ini.GetInt("p3dx:goto:frontnear_priority",95);
+  distance  = ini.GetInt("p3dx/goto:frontnear_distance", 100);
+  velocity  = ini.GetInt("p3dx/goto:frontnear_velocity", 0);
+  turn      = ini.GetInt("p3dx/goto:frontnear_turn", 5);
+  priority  = ini.GetInt("p3dx/goto:frontnear_priority",95);
   }
   else
   {
-  distance  = ini.GetInt("p3at:goto:frontnear_distance", 100);
-  velocity  = ini.GetInt("p3at:goto:frontnear_velocity", 0);
-  turn      = ini.GetInt("p3at:goto:frontnear_turn", 5);
-  priority  = ini.GetInt("p3at:goto:frontnear_priority",95);
+  distance  = ini.GetInt("p3at/goto:frontnear_distance", 100);
+  velocity  = ini.GetInt("p3at/goto:frontnear_velocity", 0);
+  turn      = ini.GetInt("p3at/goto:frontnear_turn", 5);
+  priority  = ini.GetInt("p3at/goto:frontnear_priority",95);
   }
   // turn avoid things close to us
   //frontnear_distance, vel, turn
@@ -300,17 +300,17 @@ inline void p3_gateway_impl::init_goto_action(iniWrapper& ini)
   // turn avoid things further away
   if(m_type==P3DX)
   {
-  distance  = ini.GetInt("p3dx:goto:frontfar_distance", 350);
-  velocity  = ini.GetInt("p3dx:goto:frontfar_velocity", 100);
-  turn      = ini.GetInt("p3dx:goto:frontfar_turn", 5);
-  priority  = ini.GetInt("p3dx:goto:frontfar_priority",90);
+  distance  = ini.GetInt("p3dx/goto:frontfar_distance", 350);
+  velocity  = ini.GetInt("p3dx/goto:frontfar_velocity", 100);
+  turn      = ini.GetInt("p3dx/goto:frontfar_turn", 5);
+  priority  = ini.GetInt("p3dx/goto:frontfar_priority",90);
   }
   else
   {
-  distance  = ini.GetInt("p3at:goto:frontfar_distance", 350);
-  velocity  = ini.GetInt("p3at:goto:frontfar_velocity", 100);
-  turn      = ini.GetInt("p3at:goto:frontfar_turn", 5);
-  priority  = ini.GetInt("p3at:goto:frontfar_priority",90);
+  distance  = ini.GetInt("p3at/goto:frontfar_distance", 350);
+  velocity  = ini.GetInt("p3at/goto:frontfar_velocity", 100);
+  turn      = ini.GetInt("p3at/goto:frontfar_turn", 5);
+  priority  = ini.GetInt("p3at/goto:frontfar_priority",90);
   }
   m_goto->addAction(new ArActionAvoidFront
         ("avoid_front_far",distance, velocity, turn), priority);
@@ -318,10 +318,10 @@ inline void p3_gateway_impl::init_goto_action(iniWrapper& ini)
   //// avoid side
   if(m_type==P3DX)
   {
-  distance  = ini.GetInt("p3dx:side:side_distance", 250);
+  distance  = ini.GetInt("p3dx/side:side_distance", 250);
   //velocity  = ini.GetInt("p3dx:side:side_velocity", 100);
-  turn      = ini.GetInt("p3dx:side:side_turn", 5);
-  priority  = ini.GetInt("p3dx:side:side_priority",80);
+  turn      = ini.GetInt("p3dx/side:side_turn", 5);
+  priority  = ini.GetInt("p3dx/side:side_priority",80);
   }
   else
   {
@@ -337,21 +337,21 @@ inline void p3_gateway_impl::init_goto_action(iniWrapper& ini)
   int speed_to_turn_at = 0;
   if(m_type==P3DX)
   {
-  distance  = ini.GetInt("p3dx:goto:mygoto_closedist", 100);
-  velocity  = ini.GetInt("p3dx:goto:mygoto_speed", 200);
+  distance  = ini.GetInt("p3dx/goto:mygoto_closedist", 100);
+  velocity  = ini.GetInt("p3dx/goto:mygoto_speed", 200);
   speed_to_turn_at = 
-    ini.GetInt("p3dx:goto:mygoto_speed_to_turn_at", 100);
-  turn      = ini.GetInt("p3dx:goto:mygoto_turn", 5);
-  priority  = ini.GetInt("p3dx:goto:mygoto_priority",90);
+    ini.GetInt("p3dx/goto:mygoto_speed_to_turn_at", 100);
+  turn      = ini.GetInt("p3dx/goto:mygoto_turn", 5);
+  priority  = ini.GetInt("p3dx/:goto:mygoto_priority",90);
   }
   else
   {
-  distance  = ini.GetInt("p3at:goto:mygoto_closedist", 100);
-  velocity  = ini.GetInt("p3at:goto:mygoto_speed", 200);
+  distance  = ini.GetInt("p3at/goto:mygoto_closedist", 100);
+  velocity  = ini.GetInt("p3at/goto:mygoto_speed", 200);
   speed_to_turn_at = 
-    ini.GetInt("p3at:goto:mygoto_speed_to_turn_at", 100);
-  turn      = ini.GetInt("p3at:goto:mygoto_turn", 5);
-  priority  = ini.GetInt("p3at:goto:mygoto_priority",90);
+    ini.GetInt("p3at/goto:mygoto_speed_to_turn_at", 100);
+  turn      = ini.GetInt("p3at/goto:mygoto_turn", 5);
+  priority  = ini.GetInt("p3at/goto:mygoto_priority",90);
   }
   //
   m_goto->addAction(new ArActionGoto
