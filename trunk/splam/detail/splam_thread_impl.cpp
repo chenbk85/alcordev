@@ -79,7 +79,6 @@ private:
 public:		// misc
 	//std::ofstream		logfile_;
 	iniWrapper			ini_;
-
 };
 
 splam_thread_impl::splam_thread_impl( const char* name)
