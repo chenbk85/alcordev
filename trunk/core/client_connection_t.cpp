@@ -16,6 +16,9 @@ client_connection_t::client_connection_t(boost::asio::io_service& io_service,
     //set the function to call when receiving a new packet
 	m_tcp_receiver.set_read_callback(boost::bind(&client_connection_t::read_packet_cb, this, _1));
 	m_tcp_receiver.set_error_callback(boost::bind(&client_connection_t::read_packet_error_cb, this, _1));
+
+	m_tcp_sender.set_error_callback(boost::bind(&client_connection_t::send_packet_error_cb, this, _1));
+
 }
 
 boost::asio::ip::tcp::socket& client_connection_t::get_socket() {
@@ -67,6 +70,11 @@ void client_connection_t::read_packet_error_cb(const boost::system::error_code& 
 		//m_client_manager_ref.stop_client(shared_from_this());
 		m_socket.io_service().post(boost::bind(&detail::client_manager_t::stop_client, &m_client_manager_ref, shared_from_this()));
 	}
+}
+
+void client_connection_t::send_packet_error_cb(const boost::system::error_code& error) {
+	printf("Error in socket connection with client %s: %s\nDisconnecting client...\n", m_remote_addr.hostname.c_str(), error.message().c_str());
+	m_socket.io_service().post(boost::bind(&detail::client_manager_t::stop_client, &m_client_manager_ref, shared_from_this()));
 }
 
 void client_connection_t::handle_shutdown() {

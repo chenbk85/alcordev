@@ -37,6 +37,8 @@ public:
 
 	void read_packet_error_cb(const boost::system::error_code&);
 
+	void send_packet_error_cb(const boost::system::error_code&);
+
 	typedef boost::shared_ptr <client_connection_t> client_connection_ptr_t;
 	
 	//set by server
