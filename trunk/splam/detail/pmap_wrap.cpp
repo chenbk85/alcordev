@@ -114,8 +114,8 @@ void pmap_wrap::process(const scan_data& scan)
 	std::copy(scan.ranges_.begin(), scan.ranges_.end(), laser_scan_data_);
 
 	current_lodoPose = lodo_add_scan(lodo_,pose2d_to_pose2_t(scan.odo_pose_),laser_scan_number_,laser_scan_data_);
-	pmap_update(pmap_, pose2_add(pose2d_to_pose2_t(offset_laser_pose_), current_lodoPose), laser_scan_number_, laser_scan_data_);	
 	
+	pmap_update(pmap_, pose2_add(pose2d_to_pose2_t(offset_laser_pose_), current_lodoPose), laser_scan_number_, laser_scan_data_);	
 }
 
 void pmap_wrap::save_map_as_file(const char* filename)

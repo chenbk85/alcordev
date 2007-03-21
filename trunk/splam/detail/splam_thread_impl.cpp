@@ -195,6 +195,7 @@ void	splam_thread_impl::broadcast_splam_data()
 	ArNetPacket sg_map_packet;
 	ArNetPacket others_packet;
 	splam_data_net_->header_ = splam_data_net::full_data;
+
 	splam_data_net_->pack_og_map(&og_map_packet);
 	splam_data_net_->pack_sg_map(&sg_map_packet);
 	splam_data_net_->pack_others(&others_packet);
@@ -249,29 +250,37 @@ void*	splam_thread_impl::runThread(void* arg)
 	while(this->ArASyncTask::getRunning())
 	{
 		// laser scan acquisition
+		//std::cout << "FASE 1.........."<<std::endl;
 		acquire_laser_scan();
 
 		// odometry acquisition
+		//std::cout << "FASE 2.........."<<std::endl;
 		current_scan_.odo_pose_ = robot_->get_odometry();
 
 		// slam processing
+		//std::cout << "FASE 3.........."<<std::endl;
 		pmap_wrap_.process(current_scan_);
 
 		// filling slam_data
+		//std::cout << "FASE 4.........."<<std::endl;
 		pmap_wrap_.fill_slam_data(splam_data_);
 		splam_data_->last_scan_ = current_scan_;
 
 		// saliency building
+		//std::cout << "FASE 5.........."<<std::endl;
 		splam_data_->build_saliency_map();
 
 		// goal finding
+		//std::cout << "FASE 6.........."<<std::endl;
 		//splam_data_->saliency_goal_finding(&splam_data_->goal_)
 		splam_data_->metric_goal_finding();
 
 		// splam data broadcasting
+		//std::cout << "FASE 7.........."<<std::endl;
 		broadcast_splam_data();
 
 		// p3_server updating with localized coord
+		//std::cout << "FASE 8.........."<<std::endl;
 		robot_->set_slam_localized(pmap_wrap_.get_current_position());
 
 		// processor yielding and heartbeat

@@ -123,7 +123,7 @@ public:	// services
 	/**
 	 *	
 	 */
-	void	build_saliency_map(){};
+	void	build_saliency_map(){sg_cells_.push_back('a');}	// prova
 };
 
 typedef	boost::shared_ptr<splam_data>	splam_data_ptr;
