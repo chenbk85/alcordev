@@ -319,12 +319,14 @@ inline void p3_gateway_impl::init_goto_action(iniWrapper& ini)
   if(m_type==P3DX)
   {
   distance  = ini.GetInt("p3dx/side:side_distance", 250);
-  //velocity  = ini.GetInt("p3dx:side:side_velocity", 100);
   turn      = ini.GetInt("p3dx/side:side_turn", 5);
   priority  = ini.GetInt("p3dx/side:side_priority",80);
   }
   else
   {
+    distance = 150;
+    velocity = 100;
+    priority = 90;
   //distance  = ini.GetInt("p3at:goto:frontfar_distance", 350);
   //velocity  = ini.GetInt("p3at:goto:frontfar_velocity", 100);
   //turn      = ini.GetInt("p3at:goto:frontfar_turn", 5);

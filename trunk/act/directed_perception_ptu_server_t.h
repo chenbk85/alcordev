@@ -34,6 +34,7 @@ private:
 
 };
 
+typedef boost::shared_ptr<directed_perception_ptu_server_t> directed_perception_ptu_server_sptr;
   }}//all::act
 
 #endif //directed_perception_ptu_server_t_H_INCLUDED

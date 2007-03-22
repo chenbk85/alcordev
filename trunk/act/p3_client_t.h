@@ -34,8 +34,12 @@ namespace all { namespace act{
   public:
     ///
     void set_slam_localized(const math::pose2d&);
+    //[direct]
     ///
     void set_vel(double mmpersecs);
+    ///
+    void set_dheading(double offset);
+
     ///
     void enable_stop_mode();
     ///
@@ -53,6 +57,9 @@ namespace all { namespace act{
     ///distance (mt) e offset angolare dal target (gradi)
     void set_relative_goto
       (const math::point2d& target, double mmpersecs = 100);
+
+    ///Generic remote trigger
+    void trigger();
 
   private:
     ///
