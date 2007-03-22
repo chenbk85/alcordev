@@ -20,6 +20,8 @@ public:
 	void		lock();
 	void		unlock();
 	void		get_splam_data(splam_data&);
+	void		set_display(bool=true);
+	bool		get_display() const;
 
 private:
 	boost::shared_ptr<splam_client_impl> pImpl_;

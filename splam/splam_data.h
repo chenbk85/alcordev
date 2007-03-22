@@ -96,34 +96,16 @@ public:	// services
 			return size2d(temp1,temp2);
 		return size2d_max;
 	}
-	/**	
-	 *	given a metric position over the map, it returns "true" iff that position is inside the allocated area
-	 */	
+
 	bool	in_map(const point2d& temp) const {return in_map(get_coord_of(temp));}	
-	
-	/**	
-	 *	given a cell's coord (raw,col), it returns "true" iff that position is inside the allocated area
-	 *	i.e. 0 <= raw <= RAW and 0 <= col <= COL 
-	 */	
 	bool	in_map(const size2d& temp) const {return temp.row_<og_row_ && temp.col_<og_col_;}	
 	bool	in_map(size_t row, size_t col) const {return row<og_row_ && col<og_col_;}	
-
-	/**
-	 *	that function estimates the nearest metric goal, based only on Occupancy Values and the Frontier-Based
-	 *  approach.
-	 */
-	void	metric_goal_finding();
-
-	/**
-	 *	that function calculates next saliency goal and return TRUE if in that position the Recognition activity
-	 *	should be launched
-	 */
-	bool	saliency_goal_finding();
-
-	/**
-	 *	
-	 */
-	void	build_saliency_map(){sg_cells_.push_back('a');}	// prova
+	void	metric_goal_finding();		///< find the goal of Metric-Based Exploration ...TOTEST...
+	bool	saliency_goal_finding();	///< find the goal of Saliency-Based Exploration ...TODO...
+	void	build_saliency_map(){sg_cells_.push_back('a');}	// build the SG map from observations, path and OG map ...TODO...
+	void	save_og_pgm(const char*) const;		///< saves a pgm OG file ...TOTEST...
+	void	save_sg_pgm(const char*) const;		///< saves a pgm SG file ...TOTEST...
+	void	save_maps_png(const char*) const;	///< saves a png MAPS file ...TODO...
 };
 
 typedef	boost::shared_ptr<splam_data>	splam_data_ptr;

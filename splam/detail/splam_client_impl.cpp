@@ -4,6 +4,7 @@
 #include "alcor/core/i_connection_handler_t.h"
 #include "alcor/core/iniWrapper.h"
 #include "splam_data_net.h"
+#include "alcor.extern/CImg/CImg.h"
 //---------------------------------------------------------------------------
 using namespace all::core;
 //---------------------------------------------------------------------------
@@ -46,8 +47,14 @@ private:	//callbacks per la ricezione dei dati
 	void			sal_receive_cb(ArNetPacket*);
 	void			others_receive_cb(ArNetPacket*);
 
-private:
+public:
 	iniWrapper		ini_;
+	bool			display_;
+	void			show_display();
+	void			init_display();
+	void			exit_display();
+	cimg_library::CImgDisplay*		og_displ;
+	cimg_library::CImg<map_value>*	og_disp;
 };
 
 splam_client_impl::splam_client_impl(const char* inifile)
@@ -56,6 +63,7 @@ splam_client_impl::splam_client_impl(const char* inifile)
 	,sal_receive_callback(this,&splam_client_impl::sal_receive_cb)
 	,others_callback(this,&splam_client_impl::others_receive_cb)
 	,ini_(inifile)
+	,display_(false)
 {
 	double temp = ini_.GetInt("mappa:larghezza",0) * ini_.GetInt("mappa:altezza",0);
 	splam_data_net_.reset(new splam_data_net(static_cast<size_t>(temp)));
@@ -92,6 +100,8 @@ void	splam_client_impl::map_receive_cb(ArNetPacket* packet)
 	lock();
 	splam_data_net_->import_og_map(packet);
 	unlock();
+	if(display_)
+		show_display();
 }
 
 void	splam_client_impl::sal_receive_cb(ArNetPacket* packet)
@@ -99,6 +109,8 @@ void	splam_client_impl::sal_receive_cb(ArNetPacket* packet)
 	lock();
 	splam_data_net_->import_sg_map(packet);
 	unlock();
+	if(display_)
+		show_display();
 }
 
 void	splam_client_impl::others_receive_cb(ArNetPacket* packet)
@@ -106,6 +118,8 @@ void	splam_client_impl::others_receive_cb(ArNetPacket* packet)
 	lock();
 	splam_data_net_->import_others(packet);
 	unlock();
+	if(display_)
+		show_display();
 }
 
 void	splam_client_impl::get_splam_data(splam_data& data)
@@ -114,6 +128,25 @@ void	splam_client_impl::get_splam_data(splam_data& data)
 	data = *(splam_data_net_->data_.get());
 	unlock();
 }
+
+void	splam_client_impl::init_display()
+{
+	og_displ = new cimg_library::CImgDisplay(splam_data_net_->data_->og_col_, splam_data_net_->data_->og_row_, "Occupancy");
+	og_disp = new cimg_library::CImg<map_value>;
+}
+void	splam_client_impl::exit_display()
+{
+	delete og_displ;
+	delete og_disp;
+}
+
+void	splam_client_impl::show_display()
+{
+	og_disp->assign(&(*(splam_data_net_->data_->og_cells_.begin())), splam_data_net_->data_->og_col_, splam_data_net_->data_->og_row_, 1,3);
+	og_disp->display(*og_displ);
+}
+
+
 
 }//namespace splam
 }//namespace all

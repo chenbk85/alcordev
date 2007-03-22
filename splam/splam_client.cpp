@@ -26,6 +26,24 @@ void	splam_client::unlock()
 	pImpl_->unlock();
 }
 
+void	splam_client::set_display(bool disp)
+{
+	if(disp)
+	{
+		if(!pImpl_->display_)
+			pImpl_->init_display();
+	}else{
+		if(pImpl_->display_)
+			pImpl_->exit_display();
+	}
+	pImpl_->display_ = disp;
+}
+
+bool	splam_client::get_display() const
+{
+	return pImpl_->display_;
+}
+
 }//namespace splam
 }//namespace all
 //-----------------------------------------------------------------------------------------------
