@@ -100,7 +100,7 @@ void pmap_wrap::fill_slam_data(splam_data_ptr data)
 
 	if(!(contazzo%10))
 	{
-		sprintf(mappazza,"mappa%d.png",contazzo);
+		sprintf(mappazza,"map%d.png",contazzo);
 		save_map_as_file(mappazza);
 	}
 #endif
@@ -111,7 +111,8 @@ void pmap_wrap::process(const scan_data& scan)
 {
 	pose2_t current_lodoPose;
 
-	std::copy(scan.ranges_.begin(), scan.ranges_.end(), laser_scan_data_);
+	for(int i=0; i<scan.ranges_.size(); i++)
+		laser_scan_data_[i] = static_cast<double>(scan.ranges_.at(i))/1000.0;
 
 	current_lodoPose = lodo_add_scan(lodo_,pose2d_to_pose2_t(scan.odo_pose_),laser_scan_number_,laser_scan_data_);
 	

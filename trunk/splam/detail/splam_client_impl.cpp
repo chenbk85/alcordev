@@ -58,13 +58,14 @@ public:
 };
 
 splam_client_impl::splam_client_impl(const char* inifile)
-	:connection_handler_(this, std::string(inifile))
+	:connection_handler_(this, inifile)
 	,map_receive_callback(this,&splam_client_impl::map_receive_cb)
 	,sal_receive_callback(this,&splam_client_impl::sal_receive_cb)
 	,others_callback(this,&splam_client_impl::others_receive_cb)
 	,ini_(inifile)
 	,display_(false)
 {
+	Aria::init();
 	double temp = ini_.GetInt("mappa:larghezza",0) * ini_.GetInt("mappa:altezza",0);
 	splam_data_net_.reset(new splam_data_net(static_cast<size_t>(temp)));
 	splam_data_net_->data_.reset(new splam_data);
