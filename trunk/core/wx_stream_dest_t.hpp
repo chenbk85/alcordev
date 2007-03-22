@@ -26,6 +26,9 @@ public:
     update_ = client_update_cb;
   }
 
+  ///
+  boost::mutex mutex;
+
 private:
   ///
 	core::jpeg_decoder_t m_decoder;
@@ -42,6 +45,8 @@ private:
 
 inline void wx_stream_dest_t::process_data() 
 {
+
+
   boost::crc_32_type::value_type enc_crc;
 
   std::ptrdiff_t crc_offset = sizeof(boost::crc_32_type::value_type);
@@ -49,6 +54,8 @@ inline void wx_stream_dest_t::process_data()
   size_t enc_data_size = m_data_size - crc_offset;
 
   memcpy(&enc_crc, m_data.get(), sizeof(enc_crc));
+
+  boost::mutex::scoped_lock lock(mutex);
 
   if (m_decoder.decode(m_image, (m_data.get() + crc_offset), enc_data_size, enc_crc)) 
   {

@@ -421,7 +421,7 @@ inline void p3_gateway_impl::set_goto_pose(const math::point2d& reltarget , doub
   printf("ArCurrentPose: X: %.2f Y %.2f\n", current.getX(), current.getY());
   printf("ArGoal: X: %.2f Y %.2f\n", newgoal.getX(), newgoal.getY());
 
-  mygoto->log();
+  //mygoto->log();
   //
   }  
   m_robot->unlock();
