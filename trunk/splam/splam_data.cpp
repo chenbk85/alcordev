@@ -1,3 +1,4 @@
+#include <fstream>
 #include "splam_data.h"
 #include "detail/value_iteration.h"
 //-----------------------------------------------------------------------------------------------
@@ -5,6 +6,36 @@ using namespace all::util;
 //-----------------------------------------------------------------------------------------------
 namespace all{
 namespace splam{
+
+void	splam_data::save_og_pgm(const char* filename) const
+{
+	std::ofstream file(filename,std::ios::binary);
+	//FILE *file;
+	//file = fopen(filename, "w+");
+
+	//fprintf(file, "P5 %d %d 255\n", og_row_, og_col_);
+	file << "P5 "<<og_row_<<" "<<og_col_<<" 255\n";
+
+	for (int i = 0; i < og_col_*og_row_; i++)
+	{
+		unsigned char d = static_cast<unsigned char>( 127 - og_cells_.at(i));
+		//fwrite(&d, 1, 1,  file);
+		file<<d;
+	}
+
+	//fclose(file);
+}
+
+void	splam_data::save_sg_pgm(const char* filename) const
+{
+	std::ofstream file(filename,std::ios::binary);
+	file << "P5 "<<og_row_<<" "<<og_col_<<" 255\n";
+	for (int i = 0; i < og_col_*og_row_; i++)
+	{
+		unsigned char d = static_cast<unsigned char>( 127 - og_cells_.at(i));
+		file<<d;
+	}
+}
 
 void	splam_data::metric_goal_finding()
 {
