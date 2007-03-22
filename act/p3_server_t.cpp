@@ -49,8 +49,10 @@ void p3_server_t::set_slam_localized(client_connection_ptr_t, net_packet_ptr_t p
 ///
 void p3_server_t::set_vel(client_connection_ptr_t, net_packet_ptr_t pkt)
 {
+
   double vel = pkt->buf_to_double();
   p3_->set_vel(vel);
+  printf("setVel: %f", vel);
 }
 //-------------------------------------------------------------------
 ///
