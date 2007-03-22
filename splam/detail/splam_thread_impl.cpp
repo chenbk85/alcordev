@@ -48,6 +48,7 @@ private:	// hokuyo urg laser
 	int					urg_step_start_;	//
 	int					urg_step_end_;		//
 	int					urg_cc_;			//
+	bool				laser_present_;
 
 public:		// Pioneer Robot (p3dx or p3at)
 	p3_client_ptr_t		robot_;
@@ -89,6 +90,7 @@ splam_thread_impl::splam_thread_impl( const char* name)
 	,pmap_wrap_(name)
 	,scan_count_(0)
 	,server_started_(false)
+	,laser_present_(true)
 {
 		// ARIA initialization
 	Aria::init();
@@ -108,8 +110,11 @@ splam_thread_impl::splam_thread_impl( const char* name)
 	urg_step_end_	= ini_.GetInt("laser:end_step", urg_scan_data_t::default_end);
 	urg_cc_	= ini_.GetInt("laser:cc", 1);
 	if(!urg_laser_.connect())
-		throw std::runtime_error("cannot connect laser");
-	
+	{
+		std::cout<< "LASER NOT PRESENT... RUNNING UNDER SIMULATED DATA"<<std::endl;
+		laser_present_ = false;
+	}
+
 		// robot client
 	robot_.reset(new p3_client_t("config/p3_conf.ini"));
 	robot_->run_async();
@@ -173,10 +178,17 @@ void	splam_thread_impl::stop_server()
 
 void splam_thread_impl::acquire_laser_scan()
 {
-	// scan acquisition from laser and filling of scan_data structure
-	urg_scan_data_ptr_ = urg_laser_.do_scan(urg_step_start_, urg_step_end_, urg_cc_);
+	if(laser_present_)
+	{
+		urg_scan_data_ptr_ = urg_laser_.do_scan(urg_step_start_, urg_step_end_, urg_cc_);
+		current_scan_.ranges_  = urg_scan_data_ptr_->scan_points;
+	}else{
+		srand((unsigned)time(NULL));
+		for(scan_values_it iter = current_scan_.ranges_.begin(); iter != current_scan_.ranges_.end(); ++iter)
+			*iter = rand()%5600;
+		std::cout<< "LASER NOT PRESENT... RUNNING UNDER SIMULATED DATA"<<std::endl;
+	}
 
-	current_scan_.ranges_  = urg_scan_data_ptr_->scan_points;
 	for (scan_values_it it=current_scan_.ranges_.begin(); it!=current_scan_.ranges_.end();++it)
 		if(*it < 20)
 			*it = 0;

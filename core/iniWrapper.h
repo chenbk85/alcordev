@@ -19,20 +19,20 @@ class	iniWrapper{
 public:
 	iniWrapper();
 	iniWrapper(const char* f);
-  iniWrapper(const std::string& filepath );
+	iniWrapper(const std::string& filepath );
 
-  ~iniWrapper(){};
+	~iniWrapper(){};
 
 	int		create(const char* f);
 
 	bool	Load(const char* f); ///< Load an ini file in the dictionary
-  bool  Load(const std::string& filepath);//overload
+	bool  Load(const std::string& filepath);//overload
 
 	int		Size(); ///< returns how many entries there are in the dictionary
 	int		Add(char* key,char* value); ///< set the value for the key in the directory specified
 	void	Remove(char* key); ///< delete the value for the specific directory and key
 
-  //sembra non poter funzionare ...
+	//sembra non poter funzionare ...
 	std::string		GetString(char* key);
 
 	///Andrea::Overloaded Method to return a char*

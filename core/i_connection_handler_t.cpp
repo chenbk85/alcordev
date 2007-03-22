@@ -1,42 +1,36 @@
 //---------------------------------------------------------------------------
 #include "i_connection_handler_t.h"
-#include "alcor/core/config_parser_t.hpp"
+#include "alcor/core/iniWrapper.h"
 //---------------------------------------------------------------------------
 namespace all{
-	namespace core{
+namespace core{
 //---------------------------------------------------------------------------
-    i_connection_handler_t::i_connection_handler_t(core::i_service_handler* _parent 
-                                                , const std::string& _inifile)
-
-		:m_state( netLinkDown::Instance() )
-    ,  running(true)
-    ,  parent(_parent)
-
+i_connection_handler_t::i_connection_handler_t(core::i_service_handler* _parent, const char* inifile)
+	:m_state( netLinkDown::Instance() )
+	,running(true)
+	,parent(_parent)
 {
-  //Aria::init();
+	printf("Opening ini config: %s\n",inifile);
 
-	printf("Opening ini config.\n");
-
-  config_parser_t config;
-  config.load(core::tags::ini,_inifile);
+	iniWrapper ini(inifile);
 
 	printf("Gathering address and port.\n");
 
-  m_addr.hostname = config.get<std::string>("server:hostname","localhost");
-  m_addr.port	    = config.get<int>("server:port",11111);	
+	m_addr.hostname = ini.GetString("server:hostname");
+	m_addr.port	    = ini.GetInt("server:port",11111);
 
-  printf("Connection Handler\n");
-  printf("Host: %s:",m_addr.hostname.c_str() );
+	printf("Connection Handler\n");
+	printf("Host: %s:",m_addr.hostname.c_str() );
 	printf("Port: %d.\n",m_addr.port );
 
-  connection_thr.reset(
-    new boost::thread 
-    (
-    boost::bind(
-    &i_connection_handler_t::run_thread
-    , this) 
-    )
-    );
+	connection_thr.reset(
+	new boost::thread 
+	(
+	boost::bind(
+	&i_connection_handler_t::run_thread
+	, this) 
+	)
+	);
 
 }
 //---------------------------------------------------------------------------
