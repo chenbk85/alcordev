@@ -33,6 +33,8 @@ void p3_server_t::register_()
 
   add_command_handler("enableGoto",   boost::bind(&p3_server_t::enable_goto, this, _1, _2));
   add_command_handler("setGoto",   boost::bind(&p3_server_t::set_goto, this, _1, _2));
+
+  add_command_handler("trigger", boost::bind(&p3_server_t::trigger, this, _1,_2));
 }
 //-------------------------------------------------------------------
 ///
@@ -106,6 +108,17 @@ void p3_server_t::set_goto(client_connection_ptr_t, net_packet_ptr_t pkt)
   math::point2d target(mod, math::angle(orient,math::deg_tag) );
 
   p3_->set_relative_goto(target, mmpersecs);
+}
+//-------------------------------------------------------------------
+void p3_server_t::set_on_trigger_cb(trigger_callback_t user_callback)
+{
+  on_trigger_ = user_callback;
+}
+//-------------------------------------------------------------------
+void p3_server_t::trigger(client_connection_ptr_t, net_packet_ptr_t pkt)
+{
+  if(on_trigger_)
+    on_trigger_();
 }
 //-------------------------------------------------------------------
 }}//all::act
