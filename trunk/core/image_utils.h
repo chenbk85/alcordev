@@ -149,8 +149,9 @@ inline void  change_ordering::to_topleft(all::core::uint8_sarr& arr,
   arr.reset(temp);
 }
 //-------------------------------------------------------------------
+//origin is bottom left
 inline void  change_ordering::from_rgba_opengl_to_planar(
-                      const all::core::uint8_sarr& arr,
+                      const all::core::uint8_sarr& in,
                       all::core::uint8_sarr& out,
                       size_t height, 
                       size_t width)
@@ -158,10 +159,6 @@ inline void  change_ordering::from_rgba_opengl_to_planar(
 
   size_t channel_stride  = height*width;
   size_t channel_stride2 = channel_stride*2;
-
-  //size_t row_stride     = width;
-
-  //core::uint8_ptr temp = new core::uint8_t[height*width*3];
 
 	// get num pixels
 	unsigned int total_size = width * height * 4;
@@ -173,16 +170,12 @@ inline void  change_ordering::from_rgba_opengl_to_planar(
   {
 
 		//// get address of pixel data
-    const unsigned char* pixel = arr.get() + this_pixel_start;
+    const unsigned char* pixel = in.get() + this_pixel_start;
 
     out[out_pixel_start] = pixel[0];
     out[out_pixel_start + channel_stride] = pixel[1];
     out[out_pixel_start + channel_stride2] = pixel[2];
 	}
-
-  //devo fare per forza un doppio loop
-  //l'origine originale è bottomleft
-
 
   }
 //-------------------------------------------------------------------
@@ -226,15 +219,12 @@ inline  void change_ordering::to_planar(all::core::uint8_sarr& arr,
 
   size_t comp_index_pln    = 0;
   size_t comp_index_ilv    = 0;
-//#pragma omp parallel   
-//  {
 
   for(int row = height; row; --row)
   {
-    //#pragma omp for 
+
     for(int col = width; col; --col)
     {
-      //printf("R: %d C: %d\n",row-1,col-1);
     //
     comp_index_pln = ((row-1)*row_stride) + (col-1);
     comp_index_ilv = comp_index_pln*3;

@@ -409,8 +409,10 @@ inline void p3_gateway_impl::set_goto_pose(const math::point2d& reltarget , doub
   newgoal.setX(static_cast<int>(current.getX() + xoffset*1000.0));
   newgoal.setY(static_cast<int>(current.getY() + yoffset*1000.0));
   newgoal.setTh(ArMath::addAngle(reltarget.orientation().deg(), current.getTh() ));
-  //
+
+  //update rel goal ...
   mygoto->setGoal(newgoal);
+  //update speed ...
   mygoto->setSpeed(mmpersecs);
 
   //
