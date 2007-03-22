@@ -16,6 +16,10 @@ public:
   p3_server_t(const char* ini_file); 
   ///
   void set_gateway_ptr(p3_gateway_ptr_t);
+  ///
+  typedef boost::function<void (void)> trigger_callback_t;
+  ///Set Generic Trigger callback
+  void set_on_trigger_cb(trigger_callback_t user_cb);
 
 
 private:
@@ -35,9 +39,13 @@ private:
   void enable_goto(client_connection_ptr_t, net_packet_ptr_t);
   //
   void set_goto(client_connection_ptr_t, net_packet_ptr_t);
-
   ///
   void send_p3_data(client_connection_ptr_t, net_packet_ptr_t);
+
+  ///Generic Trigger (not a command to Aria)
+  void trigger(client_connection_ptr_t, net_packet_ptr_t);
+  ///Actual trigger-received callback
+  trigger_callback_t on_trigger_;
 
   ///
   void register_();
