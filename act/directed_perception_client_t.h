@@ -30,6 +30,6 @@ private:
   act::ptu_server_data_t ptu_data;
 };
 
-
+typedef boost::shared_ptr<directed_perception_client_t> directed_perception_client_sptr;
   }}
 #endif

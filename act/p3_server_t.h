@@ -23,10 +23,16 @@ public:
 
 
 private:
-  ///
-  void set_slam_localized(client_connection_ptr_t, net_packet_ptr_t);
+  //[direct commands]
   ///
   void set_vel(client_connection_ptr_t, net_packet_ptr_t);
+  ///
+  void set_dheading(client_connection_ptr_t, net_packet_ptr_t);
+
+  ///
+  void set_slam_localized(client_connection_ptr_t, net_packet_ptr_t);
+
+  //[actions]
   ///
   void enable_wander(client_connection_ptr_t, net_packet_ptr_t);
   ///

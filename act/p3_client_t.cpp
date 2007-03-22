@@ -57,6 +57,14 @@ void p3_client_t::set_vel(double mmpersecs)
   send_command("setVel", packet);
 }
 //-------------------------------------------------------------------
+//
+void p3_client_t::set_dheading(double offset)
+{
+  core::net_packet_ptr_t packet(new core::net_packet_t());
+  packet->double_to_buf(offset);
+  send_command("setDHeading", packet);
+}
+//-------------------------------------------------------------------
 void p3_client_t::enable_stop_mode()
 {
   send_command("enableStop");
@@ -104,6 +112,11 @@ void p3_client_t::set_relative_goto
   packet->double_to_buf(mmpersecs);
     
   send_command("setGoto", packet);
+}
+//-------------------------------------------------------------------
+void p3_client_t::trigger()
+{
+send_command("trigger");
 }
 //-------------------------------------------------------------------
 ///

@@ -33,7 +33,7 @@ bool directed_perception_ptu_t::open(const std::string& ini)
   int com = config.GetInt("ptu:port",8);
 
   serial::parameters port_params;
-  port_params.receiveTimeout = 150;
+  port_params.receiveTimeout = 250;
   port_params.stopBits = serial::parameters::One;
   port_params.baudRate = serial::parameters::Baud9600;
   port_params.parity = serial::parameters::No;
