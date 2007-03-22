@@ -15,6 +15,8 @@ public:
 	
 	virtual void process_command(net_packet_ptr_t) {};
 
+	virtual void stream_stopped() {};
+
 private:
 
 };

@@ -52,7 +52,7 @@ public:
   virtual ~opencv_grabber_t();
 
   ///
-  bool open(const std::string& inifile);
+  bool open(const std::string& inifile, bool show_dialog = true);
 
   ///
   void log_to_disk(const std::string& avifile);
@@ -86,7 +86,7 @@ public:
 
 private:
 	///
-	bool open_(core::camera_mode_t, int cam=-1);
+	bool open_(core::camera_mode_t, int cam, bool show_dialog);
 	///
 	bool open_(core::video_mode_t, const std::string&);
   ///
