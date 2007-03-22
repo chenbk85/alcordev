@@ -61,6 +61,7 @@ void stream_server_t::start_streaming() {
 void stream_server_t::stop_streaming() {
 
 	if (m_streaming) {
+		m_stream_service.post(boost::bind(&stream_source_t::stream_stopped, m_stream_source.get()));
 		m_stream_service.post(boost::bind(&stream_server_t::handle_stop_streaming, this));
 		m_stream_thread->join();
 		m_stream_service.reset();

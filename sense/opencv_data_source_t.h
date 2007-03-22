@@ -16,6 +16,8 @@ public:
 	void set_quality(unsigned int);
   //
 	int get_data(all::core::uint8_ptr*);
+
+	void stream_stopped();
   //
 
 
@@ -25,6 +27,8 @@ private:
   void init_();
   core::uint8_sarr image;
 	int m_jpeg_quality;
+
+	bool m_init_flag;
 };
 
 }}

@@ -2,7 +2,7 @@
 #include <cstddef>
 namespace all{ namespace sense {
 
-opencv_data_source_t::opencv_data_source_t() :	m_jpeg_quality (100)
+opencv_data_source_t::opencv_data_source_t() :	m_jpeg_quality (100), m_init_flag(false)
 {
 
 }
@@ -11,9 +11,18 @@ void opencv_data_source_t::init_()
 {
 
   printf("opencv_data_source_t::Init::IN\n");
-  m_cam.reset(new sense::opencv_grabber_t);
+  
 
-  if(m_cam->open(std::string("config/cmoscam.ini") ) )
+  bool show_dialog;
+  if (!m_cam) 
+	  show_dialog = true;
+  else
+	  show_dialog = false;
+
+  m_cam.reset(new sense::opencv_grabber_t);
+	  
+
+  if(m_cam->open(std::string("config/cmoscam.ini"), show_dialog ) )
   {
     //
 
@@ -39,12 +48,19 @@ void opencv_data_source_t::init_()
       break;
     }
   }
+  m_init_flag = true;
   printf("opencv_data_source_t::Init::OUT\n");
+
 }
 
 void opencv_data_source_t::set_quality(unsigned int quality) 
 {
 	m_jpeg_quality = quality;
+}
+
+void opencv_data_source_t::stream_stopped() {
+	m_cam->close();
+	m_init_flag = false;
 }
 
 int opencv_data_source_t::get_data(all::core::uint8_ptr* data) 
@@ -53,7 +69,7 @@ int opencv_data_source_t::get_data(all::core::uint8_ptr* data)
 
   //Se non lo faccio qui .. opencv rifiuta di funzionare.
   //Deve stare nel thread principale.
-  if(!m_cam || !m_encoder) init_();
+  if(!m_init_flag) init_();
 
   if (m_cam->get_color_buffer(image))
   {
