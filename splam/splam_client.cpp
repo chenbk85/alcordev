@@ -16,6 +16,16 @@ void	splam_client::get_splam_data(splam_data& data)
 	pImpl_->get_splam_data(data);
 }
 
+void	splam_client::lock()
+{
+	pImpl_->lock();
+}
+
+void	splam_client::unlock()
+{
+	pImpl_->unlock();
+}
+
 }//namespace splam
 }//namespace all
 //-----------------------------------------------------------------------------------------------
