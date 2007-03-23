@@ -1,3 +1,5 @@
+#include <algorithm>
+#include <fstream>
 #include "Aria.h"
 #include "ArNetworking.h"
 #include "alcor/core/core.h"
@@ -54,7 +56,7 @@ public:
 	void			init_display();
 	void			exit_display();
 	cimg_library::CImgDisplay*		og_displ;
-	cimg_library::CImg<map_value>*	og_disp;
+	cimg_library::CImg<map_value>	og_disp;
 };
 
 splam_client_impl::splam_client_impl(const char* inifile)
@@ -133,21 +135,41 @@ void	splam_client_impl::get_splam_data(splam_data& data)
 void	splam_client_impl::init_display()
 {
 	og_displ = new cimg_library::CImgDisplay(splam_data_net_->data_->og_col_, splam_data_net_->data_->og_row_, "Occupancy");
-	og_disp = new cimg_library::CImg<map_value>;
 }
 void	splam_client_impl::exit_display()
 {
 	delete og_displ;
-	delete og_disp;
+}
+
+all::util::pixel_value	trasf(const all::util::map_value& temp)
+{
+	return static_cast<pixel_value>(127 - static_cast<int>(temp));
+}
+
+all::util::pixel_value	trasf2(const all::util::map_value& temp)
+{
+	return static_cast<pixel_value>(127 + static_cast<int>(temp));
 }
 
 void	splam_client_impl::show_display()
 {
-	og_disp->assign(&(*(splam_data_net_->data_->og_cells_.begin())), splam_data_net_->data_->og_col_, splam_data_net_->data_->og_row_, 1,3);
-	og_disp->display(*og_displ);
+	all::util::pixel_values	temp;
+	std::transform(
+		splam_data_net_->data_->og_cells_.begin(), 
+		splam_data_net_->data_->og_cells_.end(), 
+		std::back_inserter<all::util::pixel_values>(temp),
+#if 1
+		trasf
+#else
+		trasf2
+#endif
+		);
+	og_disp.assign(&temp[0], splam_data_net_->data_->og_col_, splam_data_net_->data_->og_row_, 1,1);
+	og_disp.display(*og_displ);
+	std::ofstream rotolo("scorreggione.txt", std::ios::out);
+	for(int i=0;i<temp.size();i++)
+		rotolo << (int)temp[i]<< std::endl;
 }
-
-
 
 }//namespace splam
 }//namespace all

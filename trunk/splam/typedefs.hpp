@@ -14,6 +14,10 @@ typedef	signed char					map_value;
 typedef std::vector<map_value>		map_values;
 typedef map_values::iterator		map_values_it;
 
+typedef	unsigned char				pixel_value;
+typedef std::vector<pixel_value>	pixel_values;
+typedef pixel_values::iterator		pixel_values_it;
+
 typedef std::vector<int>			int_vect;
 typedef int_vect::iterator			int_vect_it;
 
