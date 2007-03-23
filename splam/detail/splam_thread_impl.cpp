@@ -55,6 +55,7 @@ public:		// Pioneer Robot (p3dx or p3at)
 	void				acquire_laser_scan();	// internal
 	void				emulate_laser_scan();
 	void				fill_scan_data();
+	pose2d				emulate_odometry();
 
 private:	// splam
 	pmap_wrap			pmap_wrap_;
@@ -208,6 +209,15 @@ void	splam_thread_impl::acquire_laser_scan()
 			*it = 0;
 }
 
+pose2d	splam_thread_impl::emulate_odometry()
+{
+	std::cout<< "ROBOT NOT PRESENT... RUNNING UNDER SIMULATED DATA"<<std::endl;
+	std::cout<< "old: "<< splam_data_->get_current_position()
+		<< "  -  new: "<< splam_data_->get_current_position().move(1.0) <<std::endl;
+
+	return splam_data_->get_current_position().move(1.0);
+}
+
 void	splam_thread_impl::broadcast_splam_data()
 {
 	ArNetPacket og_map_packet;
@@ -276,7 +286,10 @@ void*	splam_thread_impl::runThread(void* arg)
 		fill_scan_data();
 
 		// odometry acquisition
-		current_scan_.odo_pose_ = robot_->get_odometry();
+		if(robot_->is_connected())
+			current_scan_.odo_pose_ = robot_->get_odometry();
+		else
+			current_scan_.odo_pose_ = emulate_odometry();
 
 		// slam processing
 		//std::cout << "FASE 3.........."<<std::endl;
