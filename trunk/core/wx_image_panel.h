@@ -21,6 +21,7 @@
  */
 
 ////@begin includes
+#include "wx_image_panel_symbols.h"
 ////@end includes
 
 #include "alcor/core/wx_stream_dest_t.hpp"
@@ -40,9 +41,9 @@ class wx_image_panel;
  */
 
 ////@begin control identifiers
-#define ID__IMAGE_PANEL 10004
+#define ID_IMAGE_PANEL 10004
 #define SYMBOL_WX_IMAGE_PANEL_STYLE wxNO_BORDER|wxTAB_TRAVERSAL
-#define SYMBOL_WX_IMAGE_PANEL_IDNAME ID__IMAGE_PANEL
+#define SYMBOL_WX_IMAGE_PANEL_IDNAME ID_IMAGE_PANEL
 #define SYMBOL_WX_IMAGE_PANEL_SIZE wxSize(320, 240)
 #define SYMBOL_WX_IMAGE_PANEL_POSITION wxDefaultPosition
 ////@end control identifiers
@@ -89,16 +90,16 @@ public:
 
 ////@begin wx_image_panel event handler declarations
 
-    /// wxEVT_DESTROY event handler for ID__IMAGE_PANEL
+    /// wxEVT_DESTROY event handler for ID_IMAGE_PANEL
     void OnDestroy( wxWindowDestroyEvent& event );
 
-    /// wxEVT_PAINT event handler for ID__IMAGE_PANEL
+    /// wxEVT_PAINT event handler for ID_IMAGE_PANEL
     void OnPaint( wxPaintEvent& event );
 
-    /// wxEVT_LEFT_UP event handler for ID__IMAGE_PANEL
+    /// wxEVT_LEFT_UP event handler for ID_IMAGE_PANEL
     void OnLeftUp( wxMouseEvent& event );
 
-    /// All mouse events event handler for ID__IMAGE_PANEL
+    /// All mouse events event handler for ID_IMAGE_PANEL
     void OnMouse( wxMouseEvent& event );
 
 ////@end wx_image_panel event handler declarations

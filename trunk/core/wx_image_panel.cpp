@@ -134,7 +134,7 @@ void wx_image_panel::CreateControls()
 {    
 ////@begin wx_image_panel content construction
     // Connect events and objects
-    Connect(ID__IMAGE_PANEL, wxEVT_DESTROY, wxWindowDestroyEventHandler(wx_image_panel::OnDestroy), NULL, this);
+    Connect(ID_IMAGE_PANEL, wxEVT_DESTROY, wxWindowDestroyEventHandler(wx_image_panel::OnDestroy), NULL, this);
 ////@end wx_image_panel content construction
 }
 
