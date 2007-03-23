@@ -396,7 +396,7 @@ inline void p3_gateway_impl::set_goto_pose(const math::point2d& reltarget , doub
 
   if(mygoto)
   {
-  printf("p3_gateway_impl::set_goto_pose\n");
+  //printf("p3_gateway_impl::set_goto_pose\n");
 
   //pose is meters, degree (relative pose)
   //ArPose is mm, degrees
@@ -418,8 +418,11 @@ inline void p3_gateway_impl::set_goto_pose(const math::point2d& reltarget , doub
   mygoto->setSpeed(mmpersecs);
 
   //
-  printf("ArCurrentPose: X: %.2f Y %.2f\n", current.getX(), current.getY());
-  printf("ArGoal: X: %.2f Y %.2f\n", newgoal.getX(), newgoal.getY());
+  printf("---------------------------\n", reltarget.magnitude()*1000.0, reltarget.orientation().deg());
+  printf("Goal dist: %f theta: %f\n", reltarget.magnitude()*1000.0, reltarget.orientation().deg());
+  printf("Speed (mmpersecs): %f\n", mmpersecs);
+  printf("ArCurrentPose: X: %.2f Y %.2f Th:%.2f\n", current.getX(), current.getY(),current.getTh());
+  printf("ArGoal: X: %.2f Y %.2f Th:%.2f\n\n", newgoal.getX(), newgoal.getY(), newgoal.getTh());
 
   //mygoto->log();
   //
