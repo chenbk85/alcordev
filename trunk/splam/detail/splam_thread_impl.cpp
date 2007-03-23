@@ -166,6 +166,8 @@ void	splam_thread_impl::start_server()
 
 		// notification
 	server_started_ = true;
+
+	std::cout << "SPLAM Server Started at - hostname: " << server_address_.hostname<< " - port: " << server_address_.port<< std::endl;
 }
 
 void	splam_thread_impl::stop_server()
@@ -185,7 +187,10 @@ void splam_thread_impl::acquire_laser_scan()
 	}else{
 		srand((unsigned)time(NULL));
 		for(scan_values_it iter = current_scan_.ranges_.begin(); iter != current_scan_.ranges_.end(); ++iter)
+		{
 			*iter = rand()%5600;
+			//std::cout << " " << *iter;
+		}
 		std::cout<< "LASER NOT PRESENT... RUNNING UNDER SIMULATED DATA"<<std::endl;
 	}
 
@@ -295,7 +300,7 @@ void*	splam_thread_impl::runThread(void* arg)
 		robot_->set_slam_localized(pmap_wrap_.get_current_position());
 
 		// processor yielding and heartbeat
-		ArUtil::sleep(1);
+		ArUtil::sleep(100);
 		cout << "splam_thread_impl IS RUNNING....................................." << endl;
 	}
 	return NULL;

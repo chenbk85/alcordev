@@ -35,7 +35,7 @@ inline pose2_t		pose2d_to_pose2_t(pose2d pose)
 	pose2_t	temp;
 	temp.pos.x = pose.getX();
 	temp.pos.y = pose.getY();
-	temp.rot = pose.get_th(rad_tag);
+	temp.rot = pose.get_th(deg_tag);
 	return temp;
 }
 
