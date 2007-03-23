@@ -16,13 +16,16 @@ pmap_wrap::pmap_wrap(const char* name)
 	/** parametri contenuti nel file ini per allocare le mappe */
 
 	laser_scan_number_= w.GetInt("laser:num_step",0);
-	double r_max= w.GetDouble("laser:laser_scan_data_o_max",0.0);
+	double r_max= w.GetDouble("laser:raggio_max",0.0);
 	double r_res = w.GetDouble("mappa:dim_cella",0.0);
 	int n_camp= w.GetInt("mappa:num_camp",0);
 	double r_start = w.GetDouble("laser:start_angle",0.0);
 	double r_step = w.GetDouble("laser:angle_step", 0.0);
 	double larg = w.GetDouble("mappa:larghezza",0.0);
 	double alt = w.GetDouble("mappa:altezza",0.0);
+
+	//std::cout << "SPAAAAAAAAAAAAAAAAAM: "<<laser_scan_number_ << "  " << r_max << "  " << r_res << "  " << n_camp << "  " << r_start << "  " << r_step
+	//	<< "  " << larg << "  " << alt << std::endl;
 
 	/** Alloca la memoria per omap_, pmap_, lodo_*/
 
@@ -65,10 +68,6 @@ pose2d pmap_wrap::get_current_position() const
  */
 void pmap_wrap::fill_slam_data(splam_data_ptr data)
 {
-#if 1
-	static int contazzo=0;
-#endif
-
 	pmap_sample_t*	best_sample;
 	pmap_scan_t*	scann;
 	pose2_t			pose_slap;
@@ -82,9 +81,9 @@ void pmap_wrap::fill_slam_data(splam_data_ptr data)
 	data->path_.clear();
 	data->og_cells_.resize(omap_->grid_sx * omap_->grid_sy, 0);
 
-	data->path_.reserve(pmap_->step_count);
+	data->path_.resize(pmap_->step_count);
 
-	std::ofstream filedelcazzo("ceppaflex.txt", std::ios::out);
+	//std::ofstream filazzo("ceppaflex.txt", std::ios::out);
 
 	for (int j = 0; j < pmap_->step_count; ++j)
 	{
@@ -93,32 +92,29 @@ void pmap_wrap::fill_slam_data(splam_data_ptr data)
 		omap_add(omap_, pose_slap, pmap_->num_ranges, scann->ranges);
 		data->path_.push_back(pose2_t_to_pose2d(pose_slap));
 
-		filedelcazzo << pose_slap.pos.x <<"  "<<pose_slap.pos.y <<"  "<<pose_slap.rot<<std::endl;
-
 		//for(int z=0; z<pmap_->num_ranges; z++)
-		//	filedelcazzo << "  "<<scann->ranges[z];
-		//filedelcazzo<<std::endl<<std::endl;
+		//	filazzo << "  "<<scann->ranges[z];
+		//filazzo<<std::endl<<std::endl;
 	}
-	//std::cout << "pmap_wrap::fill_slam_data.... pmap_->step_count: "<<pmap_->step_count<<std::endl;
 
 	for (int i=0; i< omap_->grid_size; ++i)
 	{
 		data->og_cells_.at(i)= omap_->grid[i];
-		//filedelcazzo<< static_cast<int>(omap_->grid[i])<< "  ";
+		//filazzo<< static_cast<int>(omap_->grid[i])<< "  ";
 	}
 	data->og_resolution_ = omap_->grid_res;
 	data->og_col_ = omap_->grid_sx;
 	data->og_row_ = omap_->grid_sy;
 
 #if 1
-	contazzo++;
-
+	static int contazzo=1;
 	if(!(contazzo%10))
 	{
 		std::ostringstream mappazza;
 		mappazza << "mappa" << contazzo << ".png";
 		save_map_as_file(mappazza.str().c_str());
 	}
+	contazzo++;
 #endif
 }
 

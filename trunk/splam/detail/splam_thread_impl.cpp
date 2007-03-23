@@ -53,6 +53,8 @@ private:	// hokuyo urg laser
 public:		// Pioneer Robot (p3dx or p3at)
 	p3_client_ptr_t		robot_;
 	void				acquire_laser_scan();	// internal
+	void				emulate_laser_scan();
+	void				fill_scan_data();
 
 private:	// splam
 	pmap_wrap			pmap_wrap_;
@@ -97,7 +99,6 @@ splam_thread_impl::splam_thread_impl( const char* name)
 
 		// splam_data initialization
 	splam_data_.reset(new splam_data);
-	splam_data_->last_scan_ = current_scan_;
 	splam_data_net_.reset(new splam_data_net(pmap_wrap_.get_map_cells()));
 	splam_data_net_->data_ = splam_data_;
 
@@ -178,31 +179,33 @@ void	splam_thread_impl::stop_server()
 	server_started_ = false;
 }
 
-void splam_thread_impl::acquire_laser_scan()
+void	splam_thread_impl::fill_scan_data()
 {
-	if(laser_present_)
-	{
-		urg_scan_data_ptr_ = urg_laser_.do_scan(urg_step_start_, urg_step_end_, urg_cc_);
-		current_scan_.ranges_  = urg_scan_data_ptr_->scan_points;
-	}else{
-		srand((unsigned)time(NULL));
-		for(scan_values_it iter = current_scan_.ranges_.begin(); iter != current_scan_.ranges_.end(); ++iter)
-		{
-			*iter = rand()%5600;
-			//std::cout << " " << *iter;
-		}
-		std::cout<< "LASER NOT PRESENT... RUNNING UNDER SIMULATED DATA"<<std::endl;
-	}
-
-	for (scan_values_it it=current_scan_.ranges_.begin(); it!=current_scan_.ranges_.end();++it)
-		if(*it < 20)
-			*it = 0;
 	current_scan_.start_angle_ = urg_laser_t::step2angle(urg_step_start_) ;
 	current_scan_.angle_step_ = urg_laser_t::resolution(urg_cc_);
 	current_scan_.scan_step_ = scan_count_;
 	current_scan_.time_stamp_ = clock();
-
 	scan_count_++;
+}
+
+void	splam_thread_impl::emulate_laser_scan()
+{
+	srand((unsigned)time(NULL));
+	for(scan_values_it iter = current_scan_.ranges_.begin(); iter != current_scan_.ranges_.end(); ++iter)
+	{
+		*iter = rand()%5000;
+		//std::cout << " " << *iter;
+	}
+	std::cout<< "LASER NOT PRESENT... RUNNING UNDER SIMULATED DATA"<<std::endl;
+}
+
+void	splam_thread_impl::acquire_laser_scan()
+{
+	urg_scan_data_ptr_ = urg_laser_.do_scan(urg_step_start_, urg_step_end_, urg_cc_);
+	current_scan_.ranges_  = urg_scan_data_ptr_->scan_points;
+	for (scan_values_it it=current_scan_.ranges_.begin(); it!=current_scan_.ranges_.end();++it)
+		if(*it < 20)
+			*it = 0;
 }
 
 void	splam_thread_impl::broadcast_splam_data()
@@ -266,11 +269,13 @@ void*	splam_thread_impl::runThread(void* arg)
 	while(this->ArASyncTask::getRunning())
 	{
 		// laser scan acquisition
-		//std::cout << "FASE 1.........."<<std::endl;
-		acquire_laser_scan();
+		if(laser_present_)
+			acquire_laser_scan();
+		else
+			emulate_laser_scan();
+		fill_scan_data();
 
 		// odometry acquisition
-		//std::cout << "FASE 2.........."<<std::endl;
 		current_scan_.odo_pose_ = robot_->get_odometry();
 
 		// slam processing
@@ -279,8 +284,8 @@ void*	splam_thread_impl::runThread(void* arg)
 
 		// filling slam_data
 		//std::cout << "FASE 4.........."<<std::endl;
-		pmap_wrap_.fill_slam_data(splam_data_);
 		splam_data_->last_scan_ = current_scan_;
+		pmap_wrap_.fill_slam_data(splam_data_);
 
 		// saliency building
 		//std::cout << "FASE 5.........."<<std::endl;
