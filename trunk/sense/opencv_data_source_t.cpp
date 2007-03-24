@@ -4,6 +4,9 @@ namespace all{ namespace sense {
 
 opencv_data_source_t::opencv_data_source_t() :	m_jpeg_quality (100), m_init_flag(false)
 {
+	m_cam.reset(new sense::opencv_grabber_t);
+	m_cam->open(std::string("config/cmoscam.ini"));
+	m_cam->close();
 
 }
 
@@ -11,18 +14,9 @@ void opencv_data_source_t::init_()
 {
 
   printf("opencv_data_source_t::Init::IN\n");
-  
-
-  bool show_dialog;
-  if (!m_cam) 
-	  show_dialog = true;
-  else
-	  show_dialog = false;
-
-  m_cam.reset(new sense::opencv_grabber_t);
 	  
 
-  if(m_cam->open(std::string("config/cmoscam.ini"), show_dialog ) )
+  if(m_cam->open(std::string("config/cmoscam.ini"), false ) )
   {
     //
 

@@ -117,7 +117,7 @@ bool shrimp_gateway_impl::is_feasible_speed(short speed) {
 
 void shrimp_gateway_impl::enable_voltage_reading() {
 	
-	update_control_flags();
+	//update_control_flags();
 	m_control_flags.set(6);
 
 	shrimp_command_t enable_voltage(CONTROL_FLAGS, write_t, static_cast <all::core::uint8_t> (m_control_flags.to_ulong()));
@@ -131,10 +131,10 @@ int shrimp_gateway_impl::send_command(const shrimp_command_t& command) {
 
 	unsigned char* cmd = new unsigned char[3];
 	memcpy(cmd, command.to_buf(), command.get_size());
-	printf("%i %i %i", cmd[0], cmd[1], cmd[2]);
+	//printf("%i %i %i", cmd[0], cmd[1], cmd[2]);
 
 	int wd = m_shrimp.Writev(command.to_buf(), command.get_size(), &m_timer_status);
-	printf("bytes sent %i\n", wd);
+	//printf("bytes sent %i\n", wd);
 	return wd;
 }
 
@@ -144,9 +144,9 @@ int shrimp_gateway_impl::read_reply() {
 	m_io_timer.start();
 	char* r = new char[10];
 	int rd = m_shrimp.Readv(r, 1, &m_timer_status);
-	printf("r: %i\n", r[0]);
+	//printf("r: %i\n", r[0]);
 	m_reply = r[0];
-	printf("byte read %i\n", rd);
+	//printf("byte read %i\n", rd);
 	return rd;
 }
 

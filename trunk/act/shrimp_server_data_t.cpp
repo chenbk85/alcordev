@@ -17,7 +17,7 @@ void shrimp_server_data_t::pack(core::net_packet_ptr_t packet) {
 	packet->int_to_buf(m_power_status);
 	packet->int_to_buf(m_em_status);
 	packet->double_to_buf(m_voltage);
-	packet->finalize_packet();
+	//packet->finalize_packet();
 }
 
 }}  //namespaces

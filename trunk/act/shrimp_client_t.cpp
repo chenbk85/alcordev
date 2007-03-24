@@ -48,7 +48,7 @@ void shrimp_client_t::update_shrimp_data(net_packet_ptr_t packet) {
 }
 
 void shrimp_client_t::connected_cb() {
-	//send_request("getData", 100);
+	send_request("getData", 100);
 }
 
 int shrimp_client_t::get_speed() {

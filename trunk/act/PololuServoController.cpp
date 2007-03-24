@@ -59,7 +59,7 @@ namespace all {
 					strcpy(&iniSection[6],":defPose");
 					mServos[i].defaultPos = mPolConfig.GetInt(iniSection,defCenterPose);
 					strcpy(&iniSection[6],":defSpeed");
-					mServos[i].defaultSpeed = mPolConfig.GetInt(iniSection,0);
+					mServos[i].defaultSpeed = mPolConfig.GetInt(iniSection,2);
 					strcpy(&iniSection[6], ":maxSpeed");
 					mServos[i].maxSpeed = mPolConfig.GetInt(iniSection, defMaxSpeed);
 
