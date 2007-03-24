@@ -68,13 +68,13 @@ double shrimp_gateway_t::get_voltage() {
 }
 
 bool shrimp_gateway_t::is_on() {
-	pimpl->update_power_state();
-	return pimpl->m_power_state.test(0);
+	pimpl->update_status_flags();
+	return pimpl->m_status_flags.test(0);
 }
 
 bool shrimp_gateway_t::is_em() {
-	pimpl->update_power_state();
-	return pimpl->m_power_state.test(1);
+	pimpl->update_status_flags();
+	return pimpl->m_status_flags.test(1);
 }
 
 }} //namespace
