@@ -220,7 +220,7 @@ void	splam_thread_impl::acquire_laser_scan()
 pose2d	splam_thread_impl::emulate_odometry()
 {
 	pose2d returnvalue = splam_data_->get_current_position().move(static_cast<double>(rand()%100)/1000.0,angle(rand()%180-90,deg_tag)).rotate(angle(rand()%180-90,deg_tag));
-	if(returnvalue.getP().magnitude() >= 15.0)
+	if(returnvalue.magnitude() >= 15.0)
 		returnvalue.setP(returnvalue.getP().resize(15.0));
 	std::cout<< "ROBOT NOT PRESENT... RUNNING UNDER SIMULATED DATA"<<std::endl;
 
