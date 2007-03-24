@@ -99,6 +99,18 @@ public:	//binary operators
 public:	//tools
 	double			magnitude()		const	{return double(sqrt((x_*x_ + y_*y_)));}
 	const	angle	orientation()	const	{return angle(atan2(y_,x_), rad_tag);}
+	const	point2d	unit()	const			
+	{
+		double temp = magnitude();
+		if(temp == 0)
+			throw std::runtime_error("division by ZERO in all::math::point2d::unit() *_*");
+		return *this/temp;
+	}
+	point2d&		resize(double temp)
+	{
+		*this = unit()*temp;
+		return *this;
+	}
 	const	point2d	rotate(const angle& temp) const
 	{
 		//unoptimized but "clear"

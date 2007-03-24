@@ -197,7 +197,7 @@ void	splam_data_net::pack_others(ArNetPacket* pack)
 	for(point2d_vect_it ite = data_->goal_.path_.begin(); ite != data_->goal_.path_.end(); ++ite)
 		total_size += pack_point2d(pack, *ite);
 
-	cout << "others packet dimension: " << total_size<<endl;
+	cout << "true others dimension: " << total_size<<endl;
 }
 
 void	splam_data_net::import_others(ArNetPacket* pack)
@@ -264,7 +264,7 @@ void	splam_data_net::import_others(ArNetPacket* pack)
 	for(point2d_vect_it ite = data_->goal_.path_.begin(); ite != data_->goal_.path_.end(); ++ite)
 		import_point2d(pack, *ite);
 
-	cout << "Pacchetto Others ricevuto!!!"<<endl;
+	cout << "coded others received"<<endl;
 }
 
 
