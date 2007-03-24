@@ -66,6 +66,9 @@ public:	//setters and getters
 	void	reset(){p_.reset();theta_.reset();}
 
 public:	//tools
+
+	double	magnitude() const{return p_.magnitude();}
+
 	/**
 	 *	function overload
 	 *	this function returns a pose2d representing a move forward of "delta".
