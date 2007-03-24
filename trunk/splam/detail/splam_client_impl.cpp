@@ -80,9 +80,9 @@ void	splam_client_impl::register_to()
 	connection_handler_.m_client.addHandler("Occupancy",&map_receive_callback);
 	connection_handler_.m_client.addHandler("Saliency",&sal_receive_callback);
 	connection_handler_.m_client.addHandler("Others",&others_callback);
-	connection_handler_.m_client.request("Occupancy",200);
-	connection_handler_.m_client.request("Saliency",200);
-	connection_handler_.m_client.request("Others",200);
+	connection_handler_.m_client.request("Occupancy",10000);
+	connection_handler_.m_client.request("Saliency",10000);
+	connection_handler_.m_client.request("Others",10000);
 }
 
 splam_client_impl::~splam_client_impl()
@@ -153,6 +153,7 @@ all::util::pixel_value	trasf2(const all::util::map_value& temp)
 
 void	splam_client_impl::show_display()
 {
+	lock();
 	all::util::pixel_values	temp;
 	std::transform(
 		splam_data_net_->data_->og_cells_.begin(), 
@@ -166,9 +167,10 @@ void	splam_client_impl::show_display()
 		);
 	og_disp.assign(&temp[0], splam_data_net_->data_->og_col_, splam_data_net_->data_->og_row_, 1,1);
 	og_disp.display(*og_displ);
-	std::ofstream rotolo("scorreggione.txt", std::ios::out);
-	for(int i=0;i<temp.size();i++)
-		rotolo << (int)temp[i]<< std::endl;
+	//std::ofstream rotolo("scorreggione.txt", std::ios::out);
+	//for(int i=0;i<temp.size();i++)
+	//	rotolo << (int)temp[i]<< std::endl;
+	unlock();
 }
 
 }//namespace splam

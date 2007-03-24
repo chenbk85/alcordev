@@ -72,9 +72,11 @@ void pmap_wrap::fill_slam_data(splam_data_ptr data)
 	pmap_scan_t*	scann;
 	pose2_t			pose_slap;
 
+std::cout << "pmap_wrap::fill_slam_data......... FASE 1"<<std::endl;
 	//Best sample
 	best_sample = PMAP_GET_SAMPLE(pmap_, pmap_->best_sample);
 	
+std::cout << "pmap_wrap::fill_slam_data......... FASE 2"<<std::endl;
 	//Realizzo una occupancy grid con i dati della posizione e della scansione del
 	//campione migliore
 	omap_clear(omap_);
@@ -85,6 +87,7 @@ void pmap_wrap::fill_slam_data(splam_data_ptr data)
 
 	//std::ofstream filazzo("ceppaflex.txt", std::ios::out);
 
+std::cout << "pmap_wrap::fill_slam_data......... FASE 3"<<std::endl;
 	for (int j = 0; j < pmap_->step_count; ++j)
 	{
 		scann = pmap_->scans + j;
@@ -97,6 +100,7 @@ void pmap_wrap::fill_slam_data(splam_data_ptr data)
 		//filazzo<<std::endl<<std::endl;
 	}
 
+std::cout << "pmap_wrap::fill_slam_data......... FASE 4"<<std::endl;
 	for (int i=0; i< omap_->grid_size; ++i)
 	{
 		data->og_cells_.at(i)= omap_->grid[i];
@@ -106,6 +110,7 @@ void pmap_wrap::fill_slam_data(splam_data_ptr data)
 	data->og_col_ = omap_->grid_sx;
 	data->og_row_ = omap_->grid_sy;
 
+std::cout << "pmap_wrap::fill_slam_data......... FASE 5"<<std::endl;
 #if 1
 	static int contazzo=1;
 	if(!(contazzo%10))
@@ -122,12 +127,20 @@ void pmap_wrap::process(const scan_data& scan)
 {
 	pose2_t current_lodoPose;
 
-	for(int i=0; i<scan.ranges_.size(); i++)
+	std::cout << "pmap_wrap::process......... FASE 1"<<std::endl;
+
+	for(size_t i=0; i<scan.ranges_.size(); i++)
 		laser_scan_data_[i] = static_cast<double>(scan.ranges_.at(i))/1000.0;
 
+	std::cout << "pmap_wrap::process......... FASE 2"<<std::endl;
+
 	current_lodoPose = lodo_add_scan(lodo_,pose2d_to_pose2_t(scan.odo_pose_),laser_scan_number_,laser_scan_data_);
-	
+
+	std::cout << "pmap_wrap::process......... FASE 3"<<std::endl;
+
 	pmap_update(pmap_, pose2_add(pose2d_to_pose2_t(offset_laser_pose_), current_lodoPose), laser_scan_number_, laser_scan_data_);	
+
+	std::cout << "pmap_wrap::process......... FASE 4"<<std::endl;
 }
 
 void pmap_wrap::save_map_as_file(const char* filename)
