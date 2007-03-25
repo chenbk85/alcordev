@@ -15,8 +15,6 @@
 //---------------------------------------------------------------------------
 #include <boost/shared_ptr.hpp>
 //---------------------------------------------------------------------------
-#pragma comment (lib, "bumblebee_driver_t.lib")
-//---------------------------------------------------------------------------
 namespace all{ 
 	namespace sense {
 	///A Point Grey Bumblebee digital camera.
