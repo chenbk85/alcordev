@@ -110,6 +110,8 @@ private:
   bool bwantsinterleaved;
   ///
   bool bwantsgray;
+  ///
+  //bool busedialogs;
 
   ///
   int m_data_order;
