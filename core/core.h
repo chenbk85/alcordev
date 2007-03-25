@@ -145,6 +145,13 @@ template <typename Source> std::string make_string(Source s, size_t number=0, ch
 	return ret.str();
 }
 //-------------------------------------------------------------------------++
+struct null_deleter
+{
+    void operator()(void const *) const
+    {
+    }
+};
+//-------------------------------------------------------------------------++
 struct i_service_handler
 {
 		///Implement this with handlers
