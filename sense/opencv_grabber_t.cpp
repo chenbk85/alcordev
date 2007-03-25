@@ -50,6 +50,7 @@ bool all::sense::opencv_grabber_t::open(const std::string& inifile, bool show_di
   iniWrapper ini;
   if (!ini.Load(inifile.c_str()) )return false;
   
+  //busedialogs= (ini.GetBool("config:usedialogs", 1) == 1);
   bwantsgray = (ini.GetBool("config:graylevel",0) == 1);
   bwantsinterleaved = (ini.GetBool("config:interleaved",1)== 1);
   m_cam_id = ini.GetInt("config:camid", -1);
