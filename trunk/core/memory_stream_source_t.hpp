@@ -19,6 +19,8 @@ public:
   //
   void update_image(const all::core::uint8_sarr&);
   //
+  void update_image(const all::core::uint8_ptr);
+  //
 	int get_data(all::core::uint8_ptr*);
 
   ///
@@ -40,6 +42,11 @@ inline memory_stream_source_t::memory_stream_source_t(size_t h, size_t w,size_t 
 
   m_image_.reset(new all::core::uint8_t[w*h*d]);
 	m_jpeg_quality_ = 100;
+}
+//...................................................................
+inline void memory_stream_source_t::update_image(const all::core::uint8_ptr pimage)
+{
+  m_image_.reset(pimage);
 }
 //...................................................................
 inline void memory_stream_source_t::update_image(const all::core::uint8_sarr& image)

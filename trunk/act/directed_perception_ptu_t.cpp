@@ -33,7 +33,7 @@ bool directed_perception_ptu_t::open(const std::string& ini)
   int com = config.GetInt("ptu:port",8);
 
   serial::parameters port_params;
-  port_params.receiveTimeout = 250;
+  port_params.receiveTimeout = 100;
   port_params.stopBits = serial::parameters::One;
   port_params.baudRate = serial::parameters::Baud9600;
   port_params.parity = serial::parameters::No;
@@ -126,16 +126,18 @@ bool directed_perception_ptu_t::set_pantilt(float pan, float tilt, float waitsec
   //
 	impl->awaitPosCommandCompletion();
   //  
-  if(waitsec>0)
-  {
+  //if(waitsec>0)
+  //{
 
-  boost::timer quit_timer;
-  quit_timer.restart();
+  //boost::timer quit_timer;
+  //quit_timer.restart();
 
   while ( !impl->isPTUidle())
-    {if(quit_timer.elapsed() > waitsec) break;}
-
+    {
+      //if(quit_timer.elapsed() > waitsec) break;
   }
+
+  //}
   ptangle_.set_pan(math::deg_tag,   pan);
   ptangle_.set_tilt(math::deg_tag,  tilt);
 
