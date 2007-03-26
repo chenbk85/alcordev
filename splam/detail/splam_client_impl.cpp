@@ -129,6 +129,7 @@ void	splam_client_impl::get_splam_data(splam_data& data)
 {
 	lock();
 	data = *(splam_data_net_->data_.get());
+	std::cout<< "SPLAM_DATA COPIED!"<<std::endl;
 	unlock();
 }
 

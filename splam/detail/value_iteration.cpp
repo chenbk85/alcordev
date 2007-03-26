@@ -8,6 +8,7 @@ using namespace std;
 //---------------------------------------------------------------------------
 #define	INFINITO			999999999
 #define	MENODIINFINITO		999999990
+#define	HIGHVALUE			999999900
 #define	POCO				0.00001
 #define	RADICEDIDUE			1.41421356
 #define	GRAD_TO_RAD			0.0174532925
@@ -109,10 +110,22 @@ value_iteration_node value_iteration::get_row_col(size_t row, size_t col) const
 	return data_[MapXY(row,col)];
 }
 
+value_iteration_node value_iteration::get_row_col(size2d temp) const 
+{
+	return data_[MapXY(temp.row_,temp.col_)];
+}
+
 void value_iteration::set_row_col(size_t row, size_t col, int val, int cost)
 {
 	size_t index = MapXY(row,col);
 	data_[index].value = val;
+	data_[index].cost = cost;
+}
+
+void value_iteration::set_searchable(size_t row, size_t col, int cost)
+{
+	size_t index = MapXY(row,col);
+	data_[index].value = HIGHVALUE;
 	data_[index].cost = cost;
 }
 
@@ -255,7 +268,7 @@ value_iteration_info value_iteration::loop()
 	return info;
 }
 
-bool value_iteration::get_path(size2d start, value_iteration_path &path)
+bool value_iteration::get_path(size2d start, sizes2d &path)
 {
 	int aaa=0;
 

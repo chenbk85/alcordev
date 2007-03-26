@@ -23,7 +23,7 @@ public:
 	pose2d			goal_near_;
 	angle			head_direction_;
 	angle			relative_head_direction_;
-	point2d_vect	path_;
+	points2d	path_;
 	bool			recognition_;
 
 public:
@@ -47,7 +47,7 @@ public:	// occupancy grid data
 	double			og_resolution_;	///< dimension of occupancy grid map cells... in meters
 
 public:	// paths
-	pose2d_vect		path_;
+	poses2d		path_;
 	saliency_path_t	observations_;
 	attention_fov_t	attention_;
 
@@ -82,7 +82,7 @@ public:	// services
 	 */
 	point2d	get_position_of(const size2d& temp) const 
 	{
-		return point2d((temp.row_ - og_row_/2)*og_resolution_, (temp.col_ - og_col_/2)*og_resolution_);
+		return point2d((static_cast<int>(temp.col_) - static_cast<int>(og_col_)/2)*og_resolution_, (static_cast<int>(temp.row_) - static_cast<int>(og_row_)/2)*og_resolution_);
 	}	
 
 	/**	

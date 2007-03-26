@@ -85,7 +85,6 @@ private:
 
 public:		// misc
 	iniWrapper			ini_;
-	std::ofstream		logfile_;
 };
 
 splam_thread_impl::splam_thread_impl( const char* name)
@@ -97,7 +96,6 @@ splam_thread_impl::splam_thread_impl( const char* name)
 	,scan_count_(0)
 	,server_started_(false)
 	,laser_present_(true)
-	,logfile_("errors.txt",std::ios_base::out)
 {
 		// ARIA initialization
 	Aria::init();
@@ -125,8 +123,6 @@ splam_thread_impl::splam_thread_impl( const char* name)
 		// server IP initialization... to start server clients must call "splam_thread::start_server()"
 	server_address_.hostname = "127.0.0.1";
 	server_address_.port = ini_.GetInt("server:port",12321);
-
-	logfile_<<"speriamo bene..."<<std::endl;
 }
 
 splam_thread_impl::~splam_thread_impl()
@@ -219,8 +215,12 @@ void	splam_thread_impl::acquire_laser_scan()
 
 pose2d	splam_thread_impl::emulate_odometry()
 {
-	pose2d returnvalue = splam_data_->get_current_position().move(static_cast<double>(rand()%100)/1000.0,angle(rand()%180-90,deg_tag)).rotate(angle(rand()%180-90,deg_tag));
-	if(returnvalue.magnitude() >= 15.0)
+	pose2d returnvalue;
+	//returnvalue = splam_data_->get_current_position().move(static_cast<double>(rand()%100)/1000.0,angle(rand()%180-90,deg_tag)).rotate(angle(rand()%180-90,deg_tag));
+	returnvalue = splam_data_->goal_.goal_near_;
+	std::cout << "GOAL NEAR: " << splam_data_->goal_.goal_near_ << std::endl;
+	returnvalue.set_th(rand(),deg_tag);
+	if(returnvalue.magnitude() >= 14.0)
 		returnvalue.setP(returnvalue.getP().resize(15.0));
 	std::cout<< "ROBOT NOT PRESENT... RUNNING UNDER SIMULATED DATA"<<std::endl;
 
@@ -287,8 +287,9 @@ void*	splam_thread_impl::runThread(void* arg)
 {
 	while(this->ArASyncTask::getRunning())
 	{
+		static int step=0;
 		// laser scan acquisition
-		std::cout << "runThread......... FASE 1"<<std::endl;
+		std::cout << "runThread......... STEP "<<step<< " - FASE 1"<<std::endl;
 		if(laser_present_)
 			acquire_laser_scan();
 		else
@@ -296,42 +297,46 @@ void*	splam_thread_impl::runThread(void* arg)
 		fill_scan_data();
 
 		// odometry acquisition
-		std::cout << "runThread......... FASE 2"<<std::endl;
+		std::cout << "runThread......... STEP "<<step<< " - FASE 2"<<std::endl;
 		if(robot_->is_connected())
 			current_scan_.odo_pose_ = robot_->get_odometry();
 		else
 			current_scan_.odo_pose_ = emulate_odometry();
 
 		// slam processin
-		std::cout << "runThread......... FASE 3"<<std::endl;
+		std::cout << "runThread......... STEP "<<step<< " - FASE 3"<<std::endl;
 		pmap_wrap_.process(current_scan_);
 
 		// filling slam_data
-		std::cout << "runThread......... FASE 4"<<std::endl;
+		std::cout << "runThread......... STEP "<<step<< " - FASE 4"<<std::endl;
 		splam_data_->last_scan_ = current_scan_;
 		pmap_wrap_.fill_slam_data(splam_data_);
 
 		// saliency building
-		std::cout << "runThread......... FASE 5"<<std::endl;
+		std::cout << "runThread......... STEP "<<step<< " - FASE 5"<<std::endl;
 		splam_data_->build_saliency_map();
 
 		// goal finding
-		std::cout << "runThread......... FASE 6"<<std::endl;
+		std::cout << "runThread......... STEP "<<step<< " - FASE 6"<<std::endl;
 		//splam_data_->saliency_goal_finding(&splam_data_->goal_)
 		splam_data_->metric_goal_finding();
 
 		// splam data broadcasting
-		std::cout << "runThread......... FASE 7"<<std::endl;
-		broadcast_splam_data();
+		std::cout << "runThread......... STEP "<<step<< " - FASE 7"<<std::endl;
+		if(server_started_)
+			broadcast_splam_data();
+		else
+			std::cout << "NOT BROADCASTING DATA.... SERVER NOT STARTED!!" << std::endl;
 
 		// p3_server updating with localized coord
-		std::cout << "runThread......... FASE 8"<<std::endl;
+		std::cout << "runThread......... STEP "<<step<< " - FASE 8"<<std::endl;
 		robot_->set_slam_localized(pmap_wrap_.get_current_position());
 
 		// processor yielding and heartbeat
 		ArUtil::sleep(100);
 		cout << "splam_thread_impl IS RUNNING....................................." << endl;
 
+		step++;
 	}
 	return NULL;
 }
