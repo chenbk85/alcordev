@@ -137,7 +137,7 @@ void	splam_data_net::pack_others(ArNetPacket* pack)
 	// robot path
 	pack->byte4ToBuf(static_cast<ArTypes::Byte4>(data_->path_.size()));
 	total_size += 4;
-	for(pose2d_vect_it it = data_->path_.begin(); it != data_->path_.end(); ++it)
+	for(poses2d_it it = data_->path_.begin(); it != data_->path_.end(); ++it)
 		total_size += pack_pose2d(pack,*it);
 
 	// saliency path
@@ -194,7 +194,7 @@ void	splam_data_net::pack_others(ArNetPacket* pack)
 	total_size += pack_pose2d(pack,data_->goal_.goal_far_);
 	pack->byte4ToBuf(static_cast<ArTypes::Byte4>(data_->goal_.path_.size()));
 	total_size += 4;
-	for(point2d_vect_it ite = data_->goal_.path_.begin(); ite != data_->goal_.path_.end(); ++ite)
+	for(points2d_it ite = data_->goal_.path_.begin(); ite != data_->goal_.path_.end(); ++ite)
 		total_size += pack_point2d(pack, *ite);
 
 	cout << "true others dimension: " << total_size<<endl;
@@ -213,7 +213,7 @@ void	splam_data_net::import_others(ArNetPacket* pack)
 	// paths
 	// robot path
 	data_->path_.resize(pack->bufToByte4());
-	for(pose2d_vect_it it = data_->path_.begin(); it != data_->path_.end(); ++it)
+	for(poses2d_it it = data_->path_.begin(); it != data_->path_.end(); ++it)
 		import_pose2d(pack, *it);
 	
 	// saliency path
@@ -261,7 +261,7 @@ void	splam_data_net::import_others(ArNetPacket* pack)
 	import_pose2d(pack,data_->goal_.goal_near_);
 	import_pose2d(pack,data_->goal_.goal_far_);
 	data_->goal_.path_.resize(pack->bufToByte4());
-	for(point2d_vect_it ite = data_->goal_.path_.begin(); ite != data_->goal_.path_.end(); ++ite)
+	for(points2d_it ite = data_->goal_.path_.begin(); ite != data_->goal_.path_.end(); ++ite)
 		import_point2d(pack, *ite);
 
 	cout << "coded others received"<<endl;

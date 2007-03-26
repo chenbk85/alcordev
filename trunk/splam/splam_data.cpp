@@ -42,7 +42,7 @@ void	splam_data::metric_goal_finding()
 	//// STEP 1: STRUCTURE INITIALIZATION
 
 	// variables definitions and initializations
-	value_iteration vi(og_row_, og_col_, static_cast<int>(og_resolution_*100.0));
+	static value_iteration vi(og_row_, og_col_, static_cast<int>(og_resolution_*100.0));
 	size2d curr_coord = get_current_coord();
 	size2d sizee = vi.get_size();
 	size_t i,j;
@@ -71,7 +71,7 @@ void	splam_data::metric_goal_finding()
 	for(i=curr_coord.row_-1;i<=curr_coord.row_+1;++i)
 		for(j=curr_coord.col_-1;j<=curr_coord.col_+1;++j)
 			if(in_map(i,j))
-				vi.set_row_col(i,j,100000000,(static_cast<int>(og_cells_[i*sizee.col_+j])+128));
+				vi.set_searchable(i,j,(static_cast<int>(og_cells_[i*sizee.col_+j])+128));
 
 	//// STEP 2: LOOP
 
@@ -81,16 +81,16 @@ void	splam_data::metric_goal_finding()
 	//// STEP 3: CALCULATE UNEXPLORED PATH
 
 	// structures setting
-	value_iteration_path path;
+	sizes2d path;
 	goal_.reset();
 
-	if(!vi.get_path(get_current_coord(),path))
+	if(!vi.get_path(curr_coord,path))
 	{
 		if(!path_.empty())
 			goal_.goal_far_ = path_.back();
 		goal_.path_.push_back(goal_.goal_far_.getP());
 	}else{
-		for(value_iteration_path_it it=path.begin(); it!=path.end();++it)
+		for(sizes2d_it it=path.begin(); it!=path.end();++it)
 			goal_.path_.push_back(get_position_of(*it));
 		if(!goal_.path_.empty())
 		{
@@ -111,6 +111,38 @@ void	splam_data::metric_goal_finding()
 	goal_.recognition_ = false;
 	goal_.head_direction_ = (goal_.goal_near_.getP()-get_current_position().getP()).orientation();
 	goal_.relative_head_direction_ = goal_.head_direction_ - get_current_position().getTh();
+
+	//// STEP 4: LOG DATA ON FILE
+	std::ostringstream namefile;
+	namefile << "metric_goal_find" << path_.size() << ".txt";
+	std::ofstream filelog(namefile.str().c_str(), std::ios::out);
+	filelog << "path size: "<< path_.size() << std::endl;
+	filelog << "path: "<< std::endl;
+	for(poses2d_it it =path_.begin(); it!= path_.end(); ++it)
+		filelog << *it << std::endl;
+
+	filelog << "goal near: "<< goal_.goal_near_ << std::endl;
+	filelog << "goal near coord: "<< get_coord_of(goal_.goal_near_.getP()) << std::endl;
+	filelog << "goal far: "<< goal_.goal_far_ << std::endl;
+	filelog << "goal far coord: "<< get_coord_of(goal_.goal_far_.getP()) << std::endl;
+	filelog << "current position: "<< get_current_position() << std::endl;
+	filelog << "current coord: "<< get_current_coord() << " - Value: "<< vi.get_row_col(get_current_coord()).value<< std::endl;
+	filelog << "goal path size: "<< goal_.path_.size() << std::endl;
+	filelog << "goal path: " << std::endl;
+	for(i=0;i<goal_.path_.size();i++)
+		filelog << goal_.path_.at(i)<< std::endl;
+
+	filelog << "vi path size: "<< path.size() << std::endl;
+	filelog << "vi path: " << std::endl;
+	for(i=0;i<path.size();i++)
+		filelog << "Coord: "<<path[i]<<" - Position: "<< get_position_of(path[i]) << " - Value: "<< vi.get_row_col(path[i]).value<< std::endl;
+
+	for(i=0;i<sizee.row_;++i)
+	{
+		for(j=0;j<sizee.col_;++j)
+			filelog << vi.get_row_col(i,j).value << " ";
+		filelog << std::endl;
+	}
 }
 
 
