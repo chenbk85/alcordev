@@ -18,6 +18,7 @@ public:
   angle roll;
   angle pitch;
   angle yaw;
+
 	///	
 	rpy_angle_t& operator=( const rpy_angle_t& );
   ///
