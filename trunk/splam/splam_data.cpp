@@ -138,8 +138,9 @@ void	splam_data::metric_goal_finding()
 
 	filelog << std::endl <<"path size: "<< path_.size() << std::endl;
 	filelog << "path: "<< std::endl;
+	i=0;
 	for(poses2d_it it =path_.begin(); it!= path_.end(); ++it)
-		filelog << i << " - Coord: "<< *it << std::endl;
+		filelog << i++ << " - Coord: "<< *it << std::endl;
 
 	//// log Value data
 	//for(i=0;i<sizee.row_;++i)
