@@ -177,18 +177,18 @@ value_iteration_info value_iteration::loop()
 		return info;
 
 	bool change = true;
-	size_t startx=0;
-	size_t starty=0;
-	size_t endx = size_.row_-1;
-	size_t endy = size_.col_-1;
-	size_t sizexx = size_.row_-1;
-	size_t sizeyy = size_.col_-1;
-	size_t _startx=endx;
-	size_t _starty=endy;
-	size_t _endx=0;
-	size_t _endy=0;
-	size_t i,j;
-	size_t iter=0;
+	int startx=0;
+	int starty=0;
+	int endx = static_cast<int>(size_.row_)-1;
+	int endy = static_cast<int>(size_.col_)-1;
+	int sizexx = static_cast<int>(size_.row_)-1;
+	int sizeyy = static_cast<int>(size_.col_)-1;
+	int _startx=endx;
+	int _starty=endy;
+	int _endx=0;
+	int _endy=0;
+	int i,j;
+	int iter=0;
 	info.nStep=0;
 
 	while(change)
