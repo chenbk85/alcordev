@@ -6,6 +6,11 @@
 #include "alcor/core/core.h"
 #include <cv.h>
 #include <highgui.h>
+
+#ifdef CVAPI_EXPORTS
+#undef CVAPI_EXPORTS
+#endif
+
 //-------------------------------------------------------------------------++
 #include <boost\shared_ptr.hpp>
 #include <boost\function.hpp>
