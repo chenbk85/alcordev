@@ -23,7 +23,8 @@ public:	//ctor, dtor, copy ctor, copy assign
 	~splam_client_impl();
 
 public:	//services
-	void	get_splam_data(splam_data&);
+	void			get_splam_data(splam_data&);
+	uint8_sarr		get_splam_image();
 
 public:
 	i_connection_handler_t	connection_handler_;
@@ -57,6 +58,8 @@ public:
 	void			exit_display();
 	cimg_library::CImgDisplay*		og_displ;
 	cimg_library::CImg<map_value>	og_disp;
+	uint8_sarr		splam_image_;
+
 };
 
 splam_client_impl::splam_client_impl(const char* inifile)
@@ -68,11 +71,12 @@ splam_client_impl::splam_client_impl(const char* inifile)
 	,display_(false)
 {
 	Aria::init();
-	double temp = ini_.GetInt("mappa:larghezza",0) * ini_.GetInt("mappa:altezza",0);
-	splam_data_net_.reset(new splam_data_net(static_cast<size_t>(temp)));
+	size_t temp = ini_.GetInt("mappa:larghezza",0) * ini_.GetInt("mappa:altezza",0);
+	splam_data_net_.reset(new splam_data_net(temp));
 	splam_data_net_->data_.reset(new splam_data);
 	int lenghtmask = ini_.GetInt("laser:num_step",0);
 	splam_data_net_->data_->og_cells_.resize(lenghtmask,0);
+	splam_image_.reset(new uint8_t[temp]);
 }
 
 void	splam_client_impl::register_to()
@@ -132,6 +136,14 @@ void	splam_client_impl::get_splam_data(splam_data& data)
 	std::cout<< "SPLAM_DATA COPIED!"<<std::endl;
 	unlock();
 }
+
+uint8_sarr	splam_client_impl::get_splam_image()
+{
+	for(int i=0; i<splam_data_net_->data_->og_row_*splam_data_net_->data_->og_col_; i++)
+		splam_image_[i] = static_cast<uint8_t>( static_cast<int>(127) - static_cast<int>(splam_data_net_->data_->og_cells_[i]));
+	return splam_image_;
+}
+
 
 void	splam_client_impl::init_display()
 {

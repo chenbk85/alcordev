@@ -13,15 +13,16 @@ class splam_client_impl;
 class splam_client
 {
 public:	
-	explicit	splam_client(const char* name = "config/splam.ini");
-				~splam_client();
+	explicit		splam_client(const char* name = "config/splam.ini");
+					~splam_client();
 				
 public:	
-	void		lock();
-	void		unlock();
-	void		get_splam_data(splam_data&);
-	void		set_display(bool=true);
-	bool		get_display() const;
+	void			lock();
+	void			unlock();
+	void			get_splam_data(splam_data&);
+	uint8_sarr		get_splam_image();
+	void			set_display(bool=true);
+	bool			get_display() const;
 
 private:
 	boost::shared_ptr<splam_client_impl> pImpl_;
