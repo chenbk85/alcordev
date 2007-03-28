@@ -42,7 +42,7 @@ public:
 	~splam_data(){}
 
 public:	// occupancy grid data
-	map_values		og_cells_;		///< occupancy grid map occupancy value
+	map_values  og_cells_;		///< occupancy grid map occupancy value
 	size_t			og_row_;		///< number of occupancy grid map raw... old mapYdimension
 	size_t			og_col_;		///< number of occupancy grid map column... old mapXdimension
 	double			og_resolution_;	///< dimension of occupancy grid map cells... in meters
@@ -56,7 +56,7 @@ public:	// laser
 	scan_data		last_scan_;		///< last laser scan
 
 public:	// saliency grid data
-	map_values		sg_cells_;		///< saliency grid: spatial saliency value
+	map_values	sg_cells_;		///< saliency grid: spatial saliency value
 	size_t			sg_row_;		
 	size_t			sg_col_;		
 	double			sg_resolution_;	///< dimension of saliency grid map cells... in meters
