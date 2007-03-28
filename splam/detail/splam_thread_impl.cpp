@@ -101,7 +101,7 @@ splam_thread_impl::splam_thread_impl( const char* name)
 	Aria::init();
 
 		// splam_data initialization
-	splam_data_.reset(new splam_data);
+	splam_data_.reset(new splam_data(name));
 	splam_data_net_.reset(new splam_data_net(pmap_wrap_.get_map_cells()));
 	splam_data_net_->data_ = splam_data_;
 

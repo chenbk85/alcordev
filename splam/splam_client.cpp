@@ -49,6 +49,16 @@ uint8_sarr	splam_client::get_splam_image()
 	return pImpl_->get_splam_image();
 }
 
+int		splam_client::get_row() const
+{
+	return pImpl_->splam_data_net_->data_->og_row_;
+}
+
+int		splam_client::get_col() const
+{
+	return pImpl_->splam_data_net_->data_->og_col_;
+}
+
 
 }//namespace splam
 }//namespace all

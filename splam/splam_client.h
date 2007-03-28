@@ -21,6 +21,8 @@ public:
 	void			unlock();
 	void			get_splam_data(splam_data&);
 	uint8_sarr		get_splam_image();
+	int				get_row() const;
+	int				get_col() const;
 	void			set_display(bool=true);
 	bool			get_display() const;
 
