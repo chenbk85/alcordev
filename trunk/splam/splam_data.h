@@ -38,7 +38,7 @@ class splam_data
 {
 	
 public:
-	splam_data(){}
+	splam_data(const char* name = "./config/splam.ini");
 	~splam_data(){}
 
 public:	// occupancy grid data
@@ -48,7 +48,7 @@ public:	// occupancy grid data
 	double			og_resolution_;	///< dimension of occupancy grid map cells... in meters
 
 public:	// paths
-	poses2d		path_;
+	poses2d			path_;
 	saliency_path_t	observations_;
 	attention_fov_t	attention_;
 

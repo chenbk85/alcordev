@@ -1,11 +1,21 @@
 #include <fstream>
 #include "splam_data.h"
 #include "detail/value_iteration.h"
+#include "alcor/core/iniwrapper.h"
 //-----------------------------------------------------------------------------------------------
 using namespace all::util;
 //-----------------------------------------------------------------------------------------------
 namespace all{
 namespace splam{
+
+splam_data::splam_data(const char* name)
+{
+	iniWrapper ini(name);
+	og_row_ = ini.GetInt("mappa:larghezza",0);
+	og_col_ = ini.GetInt("mappa:altezza",0);
+	og_resolution_ = ini.GetDouble("mappa:dim_cella",0.0);
+}
+
 
 void	splam_data::save_og_pgm(const char* filename) const
 {

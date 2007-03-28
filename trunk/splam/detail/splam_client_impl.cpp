@@ -37,9 +37,10 @@ private:	//callback su "avvenuta connessione" e "disconnessione" dal server
 	virtual void register_to();
 	virtual void lost_connection(){};
 
-private:	//data
-	//splam_data_ptr		splam_data_;
+public:
 	splam_data_net_ptr	splam_data_net_;
+
+private:	//data
 	ArMutex				splam_data_mutex_;
 
 private:	//callbacks per la ricezione dei dati

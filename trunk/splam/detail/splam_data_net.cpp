@@ -58,7 +58,7 @@ void	splam_data_net::pack_og_map(ArNetPacket* pack)
 	pack->byte4ToBuf(static_cast<ArTypes::Byte4>(data_->og_col_));
 	pack->doubleToBuf(data_->og_resolution_);
 	// Data... COMPRESSED!!!!
-	runLenght_->Encode(target_, target_lenght, (BYTE*)(&(*data_->og_cells_.begin())), static_cast<long>(data_->og_cells_.size()));
+	runLenght_->Encode(target_, target_lenght, (BYTE*)(&data_->og_cells_[0]), static_cast<long>(data_->og_cells_.size()));
 	pack->byte4ToBuf(target_lenght);
 	for(size_t size = 0; size< static_cast<size_t>(target_lenght); ++size)
 		pack->byteToBuf(target_[size]);
@@ -82,7 +82,7 @@ void	splam_data_net::import_og_map(ArNetPacket* pack)
 	
 	source_lenght  =  runLenght_->GetMaxDecoded(target_);
 	data_->og_cells_.resize(source_lenght);
-	runLenght_->Decode( (BYTE*)(&(*data_->og_cells_.begin())), source_lenght, target_, target_lenght  );
+	runLenght_->Decode( (BYTE*)(&data_->og_cells_[0]), source_lenght, target_, target_lenght  );
 
 	cout << "coded map dimension: "<< target_lenght<< " - true map dimension: "<< data_->og_cells_.size()<<endl;
 }
