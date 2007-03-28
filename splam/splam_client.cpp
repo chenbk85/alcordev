@@ -44,6 +44,12 @@ bool	splam_client::get_display() const
 	return pImpl_->display_;
 }
 
+uint8_sarr	splam_client::get_splam_image()
+{
+	return pImpl_->get_splam_image();
+}
+
+
 }//namespace splam
 }//namespace all
 //-----------------------------------------------------------------------------------------------
