@@ -58,7 +58,7 @@ class wx_gl_stream_client_t: public wx_img_stream_panel_t
 
 public:
     /// Constructors
-    wx_gl_stream_client_t(char* ini_file = "config/stream_server.ini");
+    wx_gl_stream_client_t(char* ini_file = "config/gl_stream_client.ini");
     wx_gl_stream_client_t( wxWindow* parent, wxWindowID id = wxID_ANY, const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxDefaultSize, long style = wxTAB_TRAVERSAL | wxNO_BORDER );
 
     /// Creation
