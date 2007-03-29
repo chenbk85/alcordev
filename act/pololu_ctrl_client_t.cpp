@@ -31,6 +31,13 @@ void pololu_ctrl_client_t::set_speed(int servo_number, int speed) {
 	send_command("set_speed", packet);
 }
 
+void pololu_ctrl_client_t::set_speed_deg(int servo_number, double speed) {
+	core::net_packet_ptr_t packet(new core::net_packet_t());
+	packet->int_to_buf(servo_number);
+	packet->double_to_buf(speed);
+	send_command("set_speed_deg", packet);
+}
+
 double pololu_ctrl_client_t::get_pose(int servo_number) {
 	return m_pololu_data.servo[servo_number].pose;
 }
