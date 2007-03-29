@@ -33,6 +33,12 @@ void pololu_ctrl_server_t::set_speed(client_connection_ptr_t client, net_packet_
 	m_pololu.setSpeed(servo_number, speed);
 }
 
+void pololu_ctrl_server_t::set_speed_deg(client_connection_ptr_t client, net_packet_ptr_t packet) {
+	int servo_number = packet->buf_to_int();
+	double speed = packet->buf_to_double();
+	m_pololu.setSpeedDeg(servo_number, speed);
+}
+
 void pololu_ctrl_server_t::send_num_servo(client_connection_ptr_t client, net_packet_ptr_t packet) {
 	packet.reset(new net_packet_t());
 	packet->int_to_buf(m_pololu_data.n_servo);

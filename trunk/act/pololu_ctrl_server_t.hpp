@@ -27,6 +27,7 @@ private:
 	void set_pose(all::core::client_connection_ptr_t, all::core::net_packet_ptr_t);
 	
 	void set_speed(all::core::client_connection_ptr_t, all::core::net_packet_ptr_t);
+	void set_speed_deg(all::core::client_connection_ptr_t, all::core::net_packet_ptr_t);
 
 	void get_pololu_data(all::core::client_connection_ptr_t, all::core::net_packet_ptr_t);
 

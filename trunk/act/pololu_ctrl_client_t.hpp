@@ -14,6 +14,8 @@ public:
 	pololu_ctrl_client_t(char* ini_file = "config/pololu_client.ini");
 	
 	void set_speed(int, int);
+	void set_speed_deg(int, double);
+
 	void set_pose(int, double);
 
 	double get_pose(int);

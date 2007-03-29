@@ -40,7 +40,7 @@ public:
 
 	boost::mutex mutex;
 
-private:
+protected:
 
 	all::core::uint8_sarr m_frame_buffer;
 

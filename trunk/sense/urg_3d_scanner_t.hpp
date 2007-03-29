@@ -4,7 +4,7 @@
 #include <alcor.extern/cgal/config.h>
 
 #include <alcor/sense/urg_laser_t.hpp>
-#include <alcor/act/PololuServoController.hpp>
+#include <alcor/act/pololu_ctrl_client_t.hpp>
 
 #include <alcor/math/angle.h>
 #include <alcor/core/core.h>
@@ -27,7 +27,7 @@ public:
 		LINEAR_SCAN
 	};
 
-	urg_3d_scanner_t(urg_laser_t*, all::act::PololuServoController*, int laser_servo);
+	urg_3d_scanner_t(urg_laser_t*, int laser_servo);
 
 	void set_scan_mode(scan_mode);
 
@@ -59,9 +59,11 @@ private:
 
 	urg_laser_t* m_urg;
 
-	all::act::PololuServoController* m_pololu;
+	boost::shared_ptr <all::act::pololu_ctrl_client_t> m_pololu;
 	int m_laser_servo;
 };
+
+typedef boost::shared_ptr<urg_3d_scanner_t> urg_3d_scanner_ptr;
 
 }} //namespaces
 
