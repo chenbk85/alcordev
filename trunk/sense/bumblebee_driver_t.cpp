@@ -26,7 +26,7 @@ namespace all { namespace sense {
     impl->allocate_buffers_();
 
   color_buffer_size_ = impl->rows_*impl->cols_*3;
-  depth_buffer_size_ = impl->rows_*impl->cols_*sizeof(core::single_t);
+  depth_buffer_size_ = impl->rows_*impl->cols_*sizeof(core::single_t)*3;
 
   return bIsOk;
 }

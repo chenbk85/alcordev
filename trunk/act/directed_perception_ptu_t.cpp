@@ -173,14 +173,16 @@ bool directed_perception_ptu_t::set_pan(float pan, float wait  )
   impl->setPan(pan);
   //
 	impl->awaitPosCommandCompletion();
-  //  
-  if(wait>0)
-  {
-  boost::timer quit_timer;
-  quit_timer.restart();
+  ////  
+  //if(wait>0)
+  //{
+  //boost::timer quit_timer;
+  //quit_timer.restart();
   while ( !impl->isPTUidle())
-    {if(quit_timer.elapsed() > wait) break;}
+    {
+      //if(quit_timer.elapsed() > wait) break;
   }
+  //}
   ptangle_.set_pan(math::deg_tag,pan);
   return true;
 }
