@@ -159,8 +159,8 @@ bool directed_perception_ptu_t::set_pantilt(const core::pantilt_angle_t& pantilt
     while ( !impl->isPTUidle())
       {
         //if(quit_timer.elapsed() > waitsec) break;
-    }
-  }
+      }
+  //}
 
   ptangle_=pantilt;
 
