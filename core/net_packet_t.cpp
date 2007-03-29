@@ -24,6 +24,8 @@ net_packet_header_t::~net_packet_header_t() {
 
 bool net_packet_header_t::build_header() {
 	
+	m_write_ptr = m_header.get();
+
 	//assign an id to packet
 	m_packet_id = net_packet_header_t::next_id;
 	
@@ -41,6 +43,8 @@ bool net_packet_header_t::build_header() {
 
 bool net_packet_header_t::build_header_from_buffer(const char* header) {
 	
+	m_read_ptr = m_header.get();
+
 	memcpy(m_header.get(), header, net_packet_header_t::HEADER_LENGTH);
 	
 	memcpy(&m_packet_id, m_read_ptr, sizeof(m_packet_id));
