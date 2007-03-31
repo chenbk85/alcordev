@@ -73,8 +73,8 @@ splam_client_impl::splam_client_impl(const char* inifile)
 {
 	Aria::init();
 	size_t temp = ini_.GetInt("mappa:larghezza",0) * ini_.GetInt("mappa:altezza",0);
-	splam_data_net_.reset(new splam_data_net(temp));
-	splam_data_net_->data_.reset(new splam_data);
+	splam_data_net_.reset(new splam_data_net(inifile));
+	splam_data_net_->data_.reset(new splam_data(inifile));
 	int lenghtmask = ini_.GetInt("laser:num_step",0);
 	splam_data_net_->data_->og_cells_.resize(lenghtmask,0);
 	splam_image_.reset(new uint8_t[temp]);
@@ -148,7 +148,7 @@ uint8_sarr	splam_client_impl::get_splam_image()
 
 void	splam_client_impl::init_display()
 {
-	og_displ = new cimg_library::CImgDisplay(splam_data_net_->data_->og_col_, splam_data_net_->data_->og_row_, "Occupancy");
+	og_displ = new cimg_library::CImgDisplay(splam_data_net_->data_->og_col_*2, splam_data_net_->data_->og_row_*2, "Occupancy");
 }
 void	splam_client_impl::exit_display()
 {
