@@ -30,7 +30,7 @@ public:
 	};
 
 public:
-	splam_data_net(size_t);
+	splam_data_net(const char* name = "./config/splam.ini");
 	~splam_data_net();
 
 public:
@@ -39,8 +39,7 @@ public:
 	BYTE				header_;
 	BYTE*				target_;
 	long				target_lenght;
-
-
+	BYTE*				intermediate_;
 
 public:
 	void	import_og_map(ArNetPacket*);
