@@ -18,7 +18,7 @@ glt_stream_server_t::glt_stream_server_t(int w, int h) : GlutWindow("opengl serv
 	image.reset(new all::core::uint8_t[width * height * 3]);
 
 	m_stream_source.reset(new glt_stream_source_t(this));
-	m_stream_server.reset(new all::core::stream_server_t(m_stream_source));
+	m_stream_server.reset(new all::core::stream_server_t(m_stream_source, "config/gl_stream_server.ini"));
 
 	m_stream_server->run_async();
 

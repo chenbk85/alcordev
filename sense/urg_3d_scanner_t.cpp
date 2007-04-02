@@ -7,7 +7,7 @@ namespace all {
 
 urg_3d_scanner_t::urg_3d_scanner_t(all::sense::urg_laser_t* urg, int laser_servo) {
 	m_urg = urg;
-	m_pololu.reset(new all::act::pololu_ctrl_client_t);
+	m_pololu.reset(new all::act::pololu_ctrl_client_t("config/pololu_scan_client.ini"));
 	m_pololu->run_async();
 	m_laser_servo = laser_servo;
 	m_scan_mode = LINEAR_SCAN;
@@ -87,6 +87,8 @@ urg_pcd_ptr urg_3d_scanner_t::do_linear_scan() {
 
 	m_pololu->set_speed(m_laser_servo, 40);
 	m_pololu->set_pose(m_laser_servo, m_v_start_angle.deg());
+
+	Sleep(1000);
 
 	double delta_angle = m_v_end_angle.deg() - m_v_start_angle.deg();
 
