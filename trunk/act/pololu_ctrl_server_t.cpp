@@ -11,6 +11,7 @@ pololu_ctrl_server_t::pololu_ctrl_server_t(char* ini_file) : m_pololu(ini_file) 
 
 	add_command_handler("set_pose", boost::bind(&pololu_ctrl_server_t::set_pose, this, _1, _2));
 	add_command_handler("set_speed", boost::bind(&pololu_ctrl_server_t::set_speed, this, _1, _2));
+	add_command_handler("set_speed_deg", boost::bind(&pololu_ctrl_server_t::set_speed_deg, this, _1, _2));
 
 	add_command_handler("get_data", boost::bind(&pololu_ctrl_server_t::send_pololu_data, this, _1, _2));
 	add_command_handler("get_num_servo", boost::bind(&pololu_ctrl_server_t::send_num_servo, this, _1, _2));
