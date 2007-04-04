@@ -1,6 +1,8 @@
 #include <iostream>
+#include <algorithm>
 #include "splam_data_net.h"
 #include "alcor/splam/typedefs.hpp"
+#include "alcor/core/iniwrapper.h"
 //---------------------------------------------------------------------------
 using namespace std;
 using namespace all::util;
@@ -37,17 +39,36 @@ void	import_point2d(ArNetPacket* pack, point2d& point)
 	point.set_x2(pack->bufToDouble());
 }
 
-splam_data_net::splam_data_net(size_t mapDim)
+splam_data_net::splam_data_net(const char* name)
 {
+	iniWrapper ini(name);
+	size_t temp = ini.GetInt("mappa:larghezza",0) * ini.GetInt("mappa:altezza",0);
 	runLenght_ = new TGeneric<CRLE>;
-	target_ = new BYTE [mapDim+2];
+	target_ = new BYTE [temp+2];
 	header_ = broken_data;
+	intermediate_ = new BYTE [temp];
 }
 
 splam_data_net::~splam_data_net()
 {
 	delete runLenght_;
 	delete [] target_;
+	delete [] intermediate_;
+}
+
+char	reduce(char temp)
+{
+	if(temp==0)
+		return 0;
+	if(temp>124)
+		return 125;
+	if(temp>0)
+		return (temp/5+1)*5;
+	if(temp<-124)
+		return -125;
+	if(temp<0)
+		return (temp/5-1)*5;
+	return 0;
 }
 
 void	splam_data_net::pack_og_map(ArNetPacket* pack)
@@ -57,8 +78,14 @@ void	splam_data_net::pack_og_map(ArNetPacket* pack)
 	pack->byte4ToBuf(static_cast<ArTypes::Byte4>(data_->og_row_));
 	pack->byte4ToBuf(static_cast<ArTypes::Byte4>(data_->og_col_));
 	pack->doubleToBuf(data_->og_resolution_);
-	// Data... COMPRESSED!!!!
-	runLenght_->Encode(target_, target_lenght, (BYTE*)(&data_->og_cells_[0]), static_cast<long>(data_->og_cells_.size()));
+
+	// data... transformed & compressed
+	transform(data_->og_cells_.begin(), data_->og_cells_.end(), intermediate_, reduce);
+	runLenght_->Encode(target_, target_lenght, intermediate_, static_cast<long>(data_->og_cells_.size()));
+
+	// data... compressed!!!!
+	//runLenght_->Encode(target_, target_lenght, (BYTE*)(&data_->og_cells_[0]), static_cast<long>(data_->og_cells_.size()));
+
 	pack->byte4ToBuf(target_lenght);
 	for(size_t size = 0; size< static_cast<size_t>(target_lenght); ++size)
 		pack->byteToBuf(target_[size]);

@@ -129,6 +129,7 @@ void	splam_data::metric_goal_finding()
 	goal_.head_direction_ = (goal_.goal_near_.getP()-get_current_position().getP()).orientation();
 	goal_.relative_head_direction_ = goal_.head_direction_ - get_current_position().getTh();
 
+#if 0
 	//std::cout<< "splam_data::metric_goal_finding() .......  FASE 8"<<std::endl;
 	//// STEP 4: LOG DATA ON FILE
 	std::ostringstream namefile;
@@ -160,6 +161,7 @@ void	splam_data::metric_goal_finding()
 	//	filelog << std::endl;
 	//}
 	//std::cout<< "splam_data::metric_goal_finding() .......  FASE 9"<<std::endl;
+#endif
 }
 
 
