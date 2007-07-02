@@ -1,5 +1,6 @@
 #include "alcor/sense/bumblebee_driver_t.h"
 #include "alcor/sense/detail/bumblebee_driver_impl.cpp"
+#include <iostream>
 //------------------------------------------------------------------+
 #include "alcor/core/iniWrapper.h"
 //------------------------------------------------------------------+
@@ -7,7 +8,15 @@ namespace all { namespace sense {
 //------------------------------------------------------------------+
   bumblebee_driver_t::bumblebee_driver_t()
   {
+    printf("bumblebee_driver_t ctor\n");
+
     impl.reset( new detail::bumblebee_driver_impl() );
+  }
+//------------------------------------------------------------------+
+  bumblebee_driver_t::~bumblebee_driver_t()
+  {
+    printf ("bumblebee dtor\n");
+    impl.reset();
   }
 //------------------------------------------------------------------+
 ///Inherited
@@ -15,18 +24,34 @@ namespace all { namespace sense {
 {
   bool bIsOk = true;
 
-  params.load(confname);
+    //std::ofstream logfile;
+    //logfile.open("mexlog.log");
+
+  //logfile << "Loading: " << confname << std::endl;
+  //if (params.load(confname)) logfile << "Error Loading Params File: " << confname << std::endl;
+
+  bIsOk   = bIsOk && params.load(confname);
 
   bIsOk   = bIsOk && impl->init_digiclops_context_(   params._unit_number, params._digiclopsini
                                                     , params._framerate);
+    //if (!bIsOk) logfile << "error! init_digiclops_context_" << std::endl;
+
   bIsOk   = bIsOk && impl->init_triclops_context_(params._triclopsini);
-  bIsOk   = bIsOk && impl->init_grabbing_();
+    //if (!bIsOk) logfile << "error! init_triclops_context_" << std::endl;
+
+  bIsOk   = bIsOk && impl->init_grabbing_();   
+  //if (!bIsOk) logfile << "error! init_grabbing_" << std::endl;
 
   if (bIsOk)
+  {
+    //logfile << "allocate_buffers_" << std::endl;
     impl->allocate_buffers_();
+  }
 
   color_buffer_size_ = impl->rows_*impl->cols_*3;
   depth_buffer_size_ = impl->rows_*impl->cols_*sizeof(core::single_t)*3;
+
+  //logfile.close();
 
   return bIsOk;
 }

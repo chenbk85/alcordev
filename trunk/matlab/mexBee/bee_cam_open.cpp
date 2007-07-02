@@ -3,12 +3,15 @@
 #define OBJ_HANDLE_ prhs[0]
 #define CAMERA_ID_  prhs[1]
 
+
 void bee_cam_open( int nlhs 
 					,mxArray *plhs[]
 					,int nrhs
 					,const mxArray 
 					*prhs[])
 	{
+
+
  // char *input_buf;
  // int   buflen;
 
@@ -29,21 +32,21 @@ void bee_cam_open( int nlhs
  // input_buf = (char*) mxCalloc(buflen, sizeof(char));
  // mxGetString(CAMERA_ID_, input_buf, buflen);
 
-  std::string ininame = "config/bumblebeeB";
+  std::string ininame = "config/bumblebeeB.ini";
   //ininame += input_buf;
 
   std::printf("Opening %s\n", ininame.c_str());
+  std::printf("Opening Bumblebee \n");
 
   if(mybee.open(ininame))    
   {
     printf("OK\n");
-    printf("Bumblebee RGB IPC stream succesfully opened!\n");
+    printf("Bumblebee  succesfully opened!\n");
     printf("Rows: %d Cols: %d\n", mybee.nrows(), mybee.ncols());
   }
   else
   {
-    std::printf("not OK\n");
-	  printf("Bumblebee RGB IPC stream impossible to open!\n");
+	  printf("Bumblebee  impossible to open!\n");
   }
 
 	}

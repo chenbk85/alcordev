@@ -10,8 +10,13 @@ void bee_cam_close( int nlhs
 	{
 	if(nrhs == 1)
 	{
-    destroy_object<all::sense::bumblebee_driver_t>(OBJ_HANDLE_);
-	printf("Closing Bumblebee  stream!\n");
+   destroy_object<all::sense::bumblebee_driver_t>(OBJ_HANDLE_);
+	 printf("Closing Bumblebee  stream!\n");
+
+    //all::sense::bumblebee_driver_t& mybee = 
+    //  get_object<all::sense::bumblebee_driver_t>(OBJ_HANDLE_);
+
+
 	}
 	else	
 	{

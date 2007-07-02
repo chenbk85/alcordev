@@ -67,6 +67,8 @@ class all::sense::bumblebee_driver_t : public i_device_driver
 public:
 	///Constructor.
 	bumblebee_driver_t();
+  ///DTOR
+  ~bumblebee_driver_t();
 
   ///
   static boost::shared_ptr<all::sense::bumblebee_driver_t> create()
