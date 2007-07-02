@@ -137,14 +137,16 @@ public:
 
   boost::shared_ptr<Settings> settings_sptr;
 
+  //RIGHT
   core::uint8_sarr get_rgb_right_() const ;
-
+  //LEFT
   core::uint8_sarr get_rgb_left_() const ;
 
-  //
+  //XYZ
   boost::function<core::single_sarr (void)>  get_depthmap_buffer_;
   //  
   image_indices_320 indices320;
+  //
   core::single_sarr get_depthmap_sandbox_320_planar_();
   core::single_sarr get_depthmap_sandbox_320_interleaved_();
   
@@ -155,6 +157,7 @@ public:
 
   //
   void extract_depth16_();
+  //
   bool is_depth16_new;
 
   //data

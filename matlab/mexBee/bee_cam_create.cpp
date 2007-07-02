@@ -8,8 +8,9 @@ void bee_cam_create( int nlhs
 					,const mxArray 
 					*prhs[])
 	{
-	if (nlhs != 1 || nrhs != 0)
-		mexErrMsgTxt("Usage: h = bee_cam_create");
+	//if (nlhs != 1 || nrhs != 0)
+	//	mexErrMsgTxt("Usage: h = bee_cam_create");
 
+  printf("debug: bee_cam_create\n");
   OBJ_HANDLE_  = create_handle(new all::sense::bumblebee_driver_t);
 	}
