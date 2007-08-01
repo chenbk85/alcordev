@@ -92,7 +92,8 @@ bool all::sense::opencv_grabber_t::open_(core::camera_mode_t, int in_cam, bool s
       cout <<"Unable to open camera " << m_cam_id << " for capture!\n" ;
       return false;
   }
-  if (show_dialog) {
+  if (show_dialog) 
+  {
 	cvSetCaptureProperty(m_capture, CV_CAP_PROP_DIALOG_SOURCE, 0);
 	cvSetCaptureProperty(m_capture, CV_CAP_PROP_DIALOG_FORMAT, 0);
   }
