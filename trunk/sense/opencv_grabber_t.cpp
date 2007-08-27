@@ -11,14 +11,14 @@ using std::endl;
 #include <boost\bind.hpp>
 //-------------------------------------------------------------------------++
 ///
-all::sense::opencv_grabber_t::opencv_grabber_t(int cam)
+all::sense::opencv_grabber_t::opencv_grabber_t()
 		:	m_w(0)
 		,	m_h(0)
 		,	m_ch(0)
     , bwantsinterleaved(false)
     , bwantsgray(false)
 		,	m_byte_size(0)
-		,	m_cam_id(cam)
+		,	m_cam_id(0)
 		,	m_capture(0) 
 		,	snap(0)
     ,m_ipl_image(0)
@@ -71,6 +71,7 @@ bool all::sense::opencv_grabber_t::open(const std::string& inifile, bool show_di
   }
   else
   {
+    //wants to open a video file.
     std::string vidname=ini.GetString("config:videofile");
   ///filevideo
     return open_(core::open_video, vidname);
@@ -144,7 +145,7 @@ bool all::sense::opencv_grabber_t::internal_open_()
   else
   {	
     m_byte_size = _iplFrame->imageSize;
-	  m_ch    = _iplFrame->nChannels;
+	  m_ch        = _iplFrame->nChannels;
   }
 
   //
@@ -184,14 +185,21 @@ bool all::sense::opencv_grabber_t::internal_open_()
 bool all::sense::opencv_grabber_t::close() 
 {
 
-    if(m_ipl_image)  cvReleaseImage(&m_ipl_image);
+    if(m_ipl_image)       cvReleaseImage(&m_ipl_image);
     if(m_ipl_image_gray)  cvReleaseImage(&m_ipl_image_gray);
 
     // Release the capture object, the pointer should be set null
-    if (0 != m_capture) cvReleaseCapture((CvCapture**)(&m_capture));
-    if (0 != m_capture) {
-        m_capture = 0; return false;
-    } else return true;
+    if (0 != m_capture) 
+      cvReleaseCapture((CvCapture**)(&m_capture));
+
+    //uhm...why?...
+    if (0 != m_capture) 
+    {
+        m_capture = 0; 
+        return false;
+    } 
+    else 
+      return true;
 }
 //-------------------------------------------------------------------------++
 ///
@@ -213,28 +221,39 @@ get_color_buffer_original_(core::uint8_sarr& user_buffer)
        return false;
   }
 
+  //IplImage format is a mess ...
+  //BGR and bottom-left alignement
+  //we want topleft .. this is a weird code .. but .. works.
   if(m_data_origin)
   {    
+    //bottom-left
     //printf("PRE_ cvConvertImage(m_ipl_image, m_ipl_image, CV_CVTIMG_FLIP);\n");
     cvConvertImage(iplFrame, m_ipl_image, CV_CVTIMG_FLIP);
     //printf("PRE_ cvConvertImage(m_ipl_image, m_ipl_image, CV_CVTIMG_FLIP);\n");
   }
   else
   {
+    //top-left
       m_ipl_image = cvCloneImage(iplFrame);
   }
 
     //if( std::strcmp(&iplFrame->channelSeq[0],"B") == 0 )
+
+  //it seems that everytime the image grabbed is BGR.
+  //nocheck here .. also because channelSeq seems unuseful.
   cvConvertImage(m_ipl_image, m_ipl_image, CV_CVTIMG_SWAP_RB);
 
+  //user-buffer was not initialized.
+  //we do it here
   if(!user_buffer) 
     user_buffer.reset(new core::uint8_t[m_byte_size]);
 
-    //printf("PRE_ RGB _ memcpy(user_buffer.get()...);\n");
+  //just a raw memcpy here.
   memcpy(user_buffer.get()
   ,(unsigned char*)m_ipl_image->imageData
    ,  m_byte_size);
 
+  //depending on the inifile we convert things to the desired format.
   if (iplimage_is_interleaved() )
   { 
     if(!bwantsinterleaved)
