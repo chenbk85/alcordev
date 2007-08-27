@@ -5,7 +5,7 @@
 #include <boost/function.hpp>
 #include <boost/bind.hpp>
 #include <map>
-#include "../net_packet_t.hpp"
+#include "alcor/core/net_packet_t.hpp"
 
 
 namespace all {
