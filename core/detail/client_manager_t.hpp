@@ -3,8 +3,8 @@
 
 #include <set>
 #include <boost/function.hpp>
-#include "../net_packet_t.hpp"
-#include "../client_connection_t.hpp"
+#include "alcor/core/net_packet_t.hpp"
+#include "alcor/core/client_connection_t.hpp"
 
 namespace all {
 	namespace core {
@@ -16,7 +16,7 @@ class client_manager_t {
 public:
 	
 	//add a new client to the list
-	void add_client(client_connection_ptr_t);
+	void add_client(all::core::client_connection_ptr_t);
 	
 	void stop_client(client_connection_ptr_t);
 	

@@ -4,7 +4,7 @@
 #include <boost/asio.hpp>
 #include <boost/function.hpp>
 #include <boost/bind.hpp>
-#include "../net_packet_t.hpp"
+#include "alcor/core/net_packet_t.hpp"
 
 namespace all {
 	namespace core {
