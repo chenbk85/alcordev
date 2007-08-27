@@ -51,7 +51,7 @@ class all::sense::opencv_grabber_t
 public:
 
   ///
-  opencv_grabber_t(int cam = -1); 
+  opencv_grabber_t(); 
 
   // Destroy an OpenCV image grabber.
   virtual ~opencv_grabber_t();
@@ -59,7 +59,7 @@ public:
   ///
   bool open(const std::string& inifile, bool show_dialog = true);
 
-  ///
+  ///uhm nothing here .. yet.
   void log_to_disk(const std::string& avifile);
 
   ///
@@ -77,7 +77,7 @@ public:
   boost::function< bool (core::uint8_sarr&) > 
     get_color_buffer; 
 
-  ///
+  ///get the IplImage as is without modifications.
   IplImage* get_ipl_image();
   
   ///
