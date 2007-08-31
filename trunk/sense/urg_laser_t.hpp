@@ -44,6 +44,9 @@ public:
 	urg_scan_data_ptr do_scan(all::math::angle, all::math::angle, int);
 	urg_multi_scan_t do_multiple_scan(all::math::angle, all::math::angle, int, int, int);
 
+	void start_continous_scan(int, int, int, int);
+	void stop_continous_scan();
+
 	urg_multi_scan_t get_scan_vector();
 
 protected:
