@@ -297,6 +297,8 @@ void net_packet_t::resize_data_buffer() {
 	delete[] m_data;
 	m_data = new_buffer;
 
+	m_write_ptr = &(m_data[m_data_size]);
+
 	net_packet_t::INIT_DATA_BUFFER_SIZE = m_data_buffer_size;
 }
 

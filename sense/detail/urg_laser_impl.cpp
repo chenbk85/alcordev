@@ -3,6 +3,8 @@
 
 #include <vector>
 #include <boost/function.hpp>
+#include <boost/thread.hpp>
+#include <boost/bind.hpp>
 
 #include <alcor/core/iniWrapper.h>
 #include <alcor/core/core.h>
@@ -44,6 +46,10 @@ public:
 	//interface command
 	urg_scan_data_ptr do_scan(int, int, int);
 	urg_multi_scan_t do_multiple_scan(int, int, int, int, int);
+
+	void start_continous_scan(int, int, int, int);
+	void stop_continous_scan();
+	void continous_scan(int, int, int, int);
 	
 	void set_d_mode();
 	void set_s_mode();
@@ -76,7 +82,11 @@ public:
 	char m_scan_mode;
 
 	bool is_on;
+	volatile bool continous_mode;
 
+	boost::shared_ptr<boost::thread> m_continous_thread;
+
+	boost::shared_ptr<boost::thread> m_ready_cb_thread;
 	boost::function <void (urg_scan_data_ptr)> m_line_ready_cb;
 
 };
@@ -223,8 +233,10 @@ urg_multi_scan_t urg_laser_impl::do_multiple_scan(int start_step, int end_step, 
 
 				decode_scan(m_last_scan.scan_vec[i]);
 
-				if (m_line_ready_cb)
-					m_line_ready_cb(m_last_scan.scan_vec[i]);
+				if (m_line_ready_cb) {
+					m_ready_cb_thread.reset(new boost::thread(boost::bind(urg_laser_impl::m_line_ready_cb, m_last_scan.scan_vec[i])));
+					//m_line_ready_cb(m_last_scan.scan_vec[i]);
+				}
 
 			}
 			else
@@ -235,6 +247,64 @@ urg_multi_scan_t urg_laser_impl::do_multiple_scan(int start_step, int end_step, 
 	}
 }
 	
+
+void urg_laser_impl::start_continous_scan(int start, int end, int cc, int time_interval) {
+	continous_mode = true;
+	m_continous_thread.reset(new boost::thread(boost::bind(&urg_laser_impl::continous_scan, this, start, end, cc, time_interval)));
+}
+
+void urg_laser_impl::stop_continous_scan() {
+	continous_mode = false;
+	m_continous_thread->join();
+}
+
+void urg_laser_impl::continous_scan(int start, int end, int cc, int time_interval) {
+	if (!is_on)
+		laser_on();
+
+	std::string command = "M" + all::core::make_string(m_scan_mode,1) 
+						  + all::core::make_string(start, 4) 
+						  + all::core::make_string(end, 4)
+						  + all::core::make_string(cc, 2) 
+						  + all::core::make_string(time_interval, 1)
+						  + all::core::make_string(0, 2);
+
+	send_command(command);
+
+	read_reply();
+
+	if (m_last_reply.status == URG_CMD_OK) {
+
+		m_last_scan.scan_vec.reset(new urg_scan_data_ptr[1]);
+	
+		while(continous_mode) {
+			read_reply();
+
+
+			if (m_last_reply.status == URG_DATA_OK) {
+
+				m_last_scan.scan_vec[0].reset(new urg_scan_data_t());
+				m_last_scan.n_scan = 1;
+
+				m_last_scan.scan_vec[0]->start_step = start;
+				m_last_scan.scan_vec[0]->end_step = end;
+				m_last_scan.scan_vec[0]->cc = cc;
+				decode_scan(m_last_scan.scan_vec[0]);
+				if (m_line_ready_cb) {
+					m_ready_cb_thread.reset(new boost::thread(boost::bind(urg_laser_impl::m_line_ready_cb, m_last_scan.scan_vec[0])));
+					//m_line_ready_cb(m_last_scan.scan_vec[0]);
+				}
+
+			}
+
+		}
+	}
+
+	read_reply();
+	laser_off();
+	read_reply();
+
+}
 
 void urg_laser_impl::send_command(std::string command) {
 	

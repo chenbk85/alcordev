@@ -37,6 +37,14 @@ urg_multi_scan_t urg_laser_t::do_multiple_scan(all::math::angle start, all::math
 	return pimpl->do_multiple_scan(angle2step(start), angle2step(end), cc, n_scan, time_interval);
 }
 
+void urg_laser_t::start_continous_scan(int start, int end, int cc, int time_interval) {
+	pimpl->start_continous_scan(start, end, cc, time_interval);
+}
+
+void urg_laser_t::stop_continous_scan() {
+	pimpl->stop_continous_scan();
+}
+
 void urg_laser_t::set_d_mode() {
 	pimpl->set_d_mode();
 }
