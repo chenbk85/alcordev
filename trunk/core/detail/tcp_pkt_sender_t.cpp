@@ -55,7 +55,6 @@ void tcp_pkt_sender_t::send_packet(net_packet_ptr_t packet) {
 
 void tcp_pkt_sender_t::handle_write(const boost::system::error_code& error, std::size_t bytes_transferred, std::string* buffer_ptr) {
 	if (!error) {
-		//printf("packet sent\n%i bytes", bytes_transferred);
 		all::core::BOOST_SLEEP(1);
 	}
 	else {

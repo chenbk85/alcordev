@@ -9,7 +9,8 @@
 #include <alcor/core/iniWrapper.h>
 #include <alcor/core/core.h>
 
-#include "../urg_scan_data_t.hpp"
+//#include "../urg_scan_data_t.hpp"
+#include <alcor/sense/urg_scan_data_t.hpp>
 
 
 namespace all {
