@@ -24,6 +24,10 @@ public:
 
 	static const int MAX_NUM_POINTS = 769;
 
+	static all::math::angle step2angle(int);
+	static int angle2step(all::math::angle);
+	static all::math::angle resolution(int);
+
 	urg_scan_data_t();
 	//return the horizontal angle of the i-th element of scan_points
 	all::math::angle get_angle(int) const;
