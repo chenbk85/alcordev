@@ -30,11 +30,11 @@ urg_multi_scan_t urg_laser_t::do_multiple_scan(int start, int end, int cc, int n
 }
 
 urg_scan_data_ptr urg_laser_t::do_scan(all::math::angle start, all::math::angle end, int cc) {
-	return pimpl->do_scan(angle2step(start), angle2step(end), cc);
+	return pimpl->do_scan(urg_scan_data_t::angle2step(start), urg_scan_data_t::angle2step(end), cc);
 }
 
 urg_multi_scan_t urg_laser_t::do_multiple_scan(all::math::angle start, all::math::angle end, int cc, int n_scan, int time_interval) {
-	return pimpl->do_multiple_scan(angle2step(start), angle2step(end), cc, n_scan, time_interval);
+	return pimpl->do_multiple_scan(urg_scan_data_t::angle2step(start), urg_scan_data_t::angle2step(end), cc, n_scan, time_interval);
 }
 
 void urg_laser_t::start_continous_scan(int start, int end, int cc, int time_interval) {
@@ -65,17 +65,17 @@ urg_multi_scan_t urg_laser_t::get_scan_vector() {
 	return pimpl->m_last_scan;
 }
 
-all::math::angle urg_laser_t::step2angle(int step) {
-	return all::math::angle((360.0/1024.0)*(static_cast<double>(step) - 384.0), all::math::deg_tag);
-}
-
-int urg_laser_t::angle2step(all::math::angle a) {
-	return static_cast<int> ((double(1024)/double(360)) * a.deg())+384;
-}
-
-all::math::angle urg_laser_t::resolution (int cc) {
-	return all::math::angle(static_cast<double>(cc)*(360.0/1024.0) , all::math::deg_tag);
-}
+//all::math::angle urg_laser_t::step2angle(int step) {
+//	return all::math::angle((360.0/1024.0)*(static_cast<double>(step) - 384.0), all::math::deg_tag);
+//}
+//
+//int urg_laser_t::angle2step(all::math::angle a) {
+//	return static_cast<int> ((double(1024)/double(360)) * a.deg())+384;
+//}
+//
+//all::math::angle urg_laser_t::resolution (int cc) {
+//	return all::math::angle(static_cast<double>(cc)*(360.0/1024.0) , all::math::deg_tag);
+//}
 
 } //namespace sense
 } //namespace all
