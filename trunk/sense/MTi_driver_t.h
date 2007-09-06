@@ -58,6 +58,8 @@ namespace tags
     ///
     all::math::rpy_angle_t  
         get_euler();
+    ///
+
     
   private:
     boost::shared_ptr<detail::MTi_driver_impl> impl;
