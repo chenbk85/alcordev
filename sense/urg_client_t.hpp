@@ -4,7 +4,8 @@
 #include <alcor/core/client_base_t.hpp>
 #include <alcor/core/iniWrapper.h>
 
-#include "urg_server_data_t.hpp"
+//#include "urg_server_data_t.hpp"
+#include "alcor/sense/urg_server_data_t.hpp"
 
 namespace all {
 	namespace sense {

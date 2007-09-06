@@ -5,8 +5,8 @@
 /// created: 11/05/06
 /// last modified: 11/05/06
 ///////////////////////////////////////////////
-#include "../iniWrapper.h"
-#include "wrappImpl.cpp"
+#include <alcor/core/iniWrapper.h>
+#include <alcor/core/detail/wrappImpl.cpp>
 /// constructors
 //:errorFile_("errorFile.log",std::ios::out)
 
