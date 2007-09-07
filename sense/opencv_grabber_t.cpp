@@ -342,7 +342,17 @@ IplImage* all::sense::opencv_grabber_t::get_ipl_image()
 	cvConvertImage(m_ipl_image, m_ipl_image, CV_CVTIMG_SWAP_RB);
   return m_ipl_image;
 }
-  ///
+//-------------------------------------------------------------------------++
+int all::sense::opencv_grabber_t::grab_ipl_image() 
+	{
+   	return cvGrabFrame(m_capture); 
+  }
+//-------------------------------------------------------------------------++
+IplImage* all::sense::opencv_grabber_t::retrieve_ipl_image() 
+	{
+
+  return cvRetrieveFrame( m_capture);
+}
 //-------------------------------------------------------------------------++
 ///
 void all::sense::opencv_grabber_t::log_to_disk(const std::string& avifile)

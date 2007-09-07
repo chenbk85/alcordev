@@ -79,7 +79,15 @@ public:
 
   ///get the IplImage as is without modifications.
   IplImage* get_ipl_image();
-  
+
+  //---------------------------------------------------------------------------
+  //this two for fast acquisition....
+  ///store the IplImage as is without modifications faster.
+  int       grab_ipl_image();  
+  ///get Ipl Image from previously stored buffer.
+  IplImage* retrieve_ipl_image();
+  //---------------------------------------------------------------------------
+
   ///
   int height() const { return m_h; }
   ///
