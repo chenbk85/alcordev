@@ -82,8 +82,9 @@ public:
 
   //---------------------------------------------------------------------------
   //this two for fast acquisition....
-  ///store the IplImage as is without modifications faster.
+  ///store the IplImage as is without modifications.
   int       grab_ipl_image();  
+
   ///get Ipl Image from previously stored buffer.
   IplImage* retrieve_ipl_image();
   //---------------------------------------------------------------------------
@@ -94,7 +95,8 @@ public:
   int width() const { return m_w; }
   ///
   int channels() const { return m_ch; }
-  ///
+
+  ///size in bytes della immagine
   std::size_t size() const { return m_byte_size; }
 
 private:
