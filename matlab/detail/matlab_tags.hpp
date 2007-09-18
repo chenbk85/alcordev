@@ -36,16 +36,37 @@ public:
 };
 //-------------------------------------------------------------------------++
 template< >
+class traits<all::core::int16_t>
+{
+public:
+  typedef core::traits<core::int16_t>::value_type value_type;
+  typedef core::traits<value_type>::ptr ptr;
+  typedef core::traits<value_type>::const_ptr const_ptr;
+  BOOST_STATIC_CONSTANT(size_t, size=core::traits<value_type>::size);
+  BOOST_STATIC_CONSTANT(mxClassID, tag = mxINT16_CLASS);
+};
+//-------------------------------------------------------------------------++
+template< >
 class traits<all::core::single_t>
 {
 public:
   typedef all::core::single_t value_type;
-  typedef all::core::traits<all::core::single_t>::ptr ptr;
+  typedef all::core::traits<value_type>::ptr ptr;
   typedef const ptr const_ptr;
   BOOST_STATIC_CONSTANT(int, size=sizeof(value_type));
   BOOST_STATIC_CONSTANT(mxClassID, tag = mxSINGLE_CLASS);
 };
-
+//-------------------------------------------------------------------------++
+template< >
+class traits<all::core::double_t>
+{
+public:
+  typedef all::core::double_t value_type;
+  typedef all::core::traits<value_type>::ptr ptr;
+  typedef const ptr const_ptr;
+  BOOST_STATIC_CONSTANT(int, size=sizeof(value_type));
+  BOOST_STATIC_CONSTANT(mxClassID, tag = mxDOUBLE_CLASS);
+};
 ////#########################################################################
 //namespace detail
 //		{

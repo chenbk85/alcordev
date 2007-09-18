@@ -229,6 +229,19 @@ public:
 };
 //-------------------------------------------------------------------------++
 template< >
+class traits<int16_t>
+{
+public:
+  typedef int16_t value_type;
+  typedef int16_t* ptr;
+  typedef const int16_t* const_ptr;
+    //: Is signed
+  static bool is_signed() {return true;}
+  static unsigned num_bits() {return 16;}
+  BOOST_STATIC_CONSTANT(std::size_t, size=sizeof(int16_t));
+};
+//-------------------------------------------------------------------------++
+template< >
 class traits<int32_t>
 {
 public:
