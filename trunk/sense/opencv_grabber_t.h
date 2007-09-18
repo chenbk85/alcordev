@@ -4,6 +4,7 @@
 #pragma comment(lib, "opencv_grabber_t.lib")
 //-------------------------------------------------------------------------++
 #include "alcor/core/core.h"
+#include "alcor/matlab/opencv_matlab_utils.hpp"
 #include <cv.h>
 #include <highgui.h>
 
