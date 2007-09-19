@@ -60,6 +60,9 @@ public:
   ///
   bool open(const std::string& inifile, bool show_dialog = true);
 
+  ///
+  bool open(const std::string& inifile, const std::string& section);
+
   ///uhm nothing here .. yet.
   void log_to_disk(const std::string& avifile);
 
