@@ -7,8 +7,10 @@ using std::endl;
 #include "alcor/sense/opencv_grabber_t.h"
 #include "alcor/core/image_utils.h"
 #include "alcor/core/iniWrapper.h"
+#include "alcor/core/config_parser_t.hpp"
 //-------------------------------------------------------------------------++
-#include <boost\bind.hpp>
+#include <boost/lexical_cast.hpp>
+#include <boost/bind.hpp>
 //-------------------------------------------------------------------------++
 ///
 all::sense::opencv_grabber_t::opencv_grabber_t()
@@ -51,9 +53,12 @@ bool all::sense::opencv_grabber_t::open(const std::string& inifile, bool show_di
   if (!ini.Load(inifile.c_str()) )return false;
   
   //busedialogs= (ini.GetBool("config:usedialogs", 1) == 1);
+  //
   bwantsgray = (ini.GetBool("config:graylevel",0) == 1);
+  //
   bwantsinterleaved = (ini.GetBool("config:interleaved",1)== 1);
-  m_cam_id = ini.GetInt("config:camid", -1);
+  //
+  m_cam_id = ini.GetInt("config:camid", CV_CAP_ANY);
 
   if(bwantsgray)
   {
@@ -76,8 +81,45 @@ bool all::sense::opencv_grabber_t::open(const std::string& inifile, bool show_di
   ///filevideo
     return open_(core::open_video, vidname);
   }
-
 }
+//-------------------------------------------------------------------------++
+  ///
+  bool all::sense::opencv_grabber_t::open(const std::string& inifile, const std::string& section)
+  {
+    core::config_parser_t ini;
+    if (!ini.load(core::tags::ini,inifile)) return false;
+  
+  
+    //
+    bwantsgray        = ini.get<bool>( (section + ":graylevel"), false) ;
+    //
+    bwantsinterleaved = ini.get<bool>( (section + ":interleaved"), true);
+    //
+    m_cam_id = ini.get<int>( (section + ":camid") , CV_CAP_ANY);
+
+  if(bwantsgray)
+  {
+    get_color_buffer = boost::bind(&all::sense::opencv_grabber_t::get_color_buffer_gray_,
+                                   this,
+                                   _1);
+  }
+
+  int grabmode = ini.get<int>( (section + ":camera") ,1);
+
+  if(grabmode)
+  {
+    ///camera
+    return open_(core::open_camera, m_cam_id, true);
+  }
+  else
+  {
+    //wants to open a video file.
+    std::string vidname=ini.get<std::string>( (section + ":videofile") );
+  ///filevideo
+    return open_(core::open_video, vidname);
+  }
+
+  }
 //-------------------------------------------------------------------------++
 ///
 bool all::sense::opencv_grabber_t::open_(core::camera_mode_t, int in_cam, bool show_dialog) 
@@ -87,7 +129,7 @@ bool all::sense::opencv_grabber_t::open_(core::camera_mode_t, int in_cam, bool s
   m_cam_id = in_cam;
 
   // Try to open a capture object for the first camera
-  m_capture = cvCreateCameraCapture(m_cam_id);
+  m_capture = cvCreateCameraCapture(CV_CAP_ANY);
   if (0 == m_capture) 
   {
       cout <<"Unable to open camera " << m_cam_id << " for capture!\n" ;
