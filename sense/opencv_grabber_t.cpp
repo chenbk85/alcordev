@@ -6,7 +6,8 @@ using std::endl;
 //-------------------------------------------------------------------------++
 #include "alcor/sense/opencv_grabber_t.h"
 #include "alcor/core/image_utils.h"
-#include "alcor/core/iniWrapper.h"
+//-------------------------------------------------------------------------++
+#include "alcor/core/iniWrapper.h"//obsolete!
 #include "alcor/core/config_parser_t.hpp"
 //-------------------------------------------------------------------------++
 #include <boost/lexical_cast.hpp>
@@ -149,7 +150,8 @@ bool all::sense::opencv_grabber_t::open_(core::video_mode_t, const std::string& 
 	{
     // Try to open a capture object for the file
     m_capture = cvCaptureFromAVI(in_file.c_str());
-    if (0 == m_capture) {
+    if (0 == m_capture) 
+    {
         std::printf("Unable to open file '%s' for capture!\n",
                in_file.c_str());
         return false;
@@ -356,41 +358,41 @@ bool all::sense::opencv_grabber_t::
     //printf("POST memcpy(user_buffer.get()...);\n");
   return true;
 }
-//-------------------------------------------------------------------------++
-IplImage* all::sense::opencv_grabber_t::get_ipl_image() 
-	{
-    // Must have a capture object
-    if (0 == m_capture) {
-		cout << "!**Not a valid Capture Object!" << endl;
-        return 0;
-    }
-
-	IplImage* iplFrame = 0;
-
-  //// Grab and retrieve a frame, OpenCV owns the returned image
-  iplFrame = cvQueryFrame((CvCapture*)m_capture);
-
-  if(0!= iplFrame)
-  {
-    if(!m_data_origin)
-    {
-      m_ipl_image = cvCloneImage(iplFrame);
-    }
-    else
-    {
-      cvConvertImage(iplFrame, m_ipl_image, CV_CVTIMG_FLIP);
-    }
-  }
-	cvConvertImage(m_ipl_image, m_ipl_image, CV_CVTIMG_SWAP_RB);
-  return m_ipl_image;
-}
+////-------------------------------------------------------------------------++
+//IplImage* all::sense::opencv_grabber_t::get_ipl_image() 
+//	{
+//    // Must have a capture object
+//    if (0 == m_capture) {
+//		cout << "!**Not a valid Capture Object!" << endl;
+//        return 0;
+//    }
+//
+//	IplImage* iplFrame = 0;
+//
+//  //// Grab and retrieve a frame, OpenCV owns the returned image
+//  iplFrame = cvQueryFrame((CvCapture*)m_capture);
+//
+//  if(0!= iplFrame)
+//  {
+//    if(!m_data_origin)
+//    {
+//      m_ipl_image = cvCloneImage(iplFrame);
+//    }
+//    else
+//    {
+//      cvConvertImage(iplFrame, m_ipl_image, CV_CVTIMG_FLIP);
+//    }
+//  }
+//	cvConvertImage(m_ipl_image, m_ipl_image, CV_CVTIMG_SWAP_RB);
+//  return m_ipl_image;
+//}
 //-------------------------------------------------------------------------++
 int all::sense::opencv_grabber_t::grab_ipl_image() 
 	{
    	return cvGrabFrame(m_capture); 
   }
 //-------------------------------------------------------------------------++
-IplImage* all::sense::opencv_grabber_t::retrieve_ipl_image() 
+IplImage* all::sense::opencv_grabber_t::retrieve_ipl_image() const
 	{
 
   return cvRetrieveFrame( m_capture);

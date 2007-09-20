@@ -5,16 +5,16 @@
 //-------------------------------------------------------------------------++
 #include "alcor/core/core.h"
 #include "alcor/matlab/opencv_matlab_utils.hpp"
+//-------------------------------------------------------------------------++
 #include <cv.h>
 #include <highgui.h>
-
+//-------------------------------------------------------------------------++
 #ifdef CVAPI_EXPORTS
 #undef CVAPI_EXPORTS
 #endif
-
 //-------------------------------------------------------------------------++
-#include <boost\shared_ptr.hpp>
-#include <boost\function.hpp>
+#include <boost/shared_ptr.hpp>
+#include <boost/function.hpp>
 //-------------------------------------------------------------------------++
 namespace all {
     namespace sense {
@@ -82,7 +82,7 @@ public:
     get_color_buffer; 
 
   ///get the IplImage as is without modifications.
-  IplImage* get_ipl_image();
+  //IplImage* get_ipl_image();
 
   //---------------------------------------------------------------------------
   //this two for fast acquisition....
@@ -90,7 +90,7 @@ public:
   int       grab_ipl_image();  
 
   ///get Ipl Image from previously stored buffer.
-  IplImage* retrieve_ipl_image();
+  IplImage* retrieve_ipl_image() const;
   //---------------------------------------------------------------------------
 
   ///
