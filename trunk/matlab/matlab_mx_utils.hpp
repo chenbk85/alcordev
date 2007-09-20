@@ -96,7 +96,7 @@ static mxArray* create_from_interleaved(typename matlab::traits<T>::const_ptr _s
     //
 	int planar_inc = _height*_width;
     //int planar_inc_2 = planar_inc*2;
-	int column_inc=0;	
+	size_t column_inc=0;	
 
 	///channel's stride ..
     //TODO: remove it from here?

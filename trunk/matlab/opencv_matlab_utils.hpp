@@ -4,27 +4,15 @@
 #include "matrix.h" //for matlab mxArray
 #include "cxcore.h"
 //-----------------------------------------------------------------------++
-//#include "alcor/matlab/detail/matlab_tags.hpp"
+#include "alcor/core/opencv_utils.hpp"
 #include "alcor/matlab/matlab_mx_utils.hpp"
 //-----------------------------------------------------------------------++
 #include "boost/shared_ptr.hpp"
 //-----------------------------------------------------------------------++
 namespace all { namespace matlab {
 //-----------------------------------------------------------------------++
-//void release_iplimage(IplImage* p_image)
-//{
-//  cvReleaseImage(&p_image);
-//}
-//-----------------------------------------------------------------------++
 struct mxcv {
-//=============================================================================
-static void release_iplimage(IplImage* p_image)
-{
-  cvReleaseImage(&p_image);
-}
-//=============================================================================
-//
-typedef boost::shared_ptr<IplImage> iplimage_ptr;
+
 //=============================================================================
 template <typename T>
 static IplImage* mxarray_to_iplimage(const mxArray* p_array)
