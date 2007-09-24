@@ -36,7 +36,7 @@ all::sense::opencv_grabber_t::opencv_grabber_t()
 
 
     //default
-    get_color_buffer = boost::bind(&all::sense::opencv_grabber_t::get_color_buffer_original_,
+    get_image_buffer = boost::bind(&all::sense::opencv_grabber_t::get_image_buffer_original_,
                                  this,
                                  _1);
 
@@ -63,7 +63,7 @@ bool all::sense::opencv_grabber_t::open(const std::string& inifile, bool show_di
 
   if(bwantsgray)
   {
-    get_color_buffer = boost::bind(&all::sense::opencv_grabber_t::get_color_buffer_gray_,
+    get_image_buffer = boost::bind(&all::sense::opencv_grabber_t::get_image_buffer_gray_,
                                    this,
                                    _1);
   }
@@ -100,7 +100,7 @@ bool all::sense::opencv_grabber_t::open(const std::string& inifile, bool show_di
 
   if(bwantsgray)
   {
-    get_color_buffer = boost::bind(&all::sense::opencv_grabber_t::get_color_buffer_gray_,
+    get_image_buffer = boost::bind(&all::sense::opencv_grabber_t::get_image_buffer_gray_,
                                    this,
                                    _1);
   }
@@ -248,7 +248,7 @@ bool all::sense::opencv_grabber_t::close()
 //-------------------------------------------------------------------------++
 ///
 bool all::sense::opencv_grabber_t::
-get_color_buffer_original_(core::uint8_sarr& user_buffer)
+get_image_buffer_original_(core::uint8_sarr& user_buffer)
 {
     // Must have a capture object
     if (0 == m_capture) {
@@ -314,7 +314,7 @@ get_color_buffer_original_(core::uint8_sarr& user_buffer)
 //-------------------------------------------------------------------------++
 ///
 bool all::sense::opencv_grabber_t::
-  get_color_buffer_gray_(core::uint8_sarr& user_buffer)
+  get_image_buffer_gray_(core::uint8_sarr& user_buffer)
 {
   
     // Must have a capture object
