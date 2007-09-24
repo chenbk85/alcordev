@@ -77,12 +77,16 @@ public:
 	///
 	bool close();
 
+  ///Obsolete!
+  bool get_color_buffer(core::uint8_sarr& image_ptr) 
+  {
+    printf("USE get_image_buffer instead!\n");
+    get_image_buffer(image_ptr);
+  }
+
   ///
   boost::function< bool (core::uint8_sarr&) > 
-    get_color_buffer; 
-
-  ///get the IplImage as is without modifications.
-  //IplImage* get_ipl_image();
+    get_image_buffer; 
 
   //---------------------------------------------------------------------------
   //this two for fast acquisition....
@@ -121,9 +125,9 @@ private:
 	int m_ch;
 
 	///
-  bool get_color_buffer_original_(core::uint8_sarr&);
+  bool get_image_buffer_original_(core::uint8_sarr&);
   ///
-  bool get_color_buffer_gray_(core::uint8_sarr&);
+  bool get_image_buffer_gray_(core::uint8_sarr&);
 
   ///
   bool bwantsinterleaved;

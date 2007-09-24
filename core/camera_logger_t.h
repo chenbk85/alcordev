@@ -108,7 +108,7 @@ void camera_logger_t::main_loop_()
   double timestamp;
   while(running_)
   {
-    if (camera_->get_color_buffer(imag_sptr_) )
+    if (camera_->get_image_buffer(imag_sptr_) )
     {
       timestamp = timer_.elapsed();
       binlogger_->add(imag_sptr_, timestamp);

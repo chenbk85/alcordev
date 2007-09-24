@@ -74,11 +74,12 @@ static mxArray* create_from_planar(typename matlab::traits<T>::const_ptr _src
 
 //---------------------------------------------------------------------++
 ///
-static mxArray* create_from_interleaved(typename matlab::traits<T>::const_ptr _src
-					,matlab::row_major_t//src ordering
-					,size_t _height
-					,size_t _width
-					,size_t _channels=3)//depth==num of channels/component
+static mxArray* create_from_interleaved(
+            typename matlab::traits<T>::const_ptr _src
+					, matlab::row_major_t//src ordering
+					, size_t _height
+					, size_t _width
+					, size_t _channels=3)//depth==num of channels/component
 {
   //
 	mwSize dims[] = {_height, _width, _channels};
@@ -96,11 +97,12 @@ static mxArray* create_from_interleaved(typename matlab::traits<T>::const_ptr _s
     //
 	int planar_inc = _height*_width;
     //int planar_inc_2 = planar_inc*2;
-	size_t column_inc=0;	
+	int column_inc=0;	
 
 	///channel's stride ..
     //TODO: remove it from here?
 	std::vector<int> _channel_stride;
+  //
 	for (int i = _channels ; i ; --i)
 		{	
 		_channel_stride.push_back((i-1)*planar_inc);
