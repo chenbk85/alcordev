@@ -67,23 +67,14 @@ class p3dx_client_imp :
 		void m_get_odometry_imp ( ArNetPacket* pkt);
 		void m_set_localized_imp( ArNetPacket* pkt);
 
-		//void set_vel_imp(ArNetPacket* pkt){};
-		//void set_rot_vel_imp(ArNetPacket* pkt){};
-		//void stop_imp(ArNetPacket* pkt){};
 
 	protected:
 		ArFunctor1C<p3dx_client_imp, ArNetPacket* > m_get_odometry_cb;
 		ArFunctor1C<p3dx_client_imp, ArNetPacket* > m_set_localized_cb;
 
-		//ArFunctor1C<p3dx_client_imp, ArNetPacket* > m_set_vel_cb;
-		//ArFunctor1C<p3dx_client_imp, ArNetPacket* > m_set_rot_vel_cb;
-		//ArFunctor1C<p3dx_client_imp, ArNetPacket* > m_stop_cb;
-
 	private:
     ///
     all::core::i_connection_handler_t connection_handler;
-    ///
-    //boost::thread* conn_thr;
 		///
     act::p3dx_position_t  m_p3dx_odometry;
 		///
@@ -95,11 +86,7 @@ class p3dx_client_imp :
 p3dx_client_imp::p3dx_client_imp(const std::string& _inifile):
 			connection_handler(this,_inifile),
 			m_get_odometry_cb(this, &p3dx_client_imp::m_get_odometry_imp),
-			m_set_localized_cb(this, &p3dx_client_imp::m_set_localized_imp)/*,
-
-			m_set_vel_cb(this, &p3dx_client_imp::set_vel_imp),
-			m_stop_cb(this, &p3dx_client_imp::stop_imp),
-			m_set_rot_vel_cb(this, &p3dx_client_imp::set_rot_vel_imp)*/
+			m_set_localized_cb(this, &p3dx_client_imp::m_set_localized_imp)
 
 	{
 	}
@@ -247,10 +234,6 @@ void p3dx_client_imp::register_to()
 		connection_handler.m_client.addHandler("getOdometry", &m_get_odometry_cb);
 		connection_handler.m_client.addHandler("setLocalized",&m_set_localized_cb);
 
-		//connection_handler.m_client.addHandler("setvel",&m_set_vel_cb);
-		//connection_handler.m_client.addHandler("setrotvel",&m_set_rot_vel_cb);
-		//connection_handler.m_client.addHandler("stop",&m_stop_cb);
-
 	  connection_handler.m_client.request("getOdometry",50);
 	}
 //---------------------------------------------------------------------------
@@ -271,14 +254,6 @@ void p3dx_client_imp::m_set_localized_imp(ArNetPacket* msg)
 	}
 //---------------------------------------------------------------------------
 //###########################################################################
-//boost::shared_ptr<p3dx_client_t> create_p3dx_client()
-//  {
-//    boost::shared_ptr<p3dx_client_t> p_client (
-//    reinterpret_cast<p3dx_client_t*>
-//    (new p3dx_client_imp())
-//    );
-//  return p_client;
-//  }
 
 boost::shared_ptr<p3dx_client_t> create_p3dx_client()
   {

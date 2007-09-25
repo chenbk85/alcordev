@@ -359,33 +359,6 @@ bool all::sense::opencv_grabber_t::
   return true;
 }
 ////-------------------------------------------------------------------------++
-//IplImage* all::sense::opencv_grabber_t::get_ipl_image() 
-//	{
-//    // Must have a capture object
-//    if (0 == m_capture) {
-//		cout << "!**Not a valid Capture Object!" << endl;
-//        return 0;
-//    }
-//
-//	IplImage* iplFrame = 0;
-//
-//  //// Grab and retrieve a frame, OpenCV owns the returned image
-//  iplFrame = cvQueryFrame((CvCapture*)m_capture);
-//
-//  if(0!= iplFrame)
-//  {
-//    if(!m_data_origin)
-//    {
-//      m_ipl_image = cvCloneImage(iplFrame);
-//    }
-//    else
-//    {
-//      cvConvertImage(iplFrame, m_ipl_image, CV_CVTIMG_FLIP);
-//    }
-//  }
-//	cvConvertImage(m_ipl_image, m_ipl_image, CV_CVTIMG_SWAP_RB);
-//  return m_ipl_image;
-//}
 //-------------------------------------------------------------------------++
 int all::sense::opencv_grabber_t::grab_ipl_image() 
 	{
