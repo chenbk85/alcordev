@@ -65,7 +65,7 @@ namespace lti {
   const float directedPerceptionPTU::parameters::minTiltAcceleration =(1700.f*185.1428f/3600.f)*
                                                                       constants<float>::Pi()/180.f;
   
-  const int directedPerceptionPTU::parameters::ptuResponseTime = 100;
+  const int directedPerceptionPTU::parameters::ptuResponseTime = 120;
   
   int directedPerceptionPTU::parameters::instructionCounter=0;
                                                    
