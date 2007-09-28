@@ -41,7 +41,7 @@ inline memory_stream_source_t::memory_stream_source_t(size_t h, size_t w,size_t 
     m_encoder_->reset(core::rgb_tag,  all::core::planar_tag, h, w);
 
   m_image_.reset(new all::core::uint8_t[w*h*d]);
-	m_jpeg_quality_ = 100;
+	m_jpeg_quality_ = 80;
 }
 //...................................................................
 inline void memory_stream_source_t::update_image(const all::core::uint8_ptr pimage)

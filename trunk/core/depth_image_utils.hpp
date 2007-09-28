@@ -20,6 +20,7 @@ namespace all { namespace core {
   {
     size_t row,col;
   };
+
 //---------------------------------------------------------------------------+
   ///
   template<typename T, size_t DIM=3>
