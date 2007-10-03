@@ -55,6 +55,7 @@ void stream_client_t::get_stream_setting_cb(net_packet_ptr_t packet) {
     m_udp_socket.set_option(boost::asio::ip::udp::socket::reuse_address(true));
 	printf("socket opened\n");
     m_udp_socket.bind(listen_endpoint);
+	printf("socket binded\n");
 	start_receive();
 }
 
@@ -86,13 +87,16 @@ void stream_client_t::start_receive() {
 	if ( (!m_streaming) && (is_connected()) ) {
 		
 		//start waiting for packet 
+		printf("Start stream manager receive\n");
 		m_stream_manager.start_receive();
 		m_stream_thread.reset(new boost::thread(boost::bind(&boost::asio::io_service::run, &m_stream_service)));
     
 		// join the multicast group
-		m_udp_socket.set_option(
-			boost::asio::ip::multicast::join_group(m_asio_multicast_address));
+		//printf("Joining multicast group\n");
+		//m_udp_socket.set_option(
+		//	boost::asio::ip::multicast::join_group(m_asio_multicast_address));
 
+		printf("All ok\n");
 		m_streaming = true;
 	}
 
@@ -111,7 +115,7 @@ void stream_client_t::handle_stop_receive() {
 	m_streaming = false;
 	m_stream_manager.stop_receive();
 	printf("stream stopped\n");
-	m_udp_socket.set_option(boost::asio::ip::multicast::leave_group(m_asio_multicast_address));
+	//m_udp_socket.set_option(boost::asio::ip::multicast::leave_group(m_asio_multicast_address));
 	printf("multicast left\n");
 	m_stream_service.stop();
 }
