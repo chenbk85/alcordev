@@ -85,12 +85,12 @@ shrimp_gateway_impl::shrimp_gateway_impl(const char* ini_file): m_io_timer(COM_T
 
 bool shrimp_gateway_impl::connect() {
 	if ( m_shrimp.Open(m_com_port.c_str()) != -1) {
-		printf("shrimp connected on port %s", m_com_port.c_str());
+		printf("shrimp connected on port %s\n", m_com_port.c_str());
 		init();
 		return true;
 	}
 	else {
-		printf("unable to open port %s", m_com_port.c_str());
+		printf("unable to open port %s\n", m_com_port.c_str());
 		return false;
 	}
 }
@@ -240,7 +240,7 @@ void shrimp_gateway_impl::update_status_flags() {
 	send_command(command);
 	if (read_reply()) {
 		m_status_flags = m_reply;
-		std::cout << "status flag: " << m_status_flags << std::endl;
+		//std::cout << "status flag: " << m_status_flags << std::endl;
 	}
 	else
 		printf("error getting status flags\n");
@@ -251,7 +251,7 @@ void shrimp_gateway_impl::update_power_state() {
 	send_command(command);
 	if (read_reply()) {
 		m_power_state = m_reply;
-		std::cout << "power state: " << m_power_state << std::endl;
+		//std::cout << "power state: " << m_power_state << std::endl;
 	}
 	else
 		printf("error getting power state\n");
@@ -262,7 +262,7 @@ void shrimp_gateway_impl::update_control_flags() {
 	send_command(command);
 	if (read_reply()) {
 		m_control_flags = m_reply;
-		std::cout << "control flags: " << m_control_flags << std::endl;
+		//std::cout << "control flags: " << m_control_flags << std::endl;
 	}
 	else
 		printf("error getting control flags\n");

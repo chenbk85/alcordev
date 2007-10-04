@@ -21,6 +21,8 @@ shrimp_server_t::shrimp_server_t(char* ini_file) : m_shrimp(ini_file) {
 
 	add_command_handler("getData", boost::bind(&shrimp_server_t::send_shrimp_data, this, _1, _2));
 
+	set_client_disconnect_cb(boost::bind(&shrimp_server_t::client_disconnected_cb, this, _1));
+
 	if (m_shrimp.connect()) {
 		//m_shrimp.set_robot_on();
 	}
@@ -69,11 +71,11 @@ void shrimp_server_t::update_shrimp_data() {
 	m_shrimp_data.m_em_status = m_shrimp.is_em();
 	m_shrimp_data.m_voltage = m_shrimp.get_voltage();
 
-	printf("speed %i\n", m_shrimp_data.m_speed);
-	printf("steer %i\n", m_shrimp_data.m_steer);
-	printf("power %i\n", m_shrimp_data.m_power_status);
-	printf("em %i\n", m_shrimp_data.m_em_status);
-	printf("voltage %f\n", m_shrimp_data.m_voltage);
+	//printf("speed %i\n", m_shrimp_data.m_speed);
+	//printf("steer %i\n", m_shrimp_data.m_steer);
+	//printf("power %i\n", m_shrimp_data.m_power_status);
+	//printf("em %i\n", m_shrimp_data.m_em_status);
+	//printf("voltage %f\n", m_shrimp_data.m_voltage);
 
 }
 
@@ -83,5 +85,12 @@ void shrimp_server_t::send_shrimp_data(client_connection_ptr_t client, net_packe
 	m_shrimp_data.pack(packet);
 	send_answer_packet("serverData", client, packet);
 }
+
+void shrimp_server_t::client_disconnected_cb(int num_client)  {
+	if (num_client == 0) {
+		m_shrimp.set_robot_standby();
+	}
+}
+
 
 }} //namespaces
