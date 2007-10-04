@@ -34,6 +34,8 @@ private:
 	void update_shrimp_data();
 	void send_shrimp_data(client_connection_ptr_t, net_packet_ptr_t);
 
+	void client_disconnected_cb(int);
+
 
 private:
 	shrimp_gateway_t m_shrimp;

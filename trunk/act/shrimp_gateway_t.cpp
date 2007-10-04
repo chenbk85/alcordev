@@ -43,13 +43,13 @@ void shrimp_gateway_t::em_release() {
 
 void shrimp_gateway_t::set_speed(int speed) {
 	short step_speed = static_cast <short> (speed * SPEED_MMpS_TO_STEP);
-	printf("speed: %i\n", step_speed);
+	//printf("speed: %i\n", step_speed);
 	pimpl->set_speed(step_speed);
 }
 
 void shrimp_gateway_t::set_steer(all::math::angle steer) {
 	short step_steer = static_cast <short> (steer.deg() * (STEER_DEG_TO_STEP));
-	printf("steer: %i\n", step_steer);
+	//printf("steer: %i\n", step_steer);
 	pimpl->set_steer(step_steer);
 }
 
