@@ -1,4 +1,6 @@
-#pragma once//oggi sono pigro
+#ifndef pinholes_utils_HPP_INCLUDED
+#define pinholes_utils_HPP_INCLUDED
+///---------------------------------------------------------------------
 #include <utility>
 #include "alcor/core/core.h"
 #include "alcor/core/pantilt_angle_t.hpp"
@@ -71,3 +73,4 @@ struct pinhole_t
 
 }}
 
+#endif //pinholes_utils_HPP_INCLUDED
