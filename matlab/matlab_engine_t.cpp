@@ -64,6 +64,7 @@ void matlab_engine_t::put_scalar(const char* name, int value)
 	int* int_ptr = static_cast<int*>(mxGetData(temp));
 	*int_ptr = value;
 	engPutVariable(m_eng, name, temp);
+  mxDestroyArray(temp);
 }
 ////---------------------------------------------------------------------------
 ///\param name The name of the variable.
@@ -96,6 +97,7 @@ void matlab_engine_t::put_array(const char* name, mxArray* arr)
 {
 	//MESSAGE("Writing Double Array in WS");
 	engPutVariable(m_eng, name, arr);
+  mxDestroyArray(arr);
 }
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
