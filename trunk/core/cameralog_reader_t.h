@@ -18,6 +18,8 @@ using namespace cimg_library;
 #pragma comment (lib, "libmat.lib")
 #pragma comment (lib, "libmx.lib")
 //-------------------------------------------------------------------
+#define _DO_MATLAB_LOG_
+//-------------------------------------------------------------------
 namespace all { namespace core {
 //-------------------------------------------------------------------
 ///
@@ -25,7 +27,7 @@ class cameralog_reader_t
 {
 public:
   ///
-  cameralog_reader_t();
+  cameralog_reader_t(bool b_do_matsave = false);
   ///
   void begin_loop();
   ///
@@ -56,13 +58,16 @@ private:
   volatile bool running_;
   ///
   double timestamp_;
+  ///
+  bool b_matsave_;
 };
 
 //-------------------------------------------------------------------
 //-------------------------------------------------------------------
-cameralog_reader_t::cameralog_reader_t():
+cameralog_reader_t::cameralog_reader_t(bool b_do_matsave):
 running_(true)
 ,timestamp_(0)
+,b_matsave_(b_do_matsave)
 {
 }
 //-------------------------------------------------------------------
@@ -103,6 +108,10 @@ void cameralog_reader_t::main_loop_()
     //
   CImgDisplay view (  binreader_->width(),  binreader_->height(), "Camera");
   CImg<all::core::uint8_t> cimag;
+
+  //
+  double prev_timestamp_ = 0;
+
   //
   while(running_)
   {
@@ -118,7 +127,8 @@ void cameralog_reader_t::main_loop_()
                   , binreader_->depth());
     //
     cimag.display(view) ;
-
+    
+if (b_matsave_)
     {
         ////////////////////////////////////////////////////////////////////////
         //MATLAB --------------------------------------------------------------+
@@ -147,13 +157,16 @@ void cameralog_reader_t::main_loop_()
 
         //
         mxDestroyArray(mx_rgb);
-    }
+    }//b_matsave_
+
+
   }
   else
     running_ = false;
 
   boost::thread::yield();
-  all::core::BOOST_SLEEP(1);
+  all::core::BOOST_SLEEP((timestamp_ - prev_timestamp_)*1000);
+  prev_timestamp_ = timestamp_;
   }
   //
   //double elapsed = timer.elapsed();

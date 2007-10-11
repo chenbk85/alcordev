@@ -5,6 +5,8 @@
 #include <fstream>
 #include <boost/timer.hpp>
 //-------------------------------------------------------------------------++
+#include <cv.h>
+//-------------------------------------------------------------------------++
 namespace all {
   namespace core {
 //-------------------------------------------------------------------------++
@@ -45,7 +47,8 @@ public:
   bool open(size_t height, size_t width, size_t depth)
   {
     //
-    img_chunk_size_     = height*width*depth*sizeof(image_stream_logger_t::value_type);
+    img_chunk_size_     = 
+      height*width*depth*sizeof(image_stream_logger_t::value_type);
 
     //
     height_ = height;
@@ -71,6 +74,14 @@ public:
   void add(boost::shared_array<T> data, double timestamp)
   {
     gazelog_.write((char*)data.get(), img_chunk_size_ );
+    gazelog_.write((char*)&timestamp , sizeof(timestamp) );
+    nsamples_++;
+  }
+//-------------------------------------------------------------------------++
+  ///
+  void add_iplimage(IplImage* iplimage, double timestamp)
+  {
+    gazelog_.write(iplimage->imageData, img_chunk_size_ );
     gazelog_.write((char*)&timestamp , sizeof(timestamp) );
     nsamples_++;
   }
@@ -122,4 +133,4 @@ private:
   }} //all::core
 //-------------------------------------------------------------------------++
 #endif //image_stream_logger_t_H_INCLUDED
-//-------------------------------------------------------------------------++
+//--------------------------------------------------------------------------++
