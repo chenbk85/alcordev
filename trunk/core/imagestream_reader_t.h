@@ -4,6 +4,10 @@
 #include <iostream>
 #include <fstream>
 //-------------------------------------------------------------------
+#include <cv.h>
+//-------------------------------------------------------------------
+#include "alcor/core/cameralog_inc.h"
+//-------------------------------------------------------------------
 namespace all { namespace core {
 //-------------------------------------------------------------------
   ///
@@ -15,6 +19,7 @@ namespace all { namespace core {
     imagestream_reader_t():
          current_sample_(0)
         ,nsamples_(0)
+        ,logtype_(e_planar)
         ,img_chunk_size_(0)
         ,height_(0)
         ,width_(0)
@@ -34,6 +39,9 @@ namespace all { namespace core {
     size_t nsamples() const {return nsamples_;}
 
     ///
+    log_type logtype() const {return logtype_;}
+
+    ///
     size_t height() const {return height_;}
 
     ///
@@ -49,10 +57,15 @@ namespace all { namespace core {
     bool open(const std::string& fname = "cameralog.bin")
     {
       //
+      printf("-->imagestream_reader_t::open\n");
+      //
       gazelog_.open(fname.c_str(), std::ios::in|std::ios::binary);
       //
       gazelog_.read((char*)&nsamples_, sizeof(nsamples_));
         printf("-> nsamples: %d\n", nsamples_);
+      //
+      gazelog_.read((char*)&logtype_, sizeof(logtype_));
+        printf("-> logtype: %d\n", logtype_);
 
       //
       gazelog_.read((char*)&img_chunk_size_, sizeof(img_chunk_size_));
@@ -74,6 +87,7 @@ namespace all { namespace core {
 
       //HEADER SIZE
       header_size_ =  + sizeof(nsamples_)
+                      + sizeof(logtype_)
                       + sizeof(height_)
                       + sizeof(width_)
                       + sizeof(depth_)
@@ -84,7 +98,7 @@ namespace all { namespace core {
     }
 
     ///
-    bool sample(boost::shared_array<T> data, double& timestamp)
+    bool sample_planar(boost::shared_array<T> data, double& timestamp)
     {
       if(!eof())
       {
@@ -99,6 +113,26 @@ namespace all { namespace core {
       else
         return false;
 
+      return true;
+    }
+
+    ///
+    bool sample_ipl(IplImage* iplimage, double& timestamp)
+    {
+      //
+      if(!eof())
+      {
+        //
+        current_sample_++;
+
+        //img chunk
+        gazelog_.read(iplimage->imageData,  img_chunk_size_);
+        //elapsed time chunk
+        gazelog_.read((char*)&timestamp,  sizeof(timestamp));
+      }
+      else
+        return false;
+      
       return true;
     }
 
@@ -125,6 +159,8 @@ namespace all { namespace core {
     std::string logname_;
     ///
     size_t nsamples_;
+    ///
+    log_type logtype_;
     ///
     size_t current_sample_;
     ///

@@ -7,6 +7,8 @@
 //-------------------------------------------------------------------------++
 #include <cv.h>
 //-------------------------------------------------------------------------++
+#include "alcor/core/cameralog_inc.h"
+//-------------------------------------------------------------------------++
 namespace all {
   namespace core {
 //-------------------------------------------------------------------------++
@@ -44,7 +46,7 @@ public:
   typedef T value_type;
 //-------------------------------------------------------------------------++
   ///
-  bool open(size_t height, size_t width, size_t depth)
+  bool open(log_type logtype, size_t height, size_t width, size_t depth)
   {
     //
     img_chunk_size_     = 
@@ -54,9 +56,11 @@ public:
     height_ = height;
     width_  = width;
     depth_  = depth;
-
+    //
+    logtype_ = logtype;
     //
     header_size_ =  + sizeof(nsamples_)
+                    + sizeof(logtype_)
                     + sizeof(height_)
                     + sizeof(width_)
                     + sizeof(depth_)
@@ -94,6 +98,7 @@ private:
     gazelog_.seekp(std::ios::beg);
     //write down the header
     gazelog_.write( (char*)&nsamples_,   sizeof(nsamples_)); 
+    gazelog_.write( (char*)&logtype_,   sizeof(logtype_));
     gazelog_.write( (char*)&img_chunk_size_, sizeof(img_chunk_size_));
     gazelog_.write( (char*)&height_,     sizeof(height_));
     gazelog_.write( (char*)&width_,      sizeof(width_));
@@ -103,6 +108,7 @@ private:
     //
     printf("-> WRITE HEADER\n");
     printf("-> nsamples: %d\n", nsamples_);
+    printf("-> logtype: %d\n", logtype_);
     printf("-> chunk_size: %d\n", img_chunk_size_);
     printf("-> Image Dims: %d:%d:%d\n", height_, width_, depth_);
     printf("-> Elapsed %f seconds.\n", elapsed_);
@@ -128,6 +134,8 @@ private:
   boost::timer timer_;
   ///
   double elapsed_;
+  ///
+  log_type logtype_;
 };
 //-------------------------------------------------------------------------++
   }} //all::core

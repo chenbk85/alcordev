@@ -15,6 +15,8 @@ using namespace cimg_library;
 #include "mat.h"
 //-------------------------------------------------------------------
 #include "alcor/matlab/matlab_mx_utils.hpp"
+#include "alcor/core/image_utils.h"
+//-------------------------------------------------------------------
 #pragma comment (lib, "libmat.lib")
 #pragma comment (lib, "libmx.lib")
 //-------------------------------------------------------------------
@@ -41,7 +43,9 @@ private:
   void deinit_();
 
   ///
-  void main_loop_();
+  void main_loop_planar_();
+  ///
+  void main_loop_iplimage_();
 
   ///
   boost::shared_ptr<boost::thread> 
@@ -60,6 +64,8 @@ private:
   double timestamp_;
   ///
   bool b_matsave_;
+  ///
+  log_type logtype_;
 };
 
 //-------------------------------------------------------------------
@@ -74,7 +80,18 @@ running_(true)
 ///
 void cameralog_reader_t::begin_loop()
 {
-thread_ptr_.reset( new boost::thread(boost::bind(&cameralog_reader_t::main_loop_, this) ) );
+  //
+  init_();
+  //
+  switch( binreader_->logtype() )
+  {
+  case e_planar:
+    thread_ptr_.reset( new boost::thread(boost::bind(&cameralog_reader_t::main_loop_planar_, this) ) );
+    break;
+  case e_iplimage:
+    thread_ptr_.reset( new boost::thread(boost::bind(&cameralog_reader_t::main_loop_iplimage_, this) ) );
+    break;
+  }
 }
 //-------------------------------------------------------------------
 ///
@@ -87,10 +104,11 @@ void cameralog_reader_t::end_loop()
 void cameralog_reader_t::init_()
 {
   //
-  binreader_.reset(new all::core::imagestream_reader_t<all::core::uint8_t> );
-  binreader_->open();
+  printf("-->cameralog_reader_t::init_\n");
   //
-  imag_sptr_.reset( new all::core::uint8_t[binreader_->width()*binreader_->height()*binreader_->depth()] );
+  binreader_.reset(new all::core::imagestream_reader_t<all::core::uint8_t> );
+  //
+  binreader_->open();
 }
 //-------------------------------------------------------------------
   ///
@@ -100,10 +118,10 @@ void cameralog_reader_t::deinit_()
 }
 //-------------------------------------------------------------------
 //MAIN LOOP
-void cameralog_reader_t::main_loop_()
+void cameralog_reader_t::main_loop_planar_()
 {
   //
-  init_();
+  imag_sptr_.reset( new all::core::uint8_t[binreader_->width()*binreader_->height()*binreader_->depth()] );
   //graphics
     //
   CImgDisplay view (  binreader_->width(),  binreader_->height(), "Camera");
@@ -117,7 +135,7 @@ void cameralog_reader_t::main_loop_()
   {
   
   //
-  if (binreader_->sample(imag_sptr_ , timestamp_))
+    if (binreader_->sample_planar(imag_sptr_ , timestamp_))
   {
     //
     cimag.assign(   imag_sptr_.get() 
@@ -158,8 +176,6 @@ if (b_matsave_)
         //
         mxDestroyArray(mx_rgb);
     }//b_matsave_
-
-
   }
   else
     running_ = false;
@@ -169,12 +185,80 @@ if (b_matsave_)
   prev_timestamp_ = timestamp_;
   }
   //
-  //double elapsed = timer.elapsed();
-  //
   deinit_();
+}
+//-------------------------------------------------------------------
+//MAIN LOOP
+void cameralog_reader_t::main_loop_iplimage_()
+{
   //
-  //printf("Acquired %d samples in %f seconds\n", binlogger_->nsamples(), elapsed);
-  //printf("Frame Rate: %f\n",binlogger_->nsamples()/elapsed);
+  printf("-->cameralog_reader_t::main_loop_iplimage_\n");
+  ///
+  IplImage* current_im = 
+    cvCreateImage(cvSize(binreader_->width(),  binreader_->height()), IPL_DEPTH_8U, binreader_->depth());
+  /////
+  //IplImage* drawing_im = 
+  //  cvCreateImage(cvSize(binreader_->width(),  binreader_->height()), IPL_DEPTH_8U, binreader_->depth());
+
+//  //graphics
+//    //
+  //cvNamedWindow("Stream");
+
+  //    //
+  //CImgDisplay view (  binreader_->width(),  binreader_->height(), "Camera");
+  //CImg<all::core::uint8_t> cimag;
+
+//  //
+  double prev_timestamp_ = 0;
+  //
+  printf("++ The inner loop\n");
+  while(running_)
+  {
+  //
+  if (binreader_->sample_ipl(current_im , timestamp_))
+  {
+    cvConvertImage(current_im, current_im, CV_CVTIMG_FLIP);
+   // all::core::change_ordering
+   ////cvShowImage("Stream", current_im);
+
+  //    
+  if (b_matsave_)
+    {
+        ////////////////////////////////////////////////////////////////////////
+        //MATLAB --------------------------------------------------------------+
+        
+        MATFile *pmat = 0;
+        //MATLAB
+        std::string namebase = "cameralog_";
+
+        //
+        namebase += boost::lexical_cast<std::string>(binreader_->current_sample());
+        namebase += ".mat";
+
+        ////
+        pmat = matOpen(namebase.c_str(), "w");
+
+        ////-----------------
+        mxArray* mx_img = matlab::mxcv::iplimage_to_mxarray<core::uint8_t>(current_im);
+
+        ////add to file
+        matPutVariable(pmat, "cameralog", mx_img);
+        //
+        matClose(pmat);  
+        //
+        mxDestroyArray(mx_img);
+    }//b_matsave_
+  }
+  else
+    running_ = false;
+//
+  boost::thread::yield();
+  all::core::BOOST_SLEEP((timestamp_ - prev_timestamp_)*1000);
+  prev_timestamp_ = timestamp_;
+  }
+//  //
+  deinit_();
+
 }
 //-------------------------------------------------------------------
 }}//all::core

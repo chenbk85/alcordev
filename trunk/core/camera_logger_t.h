@@ -3,6 +3,7 @@
 //-------------------------------------------------------------------
 #include "alcor/sense/opencv_grabber_t.h"
 #include "alcor/core/imagestream_logger_t.h"
+#include "alcor/core/cameralog_inc.h"
 //-------------------------------------------------------------------
 #include <boost/timer.hpp>
 #include <boost/thread/thread.hpp>
@@ -12,12 +13,6 @@
 //-------------------------------------------------------------------
 namespace all { namespace core {  
 //-------------------------------------------------------------------
-//
-typedef enum log_type
-{
-  e_planar,
-  e_iplimage
-} log_type;
 //-------------------------------------------------------------------
 class camera_logger_t
 {
@@ -116,7 +111,7 @@ void camera_logger_t::init_()
   imag_sptr_.reset( new core::uint8_t[camera_->width()*camera_->height()*camera_->channels()] );
   //
   binlogger_.reset(new all::core::image_stream_logger_t<all::core::uint8_t>);
-  binlogger_->open(camera_->height(),camera_->width(),camera_->channels());
+  binlogger_->open(log_type_, camera_->height(),camera_->width(),camera_->channels());
 }
 //-------------------------------------------------------------------
   ///
