@@ -202,7 +202,7 @@ void cameralog_reader_t::main_loop_iplimage_()
 
 //  //graphics
 //    //
-  //cvNamedWindow("Stream");
+  cvNamedWindow("Stream");
 
   //    //
   //CImgDisplay view (  binreader_->width(),  binreader_->height(), "Camera");
@@ -218,8 +218,8 @@ void cameralog_reader_t::main_loop_iplimage_()
   if (binreader_->sample_ipl(current_im , timestamp_))
   {
     cvConvertImage(current_im, current_im, CV_CVTIMG_FLIP);
-   // all::core::change_ordering
-   ////cvShowImage("Stream", current_im);
+    // all::core::change_ordering
+    cvShowImage("Stream", current_im);
 
   //    
   if (b_matsave_)
@@ -254,6 +254,7 @@ void cameralog_reader_t::main_loop_iplimage_()
 //
   boost::thread::yield();
   all::core::BOOST_SLEEP((timestamp_ - prev_timestamp_)*1000);
+  cvWaitKey(1);
   prev_timestamp_ = timestamp_;
   }
 //  //

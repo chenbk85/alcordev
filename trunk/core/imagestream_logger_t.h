@@ -69,6 +69,9 @@ public:
     //
     gazelog_.seekp(header_size_);
 
+    //
+    ipl_serializer_.set_dims(width_, height_,depth_);
+
     return true;
   }
 //-------------------------------------------------------------------------++
@@ -85,7 +88,9 @@ public:
   ///
   void add_iplimage(IplImage* iplimage, double timestamp)
   {
-    gazelog_.write(iplimage->imageData, img_chunk_size_ );
+    //gazelog_.write(iplimage->imageData, img_chunk_size_ );
+    ipl_serializer_.serialize(iplimage, gazelog_);
+
     gazelog_.write((char*)&timestamp , sizeof(timestamp) );
     nsamples_++;
   }
@@ -116,6 +121,11 @@ private:
 //-------------------------------------------------------------------------++
   ///Binary Data Stream
   std::fstream gazelog_;
+  ///
+    /////
+  all::core::iplimage_serializable_t
+    ipl_serializer_;
+
   ///
   std::string logname_;
   ///
