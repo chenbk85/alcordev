@@ -85,7 +85,9 @@ bool all::sense::opencv_grabber_t::open(const std::string& inifile, bool show_di
 }
 //-------------------------------------------------------------------------++
   ///
-  bool all::sense::opencv_grabber_t::open(const std::string& inifile, const std::string& section)
+  bool all::sense::opencv_grabber_t::open(  const std::string& inifile
+                                          , const std::string& section
+                                          , bool show_dialog)
   {
     core::config_parser_t ini;
     if (!ini.load(core::tags::ini,inifile)) return false;
@@ -110,7 +112,7 @@ bool all::sense::opencv_grabber_t::open(const std::string& inifile, bool show_di
   if(grabmode)
   {
     ///camera
-    return open_(core::open_camera, m_cam_id, true);
+    return open_(core::open_camera, CV_CAP_ANY, show_dialog);
   }
   else
   {
