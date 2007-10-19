@@ -82,7 +82,7 @@ class IplImageIterator {
 
 //=============================================================================
 //=============================================================================
-size_t size_from_ipldepth(int depth)
+static size_t size_from_ipldepth(int depth)
 {
   //
   size_t size_;
