@@ -157,6 +157,13 @@ void camera_logger_t::main_loop_ipl_()
   double timestamp;
   ///
   IplImage* current_image;
+  /////
+  //all::core::iplimage_serializable_t
+  //  ipl_serializer;
+
+  /////
+  //ipl_serializer.set_dims(camera_->width(), camera_->height(), camera_->channels());
+
   //
   while(running_)
   {
