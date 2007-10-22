@@ -362,9 +362,9 @@ bool all::sense::opencv_grabber_t::
 }
 ////-------------------------------------------------------------------------++
 //-------------------------------------------------------------------------++
-int all::sense::opencv_grabber_t::grab_ipl_image() 
+void all::sense::opencv_grabber_t::grab_ipl_image() 
 	{
-   	return cvGrabFrame(m_capture); 
+   	cvGrabFrame(m_capture); 
   }
 //-------------------------------------------------------------------------++
 IplImage* all::sense::opencv_grabber_t::retrieve_ipl_image() const

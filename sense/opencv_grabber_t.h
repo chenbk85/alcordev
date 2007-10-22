@@ -91,7 +91,7 @@ public:
   //---------------------------------------------------------------------------
   //this two for fast acquisition....
   ///store the IplImage as is without modifications.
-  int       grab_ipl_image();  
+  void       grab_ipl_image();  
 
   ///get Ipl Image from previously stored buffer.
   IplImage* retrieve_ipl_image() const;
