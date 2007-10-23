@@ -112,9 +112,9 @@ void camera_logger_t::init_()
 
 #ifdef USE_VIDEOINPUT
   VI.reset(new videoInput());
-    //optional static function to list devices
-	//for silent listDevices use listDevices(true);
-	int numDevices = videoInput::listDevices();
+ //   //optional static function to list devices
+	////for silent listDevices use listDevices(true);
+	//int numDevices = videoInput::listDevices();
   //
   VI->setupDevice(0, 640, 480);
 	//to get a settings dialog for the device
