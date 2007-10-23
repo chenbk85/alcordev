@@ -77,6 +77,8 @@ private:
 
   ///
   boost::timer timer_;
+  ///
+  CvVideoWriter* avifile_;
 };
 //-------------------------------------------------------------------
 //*******************************************************************
@@ -124,6 +126,14 @@ void camera_logger_t::init_()
 	height 	= VI->getHeight(0);
 	size	  = VI->getSize(0);
   channels = 3;
+
+  avifile_ = 
+    cvCreateVideoWriter( "videoinput.avi"
+                        , -1
+                        , 8
+                        , cvSize(width, height)
+                       );
+
 #else
   //
   camera_.reset(new all::sense::opencv_grabber_t);
@@ -144,6 +154,7 @@ void camera_logger_t::deinit_()
 #ifdef USE_VIDEOINPUT
   //Shut down devices properly
 	VI->stopDevice(0);
+  cvReleaseVideoWriter(&avifile_ );
 #else
   //
   camera_->close();
@@ -195,7 +206,7 @@ void camera_logger_t::main_loop_ipl_()
   cvNamedWindow("videoinput");
 
 #endif
-
+  int nsamples = 0;
   //
   while(running_)
   {
@@ -205,16 +216,19 @@ void camera_logger_t::main_loop_ipl_()
       memcpy(current_image->imageData, rawframe, size);
       //cvConvertImage(current_image, current_image, CV_CVTIMG_FLIP);
       cvShowImage("videoinput", current_image);
-      cvWaitKey(1);
+
     #else
       camera_->grab_ipl_image();
 
       current_image = camera_->retrieve_ipl_image();
 
     #endif
-
+  
     timestamp = timer_.elapsed();
-    binlogger_->add_iplimage(current_image, timestamp);
+    cvWriteFrame( avifile_ , current_image );
+    nsamples++;
+    //binlogger_->add_iplimage(current_image, timestamp);
+    cvWaitKey(1);
     boost::thread::yield();
     all::core::BOOST_SLEEP(1);
   }
@@ -228,8 +242,8 @@ void camera_logger_t::main_loop_ipl_()
   //
   deinit_();
   //
-  printf("Acquired %d samples in %f seconds\n", binlogger_->nsamples(), elapsed);
-  printf("Frame Rate: %f\n",binlogger_->nsamples()/elapsed);
+  printf("Acquired %d samples in %f seconds\n", nsamples, elapsed);
+  printf("Frame Rate: %f\n",nsamples/elapsed);
 }
 //-------------------------------------------------------------------
 }}//all::core
