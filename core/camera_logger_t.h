@@ -130,7 +130,7 @@ void camera_logger_t::init_()
   avifile_ = 
     cvCreateVideoWriter( "videoinput.avi"
                         , -1
-                        , 8
+                        , 10
                         , cvSize(width, height)
                        );
 
@@ -201,7 +201,7 @@ void camera_logger_t::main_loop_ipl_()
   //    
 #ifdef USE_VIDEOINPUT
   unsigned char* rawframe = new unsigned char[VI->getSize(0)];
-  IplImage* my_image      = cvCreateImage(cvSize(width, height), IPL_DEPTH_8U, 3);
+  //IplImage* my_image      = cvCreateImage(cvSize(width, height), IPL_DEPTH_8U, 3);
   	//
   cvNamedWindow("videoinput");
 
@@ -237,6 +237,7 @@ void camera_logger_t::main_loop_ipl_()
 
   #ifdef USE_VIDEOINPUT
     delete [] rawframe; 
+    cvReleaseImage(&current_image);
   #endif
 
   //
