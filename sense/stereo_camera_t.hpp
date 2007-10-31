@@ -12,7 +12,7 @@
 #include <highgui.h>
 
 #include <boost/shared_ptr.hpp>
-#include <alcor/sense/opencv_grabber_t.h>
+//#include <alcor/sense/opencv_grabber_t.h>
 #include <alcor/core/iniWrapper.h>
 
 namespace all {
@@ -102,29 +102,40 @@ stereo_camera_t::stereo_camera_t() {
 
 bool stereo_camera_t::open() {
 	
-	m_left_cam = cvCreateCameraCapture(CV_CAP_ANY);
-	m_right_cam = cvCreateCameraCapture(CV_CAP_ANY);
 
+	m_left_cam = cvCreateCameraCapture(CV_CAP_VFW);
+	cvSetCaptureProperty(m_left_cam, CV_CAP_PROP_DIALOG_SOURCE, 0);
+	cvSetCaptureProperty(m_left_cam, CV_CAP_PROP_DIALOG_FORMAT, 0);
+
+	//m_right_cam = cvCreateCameraCapture(CV_CAP_ANY);
+	//cvSetCaptureProperty(m_right_cam, CV_CAP_PROP_DIALOG_SOURCE, 0);
+	//cvSetCaptureProperty(m_right_cam, CV_CAP_PROP_DIALOG_FORMAT, 0);
+	//cvReleaseCapture(&m_right_cam);
 
 	if (0 == m_left_cam) {
 		printf("Unable to open left camera for capture!\n") ;
 		return false;
 	}
-	else if (0 == m_right_cam) {
-		printf("Unable to open right camera for capture!\n") ;
-		return false;
-	}
 
 	m_left_ipl_image = cvQueryFrame(m_left_cam);
 	if (m_left_ipl_image == 0) {
-		printf("Unable to grab image...\n");
+		printf("Unable to grab left image...\n");
+		return false;
+	}
+
+	
+	m_right_cam = cvCreateCameraCapture(CV_CAP_VFW);
+	cvSetCaptureProperty(m_right_cam, CV_CAP_PROP_DIALOG_FORMAT, 0);
+
+	if (0 == m_right_cam) {
+		printf("Unable to open right camera for capture!\n") ;
 		return false;
 	}
 
 	m_right_ipl_image = cvQueryFrame(m_left_cam);
 	
 	if (m_right_ipl_image == 0) {
-		printf("Unable to grab image...\n");
+		printf("Unable to grab right image...\n");
 		return false;
 	}
 
@@ -133,6 +144,8 @@ bool stereo_camera_t::open() {
 	m_channel = m_left_ipl_image->nChannels;
 	m_data_origin = m_left_ipl_image->origin;
 	m_data_order = m_left_ipl_image->dataOrder;
+
+	printf("%i %i %i\n", m_width, m_height, m_channel);
 
 	if (m_channel > 1) {
 		m_gray_left = cvCreateImage(cvSize( m_width, m_height), IPL_DEPTH_8U, 1 );
@@ -209,7 +222,7 @@ bool stereo_camera_t::calibrate(int chess_rows, int chess_cols, int unit) {
 		
 		grab_stereo_();
 
-		IplImage* stereo_pair[] = { m_gray_left, m_gray_right };
+		IplImage* stereo_pair[] = { m_left_ipl_image, m_right_ipl_image };
 	
 		bool found = m_calib_filter.FindEtalon(stereo_pair);
 
@@ -219,8 +232,8 @@ bool stereo_camera_t::calibrate(int chess_rows, int chess_cols, int unit) {
 		//int cmd = cvvWaitKeyEx( 0, 1 );
 		//if( cmd == '\x1b' )
   //          break;
-		cvShowImage( "left camera", m_gray_left);
-        cvShowImage( "right camera", m_gray_right);
+		cvShowImage( "left camera", m_left_ipl_image);
+        cvShowImage( "right camera", m_right_ipl_image);
 
 		if (found) {
 			m_calib_filter.Push();
@@ -270,10 +283,13 @@ void stereo_camera_t::grab_stereo_() {
 		m_gray_left = m_left_ipl_image;
 		m_gray_right = m_right_ipl_image;
 	}
+
+	cvShowImage( "left camera", m_left_ipl_image);
+    cvShowImage( "right camera", m_right_ipl_image);
+
 }
 
 void stereo_camera_t::do_stereo_process_() {
-
 
 	grab_stereo_();
 
@@ -334,9 +350,11 @@ void stereo_camera_t::do_stereo_process_() {
 
 	estereo_matcher->doStereo(estereo_image, (unsigned char*) m_gray_left->imageData, (unsigned char*) m_gray_right->imageData);
 	estereo_reconst->doReconstruction(estereo_points, estereo_image);
+	
 	//estereo_points->save("points.txt");
 
 	//estereo_image->generateDepth8uFromDepth32f();
+	
 	memcpy(m_disp_image->imageData, estereo_image->imDepth8u, m_width*m_height);
 	m_disp_image->origin = m_gray_left->origin;
 
@@ -344,8 +362,8 @@ void stereo_camera_t::do_stereo_process_() {
 
 	cvShowImage("Disparity map", m_disp_image);
 
-	cvShowImage( "left camera", m_gray_left);
-    cvShowImage( "right camera", m_gray_right);
+	cvShowImage( "left camera", m_left_ipl_image);
+    cvShowImage( "right camera", m_right_ipl_image);
 
 	//===========================END ESTEREO==========================================
 
