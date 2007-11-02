@@ -48,7 +48,10 @@ bool MTi_driver_t::open(std::string configfile)
 
   
   printf("Setting skip factor\n");
-  if (impl->mtcomm.setSetting(MID_SETOUTPUTSKIPFACTOR,	0xFFFF, LEN_OUTPUTSKIPFACTOR, detail::MTi_driver_impl::SENSOR_BID) != MTRV_OK) {
+  if (impl->mtcomm.setSetting(MID_SETOUTPUTSKIPFACTOR
+                            ,	0xFFFF
+                            , LEN_OUTPUTSKIPFACTOR
+                            , impl->SENSOR_BID) != MTRV_OK) {
 		printf("Cannot set skip factor\n");
 		return false;
   }

@@ -13,8 +13,10 @@ struct MTi_driver_impl
 	float fdata[18];
   unsigned short samplecounter;
 
+  unsigned short skip_factor;
+
   CMTComm mtcomm;
-  BOOST_STATIC_CONSTANT(int, SENSOR_BID=1);
+  BOOST_STATIC_CONSTANT(int, SENSOR_BID=BID_MT);
 };
 
 
