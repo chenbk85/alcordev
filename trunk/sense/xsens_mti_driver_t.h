@@ -8,6 +8,7 @@
 #include <string>
 //---------------------------------------------------------
 #include "alcor/sense/xsens_mti_inc.hpp"
+#include "alcor/math/fast_mti_integral_t.hpp"
 //---------------------------------------------------------
 namespace all { namespace sense {  
 //---------------------------------------------------------
@@ -54,6 +55,8 @@ namespace all { namespace sense {
     void mti_loop_();
     ///
     boost::shared_ptr<boost::thread> loop_thread_;
+    ///
+    all::math::fast_mti_integral_t processor_;
     ///
     volatile bool running_;
   };

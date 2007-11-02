@@ -93,7 +93,7 @@ all::math::rpy_angle_t   MTi_driver_t::get_euler()
 {    
   math::rpy_angle_t rpy;
 
-  	impl->data[IND_PREAMBLE] = PREAMBLE;
+  impl->data[IND_PREAMBLE] = PREAMBLE;
 	impl->data[IND_BID] = detail::MTi_driver_impl::SENSOR_BID;
 	impl->data[IND_MID] = MID_REQDATA;
 	impl->data[IND_LEN] = 0;
