@@ -290,6 +290,28 @@ inline void BOOST_SLEEP(unsigned int _millisecs_)
    boost::thread::sleep(xt);
 }
 //-------------------------------------------------------------------------++
+inline void SLEEP_MSECS(unsigned int _millisecs_)
+{
+   boost::xtime xt; 
+   unsigned int secs = static_cast<unsigned int>(_millisecs_*0.001);  
+   unsigned int nsecs = (1000000*_millisecs_)-(secs*1000000000);
+   boost::xtime_get(&xt, boost::TIME_UTC);
+   xt.sec += secs;
+   xt.nsec += nsecs;
+   boost::thread::sleep(xt);
+}
+//-------------------------------------------------------------------------++
+//inline void SLEEP_SECS(unsigned int _seconds_)
+//{
+//   boost::xtime xt; 
+//   //unsigned int secs = static_cast<unsigned int>(_millisecs_*0.001);  
+//   unsigned int nsecs = (1000000*_millisecs_)-(secs*1000000000);
+//   boost::xtime_get(&xt, boost::TIME_UTC);
+//   xt.sec += secs;
+//   xt.nsec += nsecs;
+//   boost::thread::sleep(xt);
+//}
+//-------------------------------------------------------------------------++
 ///
 struct ip_address_t
 {

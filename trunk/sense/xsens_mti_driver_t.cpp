@@ -19,10 +19,6 @@ xsens_mti_driver_t::~xsens_mti_driver_t()
 {
   if(impl)
   {
-   // printf("Restoring Skip Factor\n");
-   // impl->mtcomm.writeMessage(MID_GOTOCONFIG,impl->SENSOR_BID);
-	  //impl->mtcomm.setSetting(MID_SETOUTPUTSKIPFACTOR,impl->skip_factor,LEN_OUTPUTSKIPFACTOR,impl->SENSOR_BID);
-    // 
     printf("Closing\n");
     impl->mtcomm.flush();
     impl->mtcomm.close();
@@ -53,43 +49,27 @@ bool xsens_mti_driver_t::open(std::string& configfile)
   }
 
   //
-  int outputMode = OUTPUTMODE_TEMP | OUTPUTMODE_CALIB | OUTPUTMODE_ORIENT;
+  impl->output_mode = OUTPUTMODE_TEMP | OUTPUTMODE_CALIB | OUTPUTMODE_ORIENT;
   //
-  //outputSettings = OUTPUTSETTINGS_ORIENTMODE_QUATERNION;
-	//outputSettings = OUTPUTSETTINGS_ORIENTMODE_EULER;
-	//outputSettings = OUTPUTSETTINGS_ORIENTMODE_MATRIX;
-  int outputSettings = OUTPUTSETTINGS_ORIENTMODE_EULER|OUTPUTSETTINGS_TIMESTAMP_SAMPLECNT;
+  // OUTPUTSETTINGS_ORIENTMODE_QUATERNION;
+	// OUTPUTSETTINGS_ORIENTMODE_EULER;
+	// OUTPUTSETTINGS_ORIENTMODE_MATRIX;
+  impl->output_settings = OUTPUTSETTINGS_ORIENTMODE_MATRIX|OUTPUTSETTINGS_TIMESTAMP_SAMPLECNT;
 
   // Set output mode and output settings for each attached MTi/MTx
-  if (impl->mtcomm.setDeviceMode( outputMode
-                                , outputSettings
+  if (impl->mtcomm.setDeviceMode( impl->output_mode
+                                , impl->output_settings
                                 , impl->SENSOR_BID) != MTRV_OK) 
   {
 			printf("Could not set (all) device mode(s)\n");
 			return false;
 	}
   
-	//// store current skip factor so we can restore it later
-	//printf("Getting skip factor\n");
- // unsigned long value;
-	//impl->mtcomm.reqSetting(MID_REQOUTPUTSKIPFACTOR, value, impl->SENSOR_BID);
-	//impl->skip_factor = (unsigned short) (value & 0xFFFF);
- // 
-	//printf("Setting skip factor\n");
-	//if (impl->mtcomm.setSetting(  MID_SETOUTPUTSKIPFACTOR
- //                             ,	0xFFFF
- //                             , LEN_OUTPUTSKIPFACTOR
- //                             , impl->SENSOR_BID) != MTRV_OK) 
- // {
-	//	printf("Cannot set skip factor\n");
-	//	return false;
-	//}
-
   // Put MTi/MTx in Measurement State
 	impl->mtcomm.writeMessage(MID_GOTOMEASUREMENT);
   impl->mtcomm.flush();
 
-  Sleep(10);
+  core::SLEEP_MSECS(10);
   return true;
 }
 //-----------------------------------------------------------------
@@ -106,13 +86,17 @@ void xsens_mti_driver_t::stop_mti()
 //-----------------------------------------------------------------
 void xsens_mti_driver_t::mti_loop_()
 {
+  int nsamples = 0;
   timestamp_.restart();
   while (running_)
   {
     print_calibdata();
-    core::BOOST_SLEEP(1);
+    nsamples++;
+    //core::BOOST_SLEEP(1);
     boost::thread::yield();
   }
+  printf("\nRATE: %.2f\n", nsamples/timestamp_.elapsed());
+  //core::BOOST_SLEEP(10);
 }
 //-----------------------------------------------------------------
 void xsens_mti_driver_t::print_calibdata()
@@ -126,48 +110,72 @@ void xsens_mti_driver_t::print_calibdata()
   double elapsed = timestamp_.elapsed();
   //  
   unsigned short samplecounter;
-  //
-  //all::math::rpy_angle_t rpy;
-
 
   //
   impl->mtcomm.getValue(VALUE_SAMPLECNT, samplecounter, impl->data, BID_MASTER);
   //
-  impl->mtcomm.getValue(VALUE_ORIENT_EULER, impl->rpy, impl->data, impl->SENSOR_BID);
-  printf("TSTAMP: %.2f SAMPLE: %d -- RPY :%6.2f\t%6.2f\t%6.2f\n"
-                    , elapsed
-                    , samplecounter
-                    , impl->rpy[0] 
-								    , impl->rpy[1] 
-								    , impl->rpy[2]);
+  switch((impl->output_settings & OUTPUTSETTINGS_ORIENTMODE_MASK))
+  {
+    //QUATERNIONS
+  case OUTPUTSETTINGS_ORIENTMODE_QUATERNION:
+    break;
+    //EULER
+  case OUTPUTSETTINGS_ORIENTMODE_EULER:
+    //
+    impl->mtcomm.getValue(VALUE_ORIENT_EULER, impl->rpy, impl->data, impl->SENSOR_BID);
+    //printf("TSTAMP: %.2f SAMPLE: %d -- RPY :%6.2f\t%6.2f\t%6.2f\n"
+    //                  , elapsed
+    //                  , samplecounter
+    //                  , impl->rpy[0] 
+				//				      , impl->rpy[1] 
+				//				      , impl->rpy[2]);
+    break;
+    //ROTATION MATRIX
+  case OUTPUTSETTINGS_ORIENTMODE_MATRIX:
+		// Output: Cosine Matrix
+    impl->mtcomm.getValue(VALUE_ORIENT_MATRIX, impl->rot, impl->data, impl->SENSOR_BID);
+		//printf("%6.3f\t%6.3f\t%6.3f\n"
+  //                  , impl->rotGS[0] 
+		//							  , impl->rotGS[1]
+		//							  , impl->rotGS[2]);
+		//printf("%6.3f\t%6.3f\t%6.3f\n"
+  //                  , impl->rotGS[3]
+		//							  , impl->rotGS[4] 
+		//							  , impl->rotGS[5]);
+		//printf("%6.3f\t%6.3f\t%6.3f\n"
+  //                  , impl->rotGS[6] 
+		//							  , impl->rotGS[7] 
+		//							  , impl->rotGS[8]);
+    break;
+  }
+
 
 	// Output Calibrated data
   impl->mtcomm.getValue(VALUE_CALIB_ACC, impl->acc, impl->data, impl->SENSOR_BID);
-  printf("ACC :%6.2f\t%6.2f\t%6.2f\n"
-                    , impl->acc[0] 
-								    , impl->acc[1] 
-								    , impl->acc[2]);
+  //printf("ACC :%6.2f\t%6.2f\t%6.2f\n"
+  //                  , impl->acc[0] 
+		//						    , impl->acc[1] 
+		//						    , impl->acc[2]);
 
-    //  
-    float mti_data[6];
-    //
-    mti_data[0] = impl->rpy[0]; //roll
-    mti_data[1] = impl->rpy[1]; //pitch
-    mti_data[2] = impl->rpy[2]; //yaw
-    mti_data[3] = impl->acc[0]; // accx
-    mti_data[4] = impl->acc[1]; // accy
-    mti_data[5] = impl->acc[2]; // accz
-    //
+    ////  
+    float mti_data[12];
+    ////
+    mti_data[0] = impl->rot[0]; //a
+    mti_data[1] = impl->rot[1]; //b
+    mti_data[2] = impl->rot[2]; //c
+    mti_data[3] = impl->rot[3]; //d
+    mti_data[4] = impl->rot[4]; //e
+    mti_data[5] = impl->rot[5]; //f
+    mti_data[6] = impl->rot[6]; //g
+    mti_data[7] = impl->rot[7]; //h
+    mti_data[8] = impl->rot[8]; //i
+    mti_data[9] = impl->acc[0]; //accx
+    mti_data[10]= impl->acc[1];//accy
+    mti_data[11]= impl->acc[2];//accz
+
+    ///
     processor_.update(mti_data, elapsed);
 
-	  //mtcomm.getValue(VALUE_CALIB_GYR, fdata, data, BID_MT + i);
-	  //printf("%6.2f\t%6.2f\t%6.2f", fdata[0], 
-			//					    fdata[1], 
-			//					    fdata[2]);
-	  //mtcomm.getValue(VALUE_CALIB_MAG, fdata, data, BID_MT + i);
-	  //printf("%6.2f\t%6.2f\t%6.2f", fdata[0], 
-			//					    fdata[1], 
-			//					    fdata[2]);
   }
   else
   {
