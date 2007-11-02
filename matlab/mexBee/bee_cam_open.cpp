@@ -32,7 +32,7 @@ void bee_cam_open( int nlhs
  // input_buf = (char*) mxCalloc(buflen, sizeof(char));
  // mxGetString(CAMERA_ID_, input_buf, buflen);
 
-  std::string ininame = "config/bumblebeeB.ini";
+  std::string ininame = "config/bumblebeeA.ini";
   //ininame += input_buf;
 
   std::printf("Opening %s\n", ininame.c_str());
