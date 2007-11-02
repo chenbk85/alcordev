@@ -8,7 +8,9 @@
 namespace all { namespace sense {
 ///////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////
-  xsens_mti_driver_t::xsens_mti_driver_t():running_(true)
+  xsens_mti_driver_t::xsens_mti_driver_t()
+    :running_(true)
+
 {
   impl.reset( new detail::MTi_driver_impl() );
 }
@@ -118,22 +120,45 @@ void xsens_mti_driver_t::print_calibdata()
   impl->mtcomm.flush();
   //
   if ( impl->mtcomm.readDataMessage(impl->data, impl->datalen) == MTRV_OK && !_kbhit() )
-  {
+  { 
+  //local scope...
+  //
+  double elapsed = timestamp_.elapsed();
   //  
   unsigned short samplecounter;
   //
-  double elapsed = timestamp_.elapsed();
+  //all::math::rpy_angle_t rpy;
+
+
   //
   impl->mtcomm.getValue(VALUE_SAMPLECNT, samplecounter, impl->data, BID_MASTER);
-
-	// Output Calibrated data
-  impl->mtcomm.getValue(VALUE_CALIB_ACC, impl->fdata, impl->data, impl->SENSOR_BID);
-  printf("TSTAMP: %.2f SAMPLE: %d -- % :%6.2f\t%6.2f\t%6.2f\n"
+  //
+  impl->mtcomm.getValue(VALUE_ORIENT_EULER, impl->rpy, impl->data, impl->SENSOR_BID);
+  printf("TSTAMP: %.2f SAMPLE: %d -- RPY :%6.2f\t%6.2f\t%6.2f\n"
                     , elapsed
                     , samplecounter
-                    , impl->fdata[0] 
-								    , impl->fdata[1] 
-								    , impl->fdata[2]);
+                    , impl->rpy[0] 
+								    , impl->rpy[1] 
+								    , impl->rpy[2]);
+
+	// Output Calibrated data
+  impl->mtcomm.getValue(VALUE_CALIB_ACC, impl->acc, impl->data, impl->SENSOR_BID);
+  printf("ACC :%6.2f\t%6.2f\t%6.2f\n"
+                    , impl->acc[0] 
+								    , impl->acc[1] 
+								    , impl->acc[2]);
+
+    //  
+    float mti_data[6];
+    //
+    mti_data[0] = impl->rpy[0]; //roll
+    mti_data[1] = impl->rpy[1]; //pitch
+    mti_data[2] = impl->rpy[2]; //yaw
+    mti_data[3] = impl->acc[0]; // accx
+    mti_data[4] = impl->acc[1]; // accy
+    mti_data[5] = impl->acc[2]; // accz
+    //
+    processor_.update(mti_data, elapsed);
 
 	  //mtcomm.getValue(VALUE_CALIB_GYR, fdata, data, BID_MT + i);
 	  //printf("%6.2f\t%6.2f\t%6.2f", fdata[0], 
