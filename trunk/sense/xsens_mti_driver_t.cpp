@@ -87,6 +87,7 @@ void xsens_mti_driver_t::stop_mti()
 void xsens_mti_driver_t::mti_loop_()
 {
   int nsamples = 0;
+  //reset(sense::heading_reset);
   timestamp_.restart();
   while (running_)
   {
@@ -184,25 +185,25 @@ void xsens_mti_driver_t::print_calibdata()
 }
 //-----------------------------------------------------------------
 //
-void xsens_mti_driver_t::reset(heading_reset_t)
+void xsens_mti_driver_t::reset(tags::heading_reset_t)
 {
   impl->mtcomm.writeMessage(MID_RESETORIENTATION,RESETORIENTATION_HEADING,LEN_RESETORIENTATION);
 }
 //-----------------------------------------------------------------
 //
-void xsens_mti_driver_t::reset(global_reset_t)
+void xsens_mti_driver_t::reset(tags::global_reset_t)
 {
   impl->mtcomm.writeMessage(MID_RESETORIENTATION,RESETORIENTATION_GLOBAL,LEN_RESETORIENTATION);
 }
 //-----------------------------------------------------------------
 //
-void xsens_mti_driver_t::reset(object_reset_t)
+void xsens_mti_driver_t::reset(tags::object_reset_t)
 {
   impl->mtcomm.writeMessage(MID_RESETORIENTATION,RESETORIENTATION_OBJECT,LEN_RESETORIENTATION);
 }
 //-----------------------------------------------------------------
 //
-void xsens_mti_driver_t::reset(align_reset_t)
+void xsens_mti_driver_t::reset(tags::align_reset_t)
 {
   impl->mtcomm.writeMessage(MID_RESETORIENTATION,RESETORIENTATION_ALIGN,LEN_RESETORIENTATION);
 }
