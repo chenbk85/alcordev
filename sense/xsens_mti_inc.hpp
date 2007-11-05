@@ -3,18 +3,17 @@
 
 namespace all { namespace sense {
 
-//namespace tags
-//{
+namespace tags{
   struct heading_reset_t{};
   struct global_reset_t{};
   struct object_reset_t{};
   struct align_reset_t{};
+}//all::sense::tags
 
-  static heading_reset_t heading_reset = heading_reset_t(); 
-  static global_reset_t global_reset = global_reset_t();
-  static object_reset_t object_reset = object_reset_t();
-  static align_reset_t align_reset   = align_reset_t();
-//}
+  static tags::heading_reset_t heading_reset = tags::heading_reset_t(); 
+  static tags::global_reset_t global_reset = tags::global_reset_t();
+  static tags::object_reset_t object_reset = tags::object_reset_t();
+  static tags::align_reset_t align_reset   = tags::align_reset_t();
 
 }}//all::sense
 

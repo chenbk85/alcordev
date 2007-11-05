@@ -30,13 +30,13 @@ namespace all { namespace sense {
     bool open(std::string& configfile);
 
     //
-    void reset(heading_reset_t);
+    void reset(tags::heading_reset_t);
     //
-    void reset(global_reset_t);
+    void reset(tags::global_reset_t);
     //
-    void reset(object_reset_t);
+    void reset(tags::object_reset_t);
     //
-    void reset(align_reset_t);
+    void reset(tags::align_reset_t);
 
     //
     void run_mti();
