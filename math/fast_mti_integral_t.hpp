@@ -6,32 +6,44 @@
 using namespace boost::numeric;
 //---------------------------------------------------------
 #include "alcor/math/moving_average_t.hpp"
-const int MVA_LENGHT = 50;
 //---------------------------------------------------------
 //---------------------------------------------------------
-#define DOFILELOG
+//#define DOFILELOG
+#define _MTILOGONSCREEN_
 //
 #ifdef DOFILELOG
 #include <fstream>
 using std::cout;
 using std::endl;
 #endif
+
 //---------------------------------------------------------
-namespace all { namespace math {
-//---------------------------------------------------------
+namespace 
+{
+  ///
 template <typename T>
 void truncate_2(T& val)
 {
   int temp = static_cast<int>(val*100);
-  val = static_cast<T>(temp)/100.0;
+  val = static_cast<T>(temp)/static_cast<T>(100.0);
 }
 //---------------------------------------------------------
+///
 template <typename T>
 void truncate_1(T& val)
 {
   int temp = static_cast<int>(val*10);
-  val = static_cast<T>(temp)/10.0;
+  val = static_cast<T>(temp)/static_cast<T>(10.0);
 }
+///
+const int MVA_LENGHT = 50;
+///
+const float GACC = 9.80665f;
+}
+//---------------------------------------------------------
+namespace all { namespace math {
+//---------------------------------------------------------
+
 //---------------------------------------------------------
 //source:http://en.wikipedia.org/wiki/Quaternions_and_spatial_rotation
 //given a quaternion z = a + bi + cj + dk (with |z| = 1) 
@@ -60,7 +72,7 @@ fast_mti_integral_t();
 ~fast_mti_integral_t();
 ///
 void set_initial_location(float loc_[]);
-void set_initial_orientation (float orient_[]);
+//void set_initial_orientation (float orient_[]);
 void set_initial_velocity(float vel_[]);
 
 ///just weird
@@ -80,22 +92,19 @@ float _prev_acc[3];
 
 ///seconds
 float prev_secs_;
+float delta_T_;
+float delta_T2_2_;
 
 ///constant  gravity acceleration
 const float G_acc;
 
 ///
-all::math::exp_weighted_moving_average_t<float,float> mav_accx_;
+all::math::simple_moving_average_t<float> mav_accx_;
 ///
-all::math::exp_weighted_moving_average_t<float,float> mav_accy_;
+all::math::simple_moving_average_t<float> mav_accy_;
 ///
-all::math::exp_weighted_moving_average_t<float,float> mav_accz_;
-/////
-//all::math::simple_moving_average_t<float,float> mav_velx_;
-/////
-//all::math::simple_moving_average_t<float,float> mav_vely_;
-/////
-//all::math::simple_moving_average_t<float,float> mav_velz_;
+all::math::simple_moving_average_t<float> mav_accz_;
+
 
 #ifdef DOFILELOG
 std::fstream flog;
@@ -103,14 +112,14 @@ std::fstream flog;
 };
 //---------------------------------------------------------
 inline fast_mti_integral_t::fast_mti_integral_t()
-:   G_acc(9.80665f)
+:   G_acc(GACC)
   , prev_secs_(0.0f)
+  , delta_T_(0.0f)
+  , delta_T2_2_(0.0f)
   , mav_accx_(MVA_LENGHT)
   , mav_accy_(MVA_LENGHT)
   , mav_accz_(MVA_LENGHT)
-  //, mav_velx_(MVA_LENGHT)
-  //, mav_vely_(MVA_LENGHT)
-  //, mav_velz_(MVA_LENGHT)
+
 {
   _prev_acc[0] = 0;  _prev_acc[1] = 0;  _prev_acc[2] = 0;
   _prev_vel[0] = 0;  _prev_vel[1] = 0;  _prev_vel[2] = 0;
@@ -138,90 +147,71 @@ inline void fast_mti_integral_t::update(float data_[], double elapsed_secs_)
 
 { 
   //time matters
-  float delta_T = static_cast<float>(elapsed_secs_ - prev_secs_);
+  delta_T_ = static_cast<float>(elapsed_secs_ - prev_secs_);
   prev_secs_    = static_cast<float>(elapsed_secs_);
 
-  //=> given accelerations, compensate for G
-  //rotate G_acc=[0 0 G] into the MTi reference system (S)
-  //G_mti = rotSG * G_acc = (c*G, f*G, i*G)' 
-  //NOTE: first two components of G_acc are null
-  float G_MTi[] = {data_[2]*G_acc, data_[5]*G_acc, data_[8]*G_acc}; 
-
-  ////Compensated accelerations
-  float M_acc[]  = {data_[9] - G_MTi[0] 
-                  , data_[10]- G_MTi[1]  
-                  , data_[11]- G_MTi[2] 
-                  };
-  //Rotate acceleration to Global Reference R_gs
+  //Rotate acceleration to Global Reference R_gs and compensate
   //Rgs = [a d g; b e h; c f i]
-  float Macc_gl[]= {  data_[0]*M_acc[0] + data_[3]*M_acc[1] + data_[6]*M_acc[2]
-                    , data_[1]*M_acc[0] + data_[4]*M_acc[1] + data_[7]*M_acc[2]
-                    , data_[2]*M_acc[0] + data_[5]*M_acc[1] + data_[8]*M_acc[2]
+  float Macc_gl[]= {  data_[0] * data_[9] + data_[3]*data_[10] + data_[6]*data_[11]
+                    , data_[1] * data_[9] + data_[4]*data_[10] + data_[7]*data_[11]
+                    ,(data_[2] * data_[9] + data_[5]*data_[10] + data_[8]*data_[11])
+                      - G_acc
                    };
-
-  ////weird trunc
-  //truncate_1<float>(M_acc[0]);
-  //truncate_1<float>(M_acc[1]);
-  //truncate_1<float>(M_acc[2]);
-  //
-  mav_accx_.push(Macc_gl[0]);
-  mav_accy_.push(Macc_gl[1]);
-  mav_accz_.push(Macc_gl[2]);
-
-  ////
-  printf("\nNOT compensated: %4.3f %4.3f %4.3f\n"
-    , data_[9],data_[10],data_[11]);
-
-  printf("Compensated: %4.3f %4.3f %4.3f\n"
-    , M_acc[0],M_acc[1],M_acc[2]);
-
-  printf("Smoothed: %4.3f %4.3f %4.3f\n"
-    , mav_accx_.mav(), mav_accy_.mav(), mav_accz_.mav());
-  //SIMPLE NOT ACCURATE DOUBLE INTEGRATION (No Runge-Kutta)
-
 
 #ifdef DOFILELOG
   flog << Macc_gl[0] << " " << Macc_gl[1] << " " << Macc_gl[2] << endl;
 #endif
+
   //
-  //_vel[0] = (_prev_acc[0]*delta_T) + _prev_vel[0];
-  //_vel[1] = (_prev_acc[1]*delta_T) + _prev_vel[1];
-  //_vel[2] = (_prev_acc[2]*delta_T) + _prev_vel[2];
+  delta_T2_2_ = (delta_T_*delta_T_)/2.0f;
+  ////UPDATE
+  _loc[0] =  _prev_acc[0]*delta_T2_2_ + (_prev_vel[0]*delta_T_) + _prev_loc[0];
+  _loc[1] =  _prev_acc[1]*delta_T2_2_ + (_prev_vel[1]*delta_T_) + _prev_loc[1];
+  _loc[2] =  _prev_acc[2]*delta_T2_2_ + (_prev_vel[2]*delta_T_) + _prev_loc[2];
 
-  _vel[0] = (mav_accx_.mav()*delta_T) + _prev_vel[0];
-  _vel[1] = (mav_accy_.mav()*delta_T) + _prev_vel[1];
-  _vel[2] = (mav_accz_.mav()*delta_T) + _prev_vel[2];
 
-  printf("VEL: %4.3f %4.3f %4.3f\n"
-    , _vel[0], _vel[1], _vel[2]);
+  //prepare for the next cycle
+  //ACC
+  mav_accx_.push(Macc_gl[0]);
+  mav_accy_.push(Macc_gl[1]);
+  mav_accz_.push(Macc_gl[2]);
 
-  truncate_2<float>(_vel[0]);
-  truncate_2<float>(_vel[1]);
-  truncate_2<float>(_vel[2]);
-  //
-  _loc[0] =  (_prev_vel[0]*delta_T) + _prev_loc[0];
-  _loc[1] =  (_prev_vel[1]*delta_T) + _prev_loc[1];
-  _loc[2] =  (_prev_vel[2]*delta_T) + _prev_loc[2];
+  _prev_acc[0] = mav_accx_.mav();
+  _prev_acc[1] = mav_accy_.mav();
+  _prev_acc[2] = mav_accz_.mav();
 
-  //update prevs
-  //acc
-  //_prev_acc[0] = M_acc[0];
-  //_prev_acc[1] = M_acc[1];
-  //_prev_acc[2] = M_acc[2];
-
+  //VEL
+  _vel[0] = (mav_accx_.mav()*delta_T_) + _prev_vel[0];
+  _vel[1] = (mav_accy_.mav()*delta_T_) + _prev_vel[1];
+  _vel[2] = (mav_accz_.mav()*delta_T_) + _prev_vel[2];
   //  
   _prev_vel[0] = _vel[0];
   _prev_vel[1] = _vel[1];
   _prev_vel[2] = _vel[2];
 
-  //
+  //LOC
   _prev_loc[0] = _loc[0];
   _prev_loc[1] = _loc[1];
   _prev_loc[2] = _loc[2];
 
+
+#ifdef _MTILOGONSCREEN_
+  ////
+  printf("\nNOT compensated: %4.3f %4.3f %4.3f\n"
+    , data_[9],data_[10],data_[11]);
+
+  printf("Compensated: %4.3f %4.3f %4.3f\n"
+    , Macc_gl[0],Macc_gl[1],Macc_gl[2]);
+
+  printf("Smoothed: %4.3f %4.3f %4.3f\n"
+    , mav_accx_.mav(), mav_accy_.mav(), mav_accz_.mav());
+
+  printf("VEL: %4.3f %4.3f %4.3f\n"
+    , _vel[0], _vel[1], _vel[2]);
   //
   printf("Location: %4.2f %4.2f %4.2f\n"
   , _loc[0],_loc[1],_loc[2]);
+#endif
 }
 //---------------------------------------------------------
 }} //all::math

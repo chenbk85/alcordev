@@ -29,8 +29,6 @@ public:
   ///filter lenght
   size_t lenght() const;
 
-  ///flushes old
-  //void reset_lenght(size_t);
   ///
   void set_weights(DATATYPE weights[]);
   ///
@@ -69,7 +67,7 @@ protected:
 };
 //---------------------------------------------------------
 ///UNIFORM MOVING AVERAGE
-template <typename DATATYPE, typename RESULTTYPE>
+template <typename DATATYPE, typename RESULTTYPE = DATATYPE>
 class simple_moving_average_t : public moving_average_base_t<DATATYPE, RESULTTYPE>
 {
 public:
@@ -88,7 +86,7 @@ protected:
 };
 //---------------------------------------------------------
 ///WEIGHTED MOVING AVERAGE
-template <typename DATATYPE, typename RESULTTYPE>
+template <typename DATATYPE, typename RESULTTYPE = DATATYPE>
 class weighted_moving_average_t : public moving_average_base_t<DATATYPE, RESULTTYPE>
 {
 public:
@@ -107,7 +105,7 @@ protected:
 };
 //---------------------------------------------------------
 ///EXPONENTIAL MOVING AVERAGE
-template <typename DATATYPE, typename RESULTTYPE>
+template <typename DATATYPE, typename RESULTTYPE = DATATYPE>
 class exp_weighted_moving_average_t : public moving_average_base_t<DATATYPE, RESULTTYPE>
 {
 public:
@@ -118,7 +116,7 @@ public:
   ///
   virtual void push(const DATATYPE& sample);
   ///
-  void set_smoothing_factor(double alpha){alpha_=alpha;};
+  void set_smoothing_factor(RESULTTYPE alpha){alpha_=alpha;};
 
 protected:
   ///
@@ -127,7 +125,7 @@ protected:
   void update_mav_regime_();
 
 private:
-  double alpha_;
+  RESULTTYPE alpha_;
 };
 //---------------------------------------------------------
 //---------------------------------------------------------
@@ -154,12 +152,6 @@ inline size_t moving_average_base_t<DATATYPE, RESULTTYPE>::lenght() const
 {
   return static_cast<size_t> (cb_.capacity());
 }
-////---------------------------------------------------------
-//template <typename DATATYPE, typename RESULTTYPE>
-//inline void moving_average_base_t<DATATYPE, RESULTTYPE>::reset_lenght(size_t lenght)
-//{
-//
-//}
 //---------------------------------------------------------
 template <typename DATATYPE, typename RESULTTYPE>
 inline void moving_average_base_t<DATATYPE, RESULTTYPE>::set_weights(DATATYPE weights[])
@@ -273,7 +265,7 @@ template <typename DATATYPE, typename RESULTTYPE>
 inline exp_weighted_moving_average_t<DATATYPE, RESULTTYPE>::exp_weighted_moving_average_t(size_t lenght)
         :moving_average_base_t(lenght)
 {
-  alpha_ = (2.0/static_cast<double>(lenght+1));
+  alpha_ = (static_cast<RESULTTYPE>(2.0)/static_cast<RESULTTYPE>(lenght+1));
   printf("Initialized Exp MAV with alpha: %1.3f\n", alpha_ );
 }
 //---------------------------------------------------------
@@ -289,18 +281,20 @@ inline void exp_weighted_moving_average_t<DATATYPE, RESULTTYPE>::push(const DATA
 ///
 template <typename DATATYPE, typename RESULTTYPE>
 inline void exp_weighted_moving_average_t<DATATYPE, RESULTTYPE>::update_mav_transient_()
-{
+{    
+
   //printf("eXp::TRANSIENT\n");
-  //TODO: switch to fast update when buffer is full!
   if(cb_.size() == 2)
   {
-    mav_ = cb_[0];
+    mav_ = (cb_[1]+cb_[0])/static_cast<RESULTTYPE>(2.0);
+
     prev_mav_ = mav_;
     update_mav_ = boost::bind(&exp_weighted_moving_average_t::update_mav_regime_,this);
   }
   else if(cb_.size() == 1)
   {
-    mav_ = 0;    
+    //
+    mav_ = cb_[0];
     prev_mav_ = mav_;
   }
 }
@@ -310,7 +304,7 @@ template <typename DATATYPE, typename RESULTTYPE>
 inline void exp_weighted_moving_average_t<DATATYPE, RESULTTYPE>::update_mav_regime_()
 {
   //printf("eXp::REGIME\n");
-  mav_ = prev_mav_ + (alpha_*(cb_.back() - prev_mav_));
+  mav_ = prev_mav_ + (alpha_*(static_cast<RESULTTYPE>(cb_.back()) - prev_mav_));
   prev_mav_ = mav_;
 }
 //---------------------------------------------------------
