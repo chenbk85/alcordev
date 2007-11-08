@@ -6,9 +6,10 @@
 using namespace boost::numeric;
 //---------------------------------------------------------
 #include "alcor/math/moving_average_t.hpp"
-const int MVA_LENGHT = 55;
+const int MVA_LENGHT = 50;
 //---------------------------------------------------------
-//#define DOFILELOG
+//---------------------------------------------------------
+#define DOFILELOG
 //
 #ifdef DOFILELOG
 #include <fstream>
@@ -17,6 +18,20 @@ using std::endl;
 #endif
 //---------------------------------------------------------
 namespace all { namespace math {
+//---------------------------------------------------------
+template <typename T>
+void truncate_2(T& val)
+{
+  int temp = static_cast<int>(val*100);
+  val = static_cast<T>(temp)/100.0;
+}
+//---------------------------------------------------------
+template <typename T>
+void truncate_1(T& val)
+{
+  int temp = static_cast<int>(val*10);
+  val = static_cast<T>(temp)/10.0;
+}
 //---------------------------------------------------------
 //source:http://en.wikipedia.org/wiki/Quaternions_and_spatial_rotation
 //given a quaternion z = a + bi + cj + dk (with |z| = 1) 
@@ -45,7 +60,7 @@ fast_mti_integral_t();
 ~fast_mti_integral_t();
 ///
 void set_initial_location(float loc_[]);
-void set_initial_orintation (float orient_[]);
+void set_initial_orientation (float orient_[]);
 void set_initial_velocity(float vel_[]);
 
 ///just weird
@@ -58,12 +73,10 @@ private:
 
 float _loc[3];
 float _vel[3];
-//float _orient[3];
 
 float _prev_loc[3];
 float _prev_vel[3];
 float _prev_acc[3];
-//float prev_orient[3];
 
 ///seconds
 float prev_secs_;
@@ -77,12 +90,12 @@ all::math::exp_weighted_moving_average_t<float,float> mav_accx_;
 all::math::exp_weighted_moving_average_t<float,float> mav_accy_;
 ///
 all::math::exp_weighted_moving_average_t<float,float> mav_accz_;
-///
-all::math::simple_moving_average_t<float,float> mav_velx_;
-///
-all::math::simple_moving_average_t<float,float> mav_vely_;
-///
-all::math::simple_moving_average_t<float,float> mav_velz_;
+/////
+//all::math::simple_moving_average_t<float,float> mav_velx_;
+/////
+//all::math::simple_moving_average_t<float,float> mav_vely_;
+/////
+//all::math::simple_moving_average_t<float,float> mav_velz_;
 
 #ifdef DOFILELOG
 std::fstream flog;
@@ -95,9 +108,9 @@ inline fast_mti_integral_t::fast_mti_integral_t()
   , mav_accx_(MVA_LENGHT)
   , mav_accy_(MVA_LENGHT)
   , mav_accz_(MVA_LENGHT)
-  , mav_velx_(MVA_LENGHT)
-  , mav_vely_(MVA_LENGHT)
-  , mav_velz_(MVA_LENGHT)
+  //, mav_velx_(MVA_LENGHT)
+  //, mav_vely_(MVA_LENGHT)
+  //, mav_velz_(MVA_LENGHT)
 {
   _prev_acc[0] = 0;  _prev_acc[1] = 0;  _prev_acc[2] = 0;
   _prev_vel[0] = 0;  _prev_vel[1] = 0;  _prev_vel[2] = 0;
@@ -118,6 +131,7 @@ inline fast_mti_integral_t::~fast_mti_integral_t()
 //[rot(9) acc(3)]
 //[0-8 9-11]
 //rot is [a b c d e f g h i]
+//        0 1 2 3 4 5 6 7 8
 //acc is [accx accy accz]
 //elasped_ is in seconds
 inline void fast_mti_integral_t::update(float data_[], double elapsed_secs_)
@@ -134,14 +148,25 @@ inline void fast_mti_integral_t::update(float data_[], double elapsed_secs_)
   float G_MTi[] = {data_[2]*G_acc, data_[5]*G_acc, data_[8]*G_acc}; 
 
   ////Compensated accelerations
-  float M_acc[]  = {data_[9] - G_MTi[0] - 0.0138
-                  , data_[10]- G_MTi[1] - 0.0123 
-                  , data_[11]- G_MTi[2] - 0.0119};
-       
+  float M_acc[]  = {data_[9] - G_MTi[0] 
+                  , data_[10]- G_MTi[1]  
+                  , data_[11]- G_MTi[2] 
+                  };
+  //Rotate acceleration to Global Reference R_gs
+  //Rgs = [a d g; b e h; c f i]
+  float Macc_gl[]= {  data_[0]*M_acc[0] + data_[3]*M_acc[1] + data_[6]*M_acc[2]
+                    , data_[1]*M_acc[0] + data_[4]*M_acc[1] + data_[7]*M_acc[2]
+                    , data_[2]*M_acc[0] + data_[5]*M_acc[1] + data_[8]*M_acc[2]
+                   };
+
+  ////weird trunc
+  //truncate_1<float>(M_acc[0]);
+  //truncate_1<float>(M_acc[1]);
+  //truncate_1<float>(M_acc[2]);
   //
-  mav_accx_.push(M_acc[0]);
-  mav_accy_.push(M_acc[1]);
-  mav_accz_.push(M_acc[2]);
+  mav_accx_.push(Macc_gl[0]);
+  mav_accy_.push(Macc_gl[1]);
+  mav_accz_.push(Macc_gl[2]);
 
   ////
   printf("\nNOT compensated: %4.3f %4.3f %4.3f\n"
@@ -154,8 +179,9 @@ inline void fast_mti_integral_t::update(float data_[], double elapsed_secs_)
     , mav_accx_.mav(), mav_accy_.mav(), mav_accz_.mav());
   //SIMPLE NOT ACCURATE DOUBLE INTEGRATION (No Runge-Kutta)
 
+
 #ifdef DOFILELOG
-  flog << M_acc[0] << " " << M_acc[1] << " " << M_acc[2] << endl;
+  flog << Macc_gl[0] << " " << Macc_gl[1] << " " << Macc_gl[2] << endl;
 #endif
   //
   //_vel[0] = (_prev_acc[0]*delta_T) + _prev_vel[0];
@@ -165,6 +191,13 @@ inline void fast_mti_integral_t::update(float data_[], double elapsed_secs_)
   _vel[0] = (mav_accx_.mav()*delta_T) + _prev_vel[0];
   _vel[1] = (mav_accy_.mav()*delta_T) + _prev_vel[1];
   _vel[2] = (mav_accz_.mav()*delta_T) + _prev_vel[2];
+
+  printf("VEL: %4.3f %4.3f %4.3f\n"
+    , _vel[0], _vel[1], _vel[2]);
+
+  truncate_2<float>(_vel[0]);
+  truncate_2<float>(_vel[1]);
+  truncate_2<float>(_vel[2]);
   //
   _loc[0] =  (_prev_vel[0]*delta_T) + _prev_loc[0];
   _loc[1] =  (_prev_vel[1]*delta_T) + _prev_loc[1];

@@ -3,8 +3,9 @@
 //---------------------------------------------------------
 #include <boost/circular_buffer.hpp>
 #include <boost/foreach.hpp>
+#include <boost/function.hpp>
+#include <boost/bind.hpp>
 #include <vector>
-
 //---------------------------------------------------------
 #define foreach BOOST_FOREACH
 #include <numeric>
@@ -29,7 +30,7 @@ public:
   size_t lenght() const;
 
   ///flushes old
-  void reset_lenght(size_t);
+  //void reset_lenght(size_t);
   ///
   void set_weights(DATATYPE weights[]);
   ///
@@ -49,6 +50,12 @@ public:
 
 protected:
   ///
+  boost::function<void (void)> update_mav_;
+  ///
+  virtual void update_mav_transient_()=0;
+  ///
+  virtual void update_mav_regime_()=0;
+  ///
   boost::circular_buffer<DATATYPE> cb_;
   ///
   std::vector<DATATYPE> weights_;
@@ -61,7 +68,7 @@ protected:
 
 };
 //---------------------------------------------------------
-///
+///UNIFORM MOVING AVERAGE
 template <typename DATATYPE, typename RESULTTYPE>
 class simple_moving_average_t : public moving_average_base_t<DATATYPE, RESULTTYPE>
 {
@@ -69,12 +76,18 @@ public:
   ///
   simple_moving_average_t(size_t);
   ///
-  virtual void push(const DATATYPE& sample);
+  void push(const DATATYPE& sample);
   ///
   RESULTTYPE mav();
+
+protected:
+  ///
+  void update_mav_transient_();
+  ///
+  void update_mav_regime_();
 };
 //---------------------------------------------------------
-///
+///WEIGHTED MOVING AVERAGE
 template <typename DATATYPE, typename RESULTTYPE>
 class weighted_moving_average_t : public moving_average_base_t<DATATYPE, RESULTTYPE>
 {
@@ -82,12 +95,18 @@ public:
   ///
   weighted_moving_average_t(size_t);
   ///
-  virtual void push(const DATATYPE& sample);
+  void push(const DATATYPE& sample);
   ///
   RESULTTYPE mav();
+
+protected:
+  ///
+  void update_mav_transient_();
+  ///
+  void update_mav_regime_();
 };
 //---------------------------------------------------------
-///
+///EXPONENTIAL MOVING AVERAGE
 template <typename DATATYPE, typename RESULTTYPE>
 class exp_weighted_moving_average_t : public moving_average_base_t<DATATYPE, RESULTTYPE>
 {
@@ -100,6 +119,12 @@ public:
   virtual void push(const DATATYPE& sample);
   ///
   void set_smoothing_factor(double alpha){alpha_=alpha;};
+
+protected:
+  ///
+  void update_mav_transient_();
+  ///
+  void update_mav_regime_();
 
 private:
   double alpha_;
@@ -115,7 +140,7 @@ inline moving_average_base_t<DATATYPE, RESULTTYPE>::moving_average_base_t(size_t
   , mav_(0)
   , prev_mav_(0)
 {
-
+  update_mav_ = boost::bind(&moving_average_base_t::update_mav_transient_,this);
 }
 //---------------------------------------------------------
 template <typename DATATYPE, typename RESULTTYPE>
@@ -129,12 +154,12 @@ inline size_t moving_average_base_t<DATATYPE, RESULTTYPE>::lenght() const
 {
   return static_cast<size_t> (cb_.capacity());
 }
-//---------------------------------------------------------
-template <typename DATATYPE, typename RESULTTYPE>
-inline void moving_average_base_t<DATATYPE, RESULTTYPE>::reset_lenght(size_t lenght)
-{
-
-}
+////---------------------------------------------------------
+//template <typename DATATYPE, typename RESULTTYPE>
+//inline void moving_average_base_t<DATATYPE, RESULTTYPE>::reset_lenght(size_t lenght)
+//{
+//
+//}
 //---------------------------------------------------------
 template <typename DATATYPE, typename RESULTTYPE>
 inline void moving_average_base_t<DATATYPE, RESULTTYPE>::set_weights(DATATYPE weights[])
@@ -187,6 +212,10 @@ inline void moving_average_base_t<DATATYPE, RESULTTYPE>::print_weights()
 template <typename DATATYPE, typename RESULTTYPE>
 inline void moving_average_base_t<DATATYPE, RESULTTYPE>::flush()
 {
+  cb_.clear();
+  mav_ = 0;
+  prev_mav_ = 0;
+  update_mav_ = boost::bind(&moving_average_base_t::update_mav_transient_,this);
 }
 ////---------------------------------------------------------
 ////---------------------------------------------------------
@@ -201,10 +230,19 @@ template <typename DATATYPE, typename RESULTTYPE>
 inline void simple_moving_average_t<DATATYPE, RESULTTYPE>::push(const DATATYPE& val)
 {
   //
-  DATATYPE accum = DATATYPE();
-  //
   moving_average_base_t::push(val);
-  //cb_.push_back(val);
+  //
+  update_mav_();
+  //printf("acc: %4.3f -> mav(): %4.3f\n",accum, mav_);
+}
+////---------------------------------------------------------
+///
+template <typename DATATYPE, typename RESULTTYPE>
+inline void simple_moving_average_t<DATATYPE, RESULTTYPE>::update_mav_transient_()
+{
+  //TODO: switch to fast update when buffer is full!
+  //
+  DATATYPE accum = DATATYPE();
   //
   for( size_t ind = 0; ind < cb_.size(); ind++ )
   {
@@ -213,7 +251,13 @@ inline void simple_moving_average_t<DATATYPE, RESULTTYPE>::push(const DATATYPE& 
 
   //
   mav_ = static_cast<RESULTTYPE> ( accum/cb_.size() );
-  //printf("acc: %4.3f -> mav(): %4.3f\n",accum, mav_);
+}
+////---------------------------------------------------------
+///
+template <typename DATATYPE, typename RESULTTYPE>
+inline void simple_moving_average_t<DATATYPE, RESULTTYPE>::update_mav_regime_()
+{
+
 }
 ////---------------------------------------------------------
 template <typename DATATYPE, typename RESULTTYPE>
@@ -230,13 +274,43 @@ inline exp_weighted_moving_average_t<DATATYPE, RESULTTYPE>::exp_weighted_moving_
         :moving_average_base_t(lenght)
 {
   alpha_ = (2.0/static_cast<double>(lenght+1));
+  printf("Initialized Exp MAV with alpha: %1.3f\n", alpha_ );
 }
 //---------------------------------------------------------
 template <typename DATATYPE, typename RESULTTYPE>
 inline void exp_weighted_moving_average_t<DATATYPE, RESULTTYPE>::push(const DATATYPE& val)
 {
-  cb_.push_back(val);
-  mav_ = prev_mav_ + (alpha_*(val - prev_mav_));
+  //
+  moving_average_base_t::push(val);
+  //
+  update_mav_();
+}
+////---------------------------------------------------------
+///
+template <typename DATATYPE, typename RESULTTYPE>
+inline void exp_weighted_moving_average_t<DATATYPE, RESULTTYPE>::update_mav_transient_()
+{
+  //printf("eXp::TRANSIENT\n");
+  //TODO: switch to fast update when buffer is full!
+  if(cb_.size() == 2)
+  {
+    mav_ = cb_[0];
+    prev_mav_ = mav_;
+    update_mav_ = boost::bind(&exp_weighted_moving_average_t::update_mav_regime_,this);
+  }
+  else if(cb_.size() == 1)
+  {
+    mav_ = 0;    
+    prev_mav_ = mav_;
+  }
+}
+////---------------------------------------------------------
+///
+template <typename DATATYPE, typename RESULTTYPE>
+inline void exp_weighted_moving_average_t<DATATYPE, RESULTTYPE>::update_mav_regime_()
+{
+  //printf("eXp::REGIME\n");
+  mav_ = prev_mav_ + (alpha_*(cb_.back() - prev_mav_));
   prev_mav_ = mav_;
 }
 //---------------------------------------------------------
