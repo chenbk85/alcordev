@@ -68,11 +68,11 @@ protected:
 //---------------------------------------------------------
 ///UNIFORM MOVING AVERAGE
 template <typename DATATYPE, typename RESULTTYPE = DATATYPE>
-class simple_moving_average_t : public moving_average_base_t<DATATYPE, RESULTTYPE>
+class uniform_moving_average_t : public moving_average_base_t<DATATYPE, RESULTTYPE>
 {
 public:
   ///
-  simple_moving_average_t(size_t);
+  uniform_moving_average_t(size_t);
   ///
   void push(const DATATYPE& sample);
   ///
@@ -83,6 +83,8 @@ protected:
   void update_mav_transient_();
   ///
   void update_mav_regime_();
+private:
+  DATATYPE accum_;
 };
 //---------------------------------------------------------
 ///WEIGHTED MOVING AVERAGE
@@ -214,12 +216,14 @@ inline void moving_average_base_t<DATATYPE, RESULTTYPE>::flush()
 // UNIFORM MOVING AVERAGE
 //---------------------------------------------------------
 template <typename DATATYPE, typename RESULTTYPE>
-inline simple_moving_average_t<DATATYPE, RESULTTYPE>::simple_moving_average_t(size_t lenght):moving_average_base_t(lenght)
+inline uniform_moving_average_t<DATATYPE, RESULTTYPE>::uniform_moving_average_t(size_t lenght)
+:moving_average_base_t(lenght)
+,accum_(0.0)
 {
 }
 ////---------------------------------------------------------
 template <typename DATATYPE, typename RESULTTYPE>
-inline void simple_moving_average_t<DATATYPE, RESULTTYPE>::push(const DATATYPE& val)
+inline void uniform_moving_average_t<DATATYPE, RESULTTYPE>::push(const DATATYPE& val)
 {
   //
   moving_average_base_t::push(val);
@@ -230,30 +234,40 @@ inline void simple_moving_average_t<DATATYPE, RESULTTYPE>::push(const DATATYPE& 
 ////---------------------------------------------------------
 ///
 template <typename DATATYPE, typename RESULTTYPE>
-inline void simple_moving_average_t<DATATYPE, RESULTTYPE>::update_mav_transient_()
+inline void uniform_moving_average_t<DATATYPE, RESULTTYPE>::update_mav_transient_()
 {
   //TODO: switch to fast update when buffer is full!
-  //
-  DATATYPE accum = DATATYPE();
+
+  accum_ = static_cast<DATATYPE>(0.0);
   //
   for( size_t ind = 0; ind < cb_.size(); ind++ )
   {
-    accum +=  cb_[ind] ;
+    accum_ +=  cb_[ind] ;
   }
 
   //
-  mav_ = static_cast<RESULTTYPE> ( accum/cb_.size() );
+  mav_ = static_cast<RESULTTYPE> ( accum_/cb_.size() );
+
+  //
+  if(cb_.size() == (buffer_len_- 1)) 
+  {
+    prev_mav_ = mav_;
+    update_mav_ = boost::bind(&uniform_moving_average_t::update_mav_regime_,this);
+  }
+
 }
 ////---------------------------------------------------------
 ///
 template <typename DATATYPE, typename RESULTTYPE>
-inline void simple_moving_average_t<DATATYPE, RESULTTYPE>::update_mav_regime_()
+inline void uniform_moving_average_t<DATATYPE, RESULTTYPE>::update_mav_regime_()
 {
-
+//
+  mav_ = prev_mav_ + ( (cb_[buffer_len_-1] - cb_[buffer_len_-2])/buffer_len_);
+  prev_mav_ = mav_;
 }
 ////---------------------------------------------------------
 template <typename DATATYPE, typename RESULTTYPE>
-inline RESULTTYPE simple_moving_average_t<DATATYPE, RESULTTYPE>::mav()
+inline RESULTTYPE uniform_moving_average_t<DATATYPE, RESULTTYPE>::mav()
 {
   return mav_;
 }

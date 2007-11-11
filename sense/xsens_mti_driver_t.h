@@ -29,18 +29,21 @@ namespace all { namespace sense {
     ///
     bool open(std::string& configfile);
 
-    //
+    ///
     void reset(tags::heading_reset_t);
-    //
+    ///
     void reset(tags::global_reset_t);
-    //
+    ///
     void reset(tags::object_reset_t);
-    //
+    ///
     void reset(tags::align_reset_t);
 
-    //
+    ///
+    void get_data(float data[]);
+
+    ///
     void run_mti();
-    //
+    ///
     void stop_mti();
 
     ///test

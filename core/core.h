@@ -130,6 +130,21 @@ template<class T>
   typedef all::core::constants<double> dconstants;
   typedef all::core::constants<float>  fconstants;
 //-------------------------------------------------------------------------++
+    ///
+template <typename T>
+static void truncate_2(T& val)
+{
+  int temp = static_cast<int>(val*100);
+  val = static_cast<T>(temp)/static_cast<T>(100.0);
+}
+//---------------------------------------------------------
+///
+template <typename T>
+static void truncate_1(T& val)
+{
+  int temp = static_cast<int>(val*10);
+  val = static_cast<T>(temp)/static_cast<T>(10.0);
+}
 //-------------------------------------------------------------------------++
 /**	costruisce una stringa di almeno 'number' caratteri. se la sorgente non riempie i caratteri, 
 	vengono introdotti tanti '0' (ALL'INIZIO) quanti sono i caratteri mancanti*/
@@ -152,13 +167,13 @@ struct null_deleter
     }
 };
 //-------------------------------------------------------------------------++
-struct i_service_handler
-{
-		///Implement this with handlers
-		virtual void register_to() = 0;
-		///Called when server goes down
-		virtual void lost_connection()=0;
-};
+//struct i_service_handler
+//{
+//		///Implement this with handlers
+//		virtual void register_to() = 0;
+//		///Called when server goes down
+//		virtual void lost_connection()=0;
+//};
 //-------------------------------------------------------------------------++
 //-------------------------------------------------------------------------++
 //namespace sandbox {
