@@ -21,6 +21,10 @@
 #else 
   #pragma comment (lib, "opencv_grabber_t.lib")
 #endif
+namespace
+{
+const int _DEVICEID_ = 0;
+}
 //-------------------------------------------------------------------
 namespace all { namespace core {  
 //-------------------------------------------------------------------
@@ -118,7 +122,7 @@ void camera_logger_t::init_()
 	////for silent listDevices use listDevices(true);
 	//int numDevices = videoInput::listDevices();
   //
-  VI->setupDevice(0, 640, 480);
+  VI->setupDevice(_DEVICEID_, 640, 480);
 	//to get a settings dialog for the device
 	VI->showSettingsWindow(0);
   //
@@ -130,7 +134,7 @@ void camera_logger_t::init_()
   avifile_ = 
     cvCreateVideoWriter( "videoinput.avi"
                         , -1
-                        , 10
+                        , 30
                         , cvSize(width, height)
                        );
 
@@ -153,7 +157,7 @@ void camera_logger_t::deinit_()
 {
 #ifdef USE_VIDEOINPUT
   //Shut down devices properly
-	VI->stopDevice(0);
+  VI->stopDevice(_DEVICEID_);
   cvReleaseVideoWriter(&avifile_ );
 #else
   //
@@ -212,9 +216,9 @@ void camera_logger_t::main_loop_ipl_()
   {
 
     #ifdef USE_VIDEOINPUT
-      VI->getPixels(0, rawframe, false);
+      VI->getPixels(_DEVICEID_, rawframe, false);
       memcpy(current_image->imageData, rawframe, size);
-      //cvConvertImage(current_image, current_image, CV_CVTIMG_FLIP);
+      cvConvertImage(current_image, current_image, CV_CVTIMG_FLIP);
       cvShowImage("videoinput", current_image);
 
     #else
@@ -230,7 +234,7 @@ void camera_logger_t::main_loop_ipl_()
     //binlogger_->add_iplimage(current_image, timestamp);
     cvWaitKey(1);
     boost::thread::yield();
-    all::core::BOOST_SLEEP(1);
+    //all::core::BOOST_SLEEP(1);
   }
   //
   double elapsed = timer_.elapsed();
@@ -244,7 +248,7 @@ void camera_logger_t::main_loop_ipl_()
   deinit_();
   //
   printf("Acquired %d samples in %f seconds\n", nsamples, elapsed);
-  printf("Frame Rate: %f\n",nsamples/elapsed);
+  printf("Frame Rate: %4.2f\n",nsamples/elapsed);
 }
 //-------------------------------------------------------------------
 }}//all::core
