@@ -10,6 +10,8 @@
 #include "alcor/sense/xsens_mti_inc.hpp"
 #include "alcor/math/fast_mti_integral_t.hpp"
 //---------------------------------------------------------
+#include "alcor/math/quaternion_t.hpp"
+//---------------------------------------------------------
 namespace all { namespace sense {  
 //---------------------------------------------------------
   ///
