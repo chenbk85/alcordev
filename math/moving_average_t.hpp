@@ -7,6 +7,8 @@
 #include <boost/bind.hpp>
 #include <vector>
 //---------------------------------------------------------
+#include "alcor/math/quaternion_t.hpp"
+//---------------------------------------------------------
 #define foreach BOOST_FOREACH
 #include <numeric>
 //---------------------------------------------------------
