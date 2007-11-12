@@ -119,63 +119,43 @@ void xsens_mti_driver_t::print_calibdata()
   {
     //QUATERNIONS
   case OUTPUTSETTINGS_ORIENTMODE_QUATERNION:
+		// Output: quaternions
+    impl->mtcomm.getValue(VALUE_ORIENT_QUAT, impl->quat, impl->data, impl->SENSOR_BID);
+    break;    
+    //ROTATION MATRIX
+  case OUTPUTSETTINGS_ORIENTMODE_MATRIX:
+		// Output: Cosine Matrix
+    impl->mtcomm.getValue(VALUE_ORIENT_MATRIX, impl->rot, impl->data, impl->SENSOR_BID);
     break;
     //EULER
   case OUTPUTSETTINGS_ORIENTMODE_EULER:
     //
     impl->mtcomm.getValue(VALUE_ORIENT_EULER, impl->rpy, impl->data, impl->SENSOR_BID);
-    //printf("TSTAMP: %.2f SAMPLE: %d -- RPY :%6.2f\t%6.2f\t%6.2f\n"
-    //                  , elapsed
-    //                  , samplecounter
-    //                  , impl->rpy[0] 
-				//				      , impl->rpy[1] 
-				//				      , impl->rpy[2]);
     break;
-    //ROTATION MATRIX
-  case OUTPUTSETTINGS_ORIENTMODE_MATRIX:
-		// Output: Cosine Matrix
-    impl->mtcomm.getValue(VALUE_ORIENT_MATRIX, impl->rot, impl->data, impl->SENSOR_BID);
-		//printf("%6.3f\t%6.3f\t%6.3f\n"
-  //                  , impl->rotGS[0] 
-		//							  , impl->rotGS[1]
-		//							  , impl->rotGS[2]);
-		//printf("%6.3f\t%6.3f\t%6.3f\n"
-  //                  , impl->rotGS[3]
-		//							  , impl->rotGS[4] 
-		//							  , impl->rotGS[5]);
-		//printf("%6.3f\t%6.3f\t%6.3f\n"
-  //                  , impl->rotGS[6] 
-		//							  , impl->rotGS[7] 
-		//							  , impl->rotGS[8]);
-    break;
-  }
 
+  }
 
 	// Output Calibrated data
   impl->mtcomm.getValue(VALUE_CALIB_ACC, impl->acc, impl->data, impl->SENSOR_BID);
-  //printf("ACC :%6.2f\t%6.2f\t%6.2f\n"
-  //                  , impl->acc[0] 
-		//						    , impl->acc[1] 
-		//						    , impl->acc[2]);
 
-    ////  
-    float mti_data[12];
-    ////
-    mti_data[0] = impl->rot[0]; //a
-    mti_data[1] = impl->rot[1]; //b
-    mti_data[2] = impl->rot[2]; //c
-    mti_data[3] = impl->rot[3]; //d
-    mti_data[4] = impl->rot[4]; //e
-    mti_data[5] = impl->rot[5]; //f
-    mti_data[6] = impl->rot[6]; //g
-    mti_data[7] = impl->rot[7]; //h
-    mti_data[8] = impl->rot[8]; //i
-    mti_data[9] = impl->acc[0]; //accx
-    mti_data[10]= impl->acc[1];//accy
-    mti_data[11]= impl->acc[2];//accz
+  ////  
+  float mti_data[12];
+  ////
+  mti_data[0] = impl->rot[0]; //a
+  mti_data[1] = impl->rot[1]; //b
+  mti_data[2] = impl->rot[2]; //c
+  mti_data[3] = impl->rot[3]; //d
+  mti_data[4] = impl->rot[4]; //e
+  mti_data[5] = impl->rot[5]; //f
+  mti_data[6] = impl->rot[6]; //g
+  mti_data[7] = impl->rot[7]; //h
+  mti_data[8] = impl->rot[8]; //i
+  mti_data[9] = impl->acc[0]; //accx
+  mti_data[10]= impl->acc[1];//accy
+  mti_data[11]= impl->acc[2];//accz
 
-    ///
-    processor_.update(mti_data, elapsed);
+  ///
+  processor_.update(mti_data, elapsed);
 
   }
   else
