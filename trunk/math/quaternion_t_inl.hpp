@@ -112,6 +112,18 @@ namespace all { namespace math {
     return *this;
   }
 //---------------------------------------------------------
+  template <typename T>
+  quaternion_t<T>& quaternion_t<T>::operator *= (const quaternion_t<T>& rhs)
+  {
+    T W  = (rhs.w() * w() ) - (rhs.x() * x()) - (rhs.y() * y()) - (rhs.z() * z());
+    T X  = (rhs.w() * x() ) + (rhs.x() * w()) + (rhs.y() * z()) - (rhs.z() * y());
+    T Y  = (rhs.w() * y() ) + (rhs.y() * w()) + (rhs.z() * x()) - (rhs.x() * z());
+    T Z  = (rhs.w() * z() ) + (rhs.z() * w()) + (rhs.x() * y()) - (rhs.y() * x());
+
+    assign(W,X,Y,Z);
+    return (*this);
+  }
+//---------------------------------------------------------
     ///dot product
   template <typename T>
   T quaternion_t<T>::dot(const quaternion_t<T>& rhs) const
@@ -123,14 +135,14 @@ namespace all { namespace math {
   }
 //---------------------------------------------------------
   template <typename T>
-  quaternion_t<T> quaternion_t<T>::operator*(const quaternion_t<T>& other) 
+  quaternion_t<T> quaternion_t<T>::operator*(const quaternion_t<T>& rhs) const
   {
     quaternion_t<T> tmp;
 
-    T W  = (other.w() * w() ) - (other.x() * x()) - (other.y() * y()) - (other.z() * z());
-    T X  = (other.w() * x() ) + (other.x() * w()) + (other.y() * z()) - (other.z() * y());
-    T Y  = (other.w() * y() ) + (other.y() * w()) + (other.z() * x()) - (other.x() * z());
-    T Z  = (other.w() * z() ) + (other.z() * w()) + (other.x() * y()) - (other.y() * x());
+    T W  = (rhs.w() * w() ) - (rhs.x() * x()) - (rhs.y() * y()) - (rhs.z() * z());
+    T X  = (rhs.w() * x() ) + (rhs.x() * w()) + (rhs.y() * z()) - (rhs.z() * y());
+    T Y  = (rhs.w() * y() ) + (rhs.y() * w()) + (rhs.z() * x()) - (rhs.x() * z());
+    T Z  = (rhs.w() * z() ) + (rhs.z() * w()) + (rhs.x() * y()) - (rhs.y() * x());
 
     tmp.assign(W,X,Y,Z);
     return tmp;
@@ -219,7 +231,10 @@ namespace all { namespace math {
 //---------------------------------------------------------
   template <typename T>
   void quaternion_t<T>::rotate(vect3_type& vect) const
-  {
+  {    
+    T v1 = vect(0);
+    T v2 = vect(1);
+    T v3 = vect(2);
     //
     vect3_type temp(vect);
     //
@@ -233,9 +248,9 @@ namespace all { namespace math {
     T t9 =   quat_(eY)*quat_(eZ);
     T t10 = -quat_(eZ)*quat_(eZ);
     //
-    vect(0) = 2*( (t8 + t10)* temp(0) + (t6 -  t4)*temp(1) + (t3 + t7)*temp(2) ) + temp(0);
-    vect(1) = 2*( (t4 +  t6)* temp(0) + (t5 + t10)*temp(1) + (t9 - t2)*temp(2) ) + temp(1);
-    vect(2) = 2*( (t7 -  t3)* temp(0) + (t2 +  t9)*temp(1) + (t5 + t8)*temp(2) ) + temp(2);
+    vect(0) = 2*( (t8 + t10)* v1 + (t6 -  t4)*v2 + (t3 + t7)*v3 ) + v1;
+    vect(1) = 2*( (t4 +  t6)* v1 + (t5 + t10)*v2 + (t9 - t2)*v3 ) + v2;
+    vect(2) = 2*( (t7 -  t3)* v1 + (t2 +  t9)*v2 + (t5 + t8)*v3 ) + v3;
   }
 //---------------------------------------------------------
   template <typename T>
@@ -320,3 +335,4 @@ namespace all { namespace math {
 //---------------------------------------------------------
 }}//all::math
 //---------------------------------------------------------
+
