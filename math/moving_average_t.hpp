@@ -319,7 +319,6 @@ inline void exp_weighted_moving_average_t<DATATYPE, RESULTTYPE>::update_mav_tran
 template <typename DATATYPE, typename RESULTTYPE>
 inline void exp_weighted_moving_average_t<DATATYPE, RESULTTYPE>::update_mav_regime_()
 {
-  //printf("eXp::REGIME\n");
   mav_ = prev_mav_ + (alpha_*(static_cast<RESULTTYPE>(cb_.back()) - prev_mav_));
   prev_mav_ = mav_;
 }
