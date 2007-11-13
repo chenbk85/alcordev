@@ -9,15 +9,6 @@ namespace all { namespace math {
   // static member
   template<typename T>
   const quaternion_t<T> quaternion_t<T>::IDENTITY = quaternion_t<T>( 1, 0, 0, 0 );
-    // static member
-  template<typename T>
-  const quaternion_t<T> quaternion_t<T>::UNIT_X     = quaternion_t<T>( 0, 1, 0, 0 );
-    // static member
-  template<typename T>
-  const quaternion_t<T> quaternion_t<T>::UNIT_Y     = quaternion_t<T>( 0, 0, 1, 0 );
-    // static member
-  template<typename T>
-  const quaternion_t<T> quaternion_t<T>::UNIT_Z     = quaternion_t<T>( 0, 0, 0, 1 );
 //---------------------------------------------------------
   //CTOR
 //---------------------------------------------------------
@@ -52,7 +43,7 @@ namespace all { namespace math {
   quaternion_t<T>::quaternion_t( const quaternion_t<T>& src  )
     :axis_(quat_, ublas::range(1,QSIZE))
   {    
-    quat_= src;
+    (*this)= src;
     normalize();
   };
 //---------------------------------------------------------
@@ -62,6 +53,7 @@ namespace all { namespace math {
     :axis_(quat_, ublas::range(1,QSIZE))
   {    
     assign(src(0),src(1),src(2), src(3));
+    normalize();
   };
 //---------------------------------------------------------
   ///ctor
@@ -74,25 +66,22 @@ namespace all { namespace math {
 //--------------------------------------------------------- 
   ///scalar and vector comp   quaternion_t( double s, const vector3d& v );
   template <typename T>
-  quaternion_t<T>::quaternion_t(T scalar, const axis_type& vv)
+  quaternion_t<T>::quaternion_t(const axis_type& ax, T aa)
     :axis_(quat_, ublas::range(1,QSIZE))
   {
-    assign(scalar, vv(0), vv(1), vv(2));
+    from_axis_and_angle(ax, aa);
   }
 //---------------------------------------------------------
   template <typename T>
   void quaternion_t<T>::make_identity()
   {
     assign(1.0, 0,0,0);
+    normalize();
   }
 //---------------------------------------------------------
   template <typename T>
   void quaternion_t<T>::assign(T vw, T vx, T vy, T vz )
   {
-    //quat_(eW) = vw;
-    //quat_(eX) = vx;
-    //quat_(eY) = vy;
-    //quat_(eZ) = vz;
     FILL_UVECT4(quat_, vw, vx, vy, vz);
     normalize();
   }
@@ -136,7 +125,6 @@ namespace all { namespace math {
   template <typename T>
   quaternion_t<T> quaternion_t<T>::operator*(const quaternion_t<T>& other) 
   {
-    std::cout << "Operator *" << std::endl;
     quaternion_t<T> tmp;
 
     T W  = (other.w() * w() ) - (other.x() * x()) - (other.y() * y()) - (other.z() * z());
@@ -153,8 +141,8 @@ namespace all { namespace math {
   {
   //  // nVidia SDK implementation
 
-    vect3_type uv;
-    vect3_type uuv;
+    ublas::bounded_vector<T,AXSIZE> uv;
+    ublas::bounded_vector<T,AXSIZE> uuv;
 
     uv  = cross_product<T>(axis_,  v);
     uuv = cross_product<T>(axis_, uv);
@@ -293,7 +281,7 @@ namespace all { namespace math {
   template <typename T>
   void quaternion_t<T>::from_axis_and_angle(const axis_type& axis, T ang) 
   {
-	  T sinAngleOver2 = std::sin(ang/2);
+	  T sinAngleOver2 = std::sin(ang/2.0);
     quat_(eW) = std::cos(ang/2);
 	  quat_(eX) = axis(0)*sinAngleOver2;
 	  quat_(eY) = axis(1)*sinAngleOver2;

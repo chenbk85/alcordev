@@ -16,17 +16,17 @@ namespace all { namespace math {
   namespace 
   {
     ///
-    const int QSIZE  = 4;
+    const size_t QSIZE  = 4;
     ///
-    const int AXSIZE = 3;
+    const size_t AXSIZE = 3;
     ///
     typedef double QUATPRECISION;
 
     ///cross product
     template<typename T > 
-    inline ublas::bounded_vector<T,3> 
-      cross_product(const ublas::bounded_vector<T,3>& lhs
-                  , const ublas::bounded_vector<T,3>& rhs)
+    inline ublas::bounded_vector<T,AXSIZE> 
+      cross_product(const ublas::bounded_vector<T,AXSIZE>& lhs
+                  , const ublas::bounded_vector<T,AXSIZE>& rhs)
     {
       ublas::bounded_vector<T,3> result;
 
@@ -84,12 +84,6 @@ namespace all { namespace math {
     static const quaternion_t<T> ZERO;
     ///
     static const quaternion_t<T> IDENTITY;
-    ///
-    static const quaternion_t<T> UNIT_X;
-        ///
-    static const quaternion_t<T> UNIT_Y;
-        ///
-    static const quaternion_t<T> UNIT_Z;
 
     ///indices
     enum qcomp_index_t
@@ -114,9 +108,8 @@ namespace all { namespace math {
     quaternion_t( const quaternion_t& src  );
     ///ctor
     quaternion_t( T vw, T vx, T vy, T vz );
-    ///scalar and vector comp   quat4d( double s, const vector3d& v );
-    quaternion_t(T scalar, const axis_type& vv);
-
+    ///ctor axis and angle
+    quaternion_t(const axis_type& ax, T aa);
 
   public://assign + math operators
     ///
@@ -138,10 +131,9 @@ namespace all { namespace math {
     ///
     ublas::bounded_vector<T,AXSIZE>  operator* (const ublas::bounded_vector<T,AXSIZE>& v) const;
 
-
   public: //ACCESSORS
-    ///generic comp accessor
-    T operator() (qcomp_index_t ii) const {return quat_(ii);};
+    /////generic comp accessor
+    //T operator() (qcomp_index_t ii) const {return quat_(ii);};
 
     ///W
     T w()     const {return quat_(eW);};
@@ -194,7 +186,6 @@ namespace all { namespace math {
   public://ROTATION
     // Creates a matrix from this quaternion
     void to_rotation_matrix( ublas::matrix<T> &dest ) const;
-
     ///rotate vector
     void rotate(vect3_type& vect) const;
     ///rotate vector overload

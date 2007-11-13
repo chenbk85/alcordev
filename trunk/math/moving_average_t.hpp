@@ -231,7 +231,7 @@ inline void uniform_moving_average_t<DATATYPE, RESULTTYPE>::push(const DATATYPE&
   moving_average_base_t::push(val);
   //
   update_mav_();
-  //printf("acc: %4.3f -> mav(): %4.3f\n",accum, mav_);
+
 }
 ////---------------------------------------------------------
 ///
