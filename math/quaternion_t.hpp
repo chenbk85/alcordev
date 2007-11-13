@@ -124,17 +124,17 @@ namespace all { namespace math {
     quaternion_t<T> operator * (const T &rhs) const;
     ///
     quaternion_t<T>& operator *= (const T &rhs);
+    ///
+    quaternion_t<T>& operator *= (const quaternion_t<T>& rhs);
+
     ///dot product
     T dot(const quaternion_t<T>& rhs) const;
-    ///multiplication operator uhm ... vedere!
-    quaternion_t<T> operator*(const quaternion_t<T>& rhs);
+    ///operator
+    quaternion_t<T> operator*(const quaternion_t<T>& rhs) const ;
     ///
     ublas::bounded_vector<T,AXSIZE>  operator* (const ublas::bounded_vector<T,AXSIZE>& v) const;
 
   public: //ACCESSORS
-    /////generic comp accessor
-    //T operator() (qcomp_index_t ii) const {return quat_(ii);};
-
     ///W
     T w()     const {return quat_(eW);};
     ///X
@@ -210,20 +210,7 @@ namespace all { namespace math {
   typedef all::math::quaternion_t<double> quat64_t;
   typedef all::math::quaternion_t<float>  quat32_t;
 //---------------------------------------------------------
-  //template <typename T> 
-  //quaternion_t<T> quat_mult(const  quaternion_t<T>& lhs, const  quaternion_t<T>& rhs)
-  //{
-  //  std::cout << "Operator *" << std::endl;
-  //  quaternion_t<T> tmp;
 
-  //  T W  = (rhs.w() * lhs.w() ) - (rhs.x() * lhs.x()) - (rhs.y() * lhs.y()) - (rhs.z() * lhs.z());
-  //  T X  = (rhs.w() * lhs.x() ) + (rhs.x() * lhs.w()) + (rhs.y() * lhs.z()) - (rhs.z() * lhs.y());
-  //  T Y  = (rhs.w() * lhs.y() ) + (rhs.y() * lhs.w()) + (rhs.z() * lhs.x()) - (rhs.x() * lhs.z());
-  //  T Z  = (rhs.w() * lhs.z() ) + (rhs.z() * lhs.w()) + (rhs.x() * lhs.y()) - (rhs.y() * lhs.x());
-
-  //  tmp.assign(W,X,Y,Z);
-  //  return tmp;
-  //}
 //---------------------------------------------------------
 }}//all::math
 //---------------------------------------------------------
