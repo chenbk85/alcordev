@@ -230,6 +230,42 @@ namespace all { namespace math {
   }
 //---------------------------------------------------------
   template <typename T>
+      // Creates a matrix from this quaternion
+  void quaternion_t<T>::to_rotation_matrix( ublas::matrix<T> &dest ) const
+  {
+    //
+    T q00 = quat_(eW)*quat_(eW); 
+    T q0x = quat_(eW)*quat_(eX); 
+    T q0y = quat_(eW)*quat_(eY); 
+    T q0z = quat_(eW)*quat_(eZ);
+    T qxx = quat_(eX)*quat_(eX);
+    T qxy = quat_(eX)*quat_(eY);
+    T qxz = quat_(eX)*quat_(eZ);
+    T qyy = quat_(eY)*quat_(eY); 
+    T qyz = quat_(eY)*quat_(eZ);
+    T qzz = quat_(eZ)*quat_(eZ);
+
+    //fill in. there should be better ways!
+    // first row
+    dest(0,0) = q00 + qxx - qyy - qzz;
+    dest(0,1) = 2*(qxy - q0z);
+    dest(0,2) = 2*(qxz + q0y);
+    // second row
+    dest(1,0) = 2*(qxy + q0z);
+    dest(1,1) = q00 - qxx + qyy - qzz;
+    dest(1,2) = 2*(qyz - q0x);
+    //third row
+    dest(2,0) = 2*(qxz - q0y);
+    dest(2,1) = 2*(qyz + q0x);
+    dest(2,2) = q00 - qxx - qyy + qzz;
+    
+//
+//R = [ q00 + qxx - qyy - qzz       2*(qxy - q0z)	          2*(qxz + q0y)   
+//          2*(qxy + q0z)	      q00 - qxx + qyy - qzz       2*(qyz - q0x)
+//          2*(qxz - q0y)	          2*(qyz + q0x)	      q00 - qxx - qyy + qzz ];
+  }
+//---------------------------------------------------------
+  template <typename T>
   void quaternion_t<T>::rotate(vect3_type& vect) const
   {    
     T v1 = vect(0);
