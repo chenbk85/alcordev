@@ -81,6 +81,8 @@ namespace all { namespace math {
     ///
     typedef ublas::bounded_vector<T,AXSIZE> axis_type;
     ///
+    typedef ublas::bounded_matrix<T,AXSIZE,AXSIZE> rotation_matrix_type;
+    ///
     static const quaternion_t<T> ZERO;
     ///
     static const quaternion_t<T> IDENTITY;
@@ -156,7 +158,10 @@ namespace all { namespace math {
     T scalar() const{return quat_(eW);};
     ///get current axis
     axis_type 
-      axis() const{return axis_type(axis_);};
+      axis() const{return axis_;};
+    ///get whole quaternion
+    quat_type 
+      quat() const {return quat_;};
 
   //op
   public:
@@ -185,7 +190,7 @@ namespace all { namespace math {
 
   public://ROTATION
     // Creates a matrix from this quaternion
-    void to_rotation_matrix( ublas::matrix<T> &dest ) const;
+    void to_rotation_matrix( rotation_matrix_type &dest ) const;
     ///rotate vector
     void rotate(vect3_type& vect) const;
     ///rotate vector overload

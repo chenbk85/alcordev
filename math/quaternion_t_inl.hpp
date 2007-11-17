@@ -231,7 +231,7 @@ namespace all { namespace math {
 //---------------------------------------------------------
   template <typename T>
       // Creates a matrix from this quaternion
-  void quaternion_t<T>::to_rotation_matrix( ublas::matrix<T> &dest ) const
+  void quaternion_t<T>::to_rotation_matrix( rotation_matrix_type &dest ) const
   {
     //
     T q00 = quat_(eW)*quat_(eW); 
