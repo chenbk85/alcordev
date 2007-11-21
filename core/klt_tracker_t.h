@@ -13,14 +13,25 @@ namespace all { namespace core {
 
   public://interface
     ///
-    void init(const std::string& params="config/klt_conf.ini");
+    void init(std::string& params);
     ///
-    void set_img(all::core::uint8_ptr imgpre);
+    void set_first_image(core::uint8_ptr imgpre);
     ///
-    void track(all::core::uint8_ptr img);
+    void track(core::uint8_ptr img);
+    ///
+    void track(core::uint8_sarr img);
+    ///
+    KLT_FeatureList status() const {return fl_;};
+    ///
+    void log_status() const;
+    ///
+    void set_verbosity(bool);
 
-  private://
+  private://klt stuff
     ///
+    KLT_TrackingContext tc_;
+    ///
+    KLT_FeatureList fl_;
 
   private://data
     ///
@@ -28,18 +39,15 @@ namespace all { namespace core {
     ///
     all::core::uint8_ptr img_post_;
     ///
-    KLT_TrackingContext tc_;
-    ///
-    KLT_FeatureList fl_;
-    ///
-    //KLT_FeatureTable ft_;
-    ///
-    int nfeatures_;// = 150;
-    //int nFrames;// = 10;
+    int nfeatures_;
     ///
     int ncols_;
     ///
     int nrows_;
+    ///
+    size_t npixels_;
+    ///
+    int count_;
   };
 
 }};
