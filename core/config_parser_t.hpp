@@ -19,10 +19,10 @@ namespace all { namespace core{
 		{ 
 			struct xml_t{};
 			struct ini_t{};
-			
-			static const xml_t xml = xml_t();
-			static const ini_t ini = ini_t();
-		}
+		}	
+    static const tags::xml_t xml = tags::xml_t();
+    static const tags::ini_t ini = tags::ini_t();
+		
 	}}
 //---------------------------------------------------------------------
 namespace all { namespace core{
