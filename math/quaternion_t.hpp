@@ -4,6 +4,7 @@
 #include <boost/numeric/ublas/vector.hpp>
 #include <boost/numeric/ublas/matrix.hpp>
 #include <boost/numeric/ublas/vector_proxy.hpp>
+#include <boost/config.hpp>
 //---------------------------------------------------------
 #include <vector>
 //---------------------------------------------------------
@@ -16,17 +17,13 @@ namespace all { namespace math {
   namespace 
   {
     ///
-    const size_t QSIZE  = 4;
-    ///
-    const size_t AXSIZE = 3;
-    ///
     typedef double QUATPRECISION;
 
     ///cross product
     template<typename T > 
-    inline ublas::bounded_vector<T,AXSIZE> 
-      cross_product(const ublas::bounded_vector<T,AXSIZE>& lhs
-                  , const ublas::bounded_vector<T,AXSIZE>& rhs)
+    inline ublas::bounded_vector<T,3> 
+      cross_product(const ublas::bounded_vector<T,3>& lhs
+                  , const ublas::bounded_vector<T,3>& rhs)
     {
       ublas::bounded_vector<T,3> result;
 
@@ -71,11 +68,14 @@ namespace all { namespace math {
   template <typename T = QUATPRECISION>
   class quaternion_t 
   {
+    BOOST_STATIC_CONSTANT(size_t, AXSIZE = 3);
+    BOOST_STATIC_CONSTANT(size_t, QSIZE = 4);
+
   public: //TRAITS
     ///
     typedef T value_type;
     ///
-    typedef ublas::vector<T> quat_type;
+    typedef ublas::bounded_vector<T,QSIZE> quat_type;
     ///
     typedef ublas::bounded_vector<T,AXSIZE> vect3_type;
     ///
@@ -134,7 +134,8 @@ namespace all { namespace math {
     ///operator
     quaternion_t<T> operator*(const quaternion_t<T>& rhs) const ;
     ///
-    ublas::bounded_vector<T,AXSIZE>  operator* (const ublas::bounded_vector<T,AXSIZE>& v) const;
+    ublas::bounded_vector<T, quaternion_t<T>::AXSIZE >  
+      operator* (const ublas::bounded_vector<T, quaternion_t<T>::AXSIZE>& v) const;
 
   public: //ACCESSORS
     ///W

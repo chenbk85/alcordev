@@ -87,8 +87,6 @@ namespace all { namespace core {
     npixels_ = static_cast<size_t>(nrows_*ncols_);
     //allocate images, the raw way
     img_pre_ = new core::uint8_t[npixels_];
-    //img_post_= new core::uint8_t[npixels_];
-
   }
 //-------------------------------------------------------------------
   void klt_tracker_t::set_first_image(core::uint8_ptr imgpre)
