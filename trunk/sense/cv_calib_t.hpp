@@ -18,12 +18,12 @@ class cv_calib_t {
 public:
 	cv_calib_t();
 
-	bool open(char* config_file = "config/cv_calib.ini");
+	bool open(const char* config_file = "config/cv_calib.ini");
 	void close();
 
 	bool calibrate();
 	
-	void save_calib_data(char*);
+	void save_calib_data(const char*);
 
 	
 private:

@@ -8,7 +8,7 @@ namespace all {
 cv_calib_t::cv_calib_t() {
 }
 
-bool cv_calib_t::open(char* config_file) {
+bool cv_calib_t::open(const char* config_file) {
 	
 	VI = new videoInput();
 
@@ -17,7 +17,7 @@ bool cv_calib_t::open(char* config_file) {
 	getchar();
 	
 	all::core::config_parser_t config;
-	config.load(core::tags::ini, config_file);
+	config.load(core::ini, config_file);
 
 	_n_cam = config.get<int>("config.num_cam", 1);
 
@@ -115,7 +115,7 @@ bool cv_calib_t::calibrate() {
 
 }
 
-void cv_calib_t::save_calib_data(char* calib_file) {
+void cv_calib_t::save_calib_data(const char* calib_file) {
 	_calib_filter.SaveCameraParams(calib_file);
 }
 
