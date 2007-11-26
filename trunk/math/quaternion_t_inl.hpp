@@ -23,7 +23,7 @@ namespace all { namespace math {
 //---------------------------------------------------------
   ///ctor 
   template <typename T>
-  quaternion_t<T>::quaternion_t( const ublas::vector<T>& src )
+  quaternion_t<T>::quaternion_t( const ublas::bounded_vector<T,QSIZE>& src )
     :quat_(src)
     ,axis_(quat_, ublas::range(1,QSIZE))
   {
@@ -149,12 +149,12 @@ namespace all { namespace math {
   }
 //---------------------------------------------------------
   template <typename T>
-  ublas::bounded_vector<T,AXSIZE>  quaternion_t<T>::operator*(const ublas::bounded_vector<T,AXSIZE>& v) const
+  ublas::bounded_vector<T, quaternion_t<T>::AXSIZE>  quaternion_t<T>::operator*(const ublas::bounded_vector<T, quaternion_t<T>::AXSIZE>& v) const
   {
   //  // nVidia SDK implementation
 
-    ublas::bounded_vector<T,AXSIZE> uv;
-    ublas::bounded_vector<T,AXSIZE> uuv;
+    ublas::bounded_vector<T, quaternion_t<T>::AXSIZE > uv;
+    ublas::bounded_vector<T, quaternion_t<T>::AXSIZE > uuv;
 
     uv  = cross_product<T>(axis_,  v);
     uuv = cross_product<T>(axis_, uv);
