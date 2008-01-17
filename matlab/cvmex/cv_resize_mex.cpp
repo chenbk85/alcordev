@@ -6,6 +6,8 @@
 #include "cv.h"
 #include <cmath>
 //--------------------------------------------------------------------++
+#pragma comment(lib,"user32.lib")
+//--------------------------------------------------------------------++
 #define _HEIGHT_FIELD_  prhs[1]
 #define _WIDTH_FIELD_   prhs[2]
 //--------------------------------------------------------------------++
@@ -66,8 +68,8 @@ void mexFunction( int nlhs
             //
             _OUT_MXARRAY_ = matlab::mxcv::iplimage_to_mxarray<core::single_t>(p_resized);
           }
-          core::cvutils::release_iplimage(p_image);
-          core::cvutils::release_iplimage(p_resized); 
+		  core::ocv::release_iplimage(p_image);
+          core::ocv::release_iplimage(p_resized); 
        }
       }
       else

@@ -108,6 +108,101 @@ static IplImage* mxarray_to_iplimage(const mxArray* p_array)
 }
 
 //=============================================================================
+template <typename T>
+static CvMat* mxarray_to_cvmat(const mxArray* p_array)
+{
+	//The code is actually the same as above
+  //wants (width, height)
+  CvSize size;//(ncols,nrows);
+  //
+  //
+  const mwSize ndims = mxGetNumberOfDimensions(p_array);
+  //
+  const mwSize* dims = mxGetDimensions(p_array);
+  //
+  int channels = 0;
+
+  //SHOULD ACCEPT ONLY MONO CHANNEL NOW
+
+  if(ndims == 3)
+  //channels
+    channels=static_cast<int>(dims[2]);
+  else
+    channels = 1 ;
+
+  //
+  size.height = static_cast<int>(dims[0]);
+  size.width  = static_cast<int>(dims[1]);
+
+  //
+  int depth = 0;
+	 //CV_<bit_depth>(S|U|F)C<number_of_channels>
+
+  //assign correct type id
+  switch (matlab::traits<T>::tag)
+  {
+  case mxUINT8_CLASS:
+    depth = CV_8UC1;
+    break;
+
+  case mxSINGLE_CLASS:
+    depth = CV_32FC1;
+    break;
+
+  case mxINT16_CLASS:
+    depth = CV_16SC1;
+    break;
+
+  case mxUINT16_CLASS:
+    depth =  CV_16UC1;
+    break;
+
+  case mxDOUBLE_CLASS:
+    depth = CV_64FC1;
+    break;
+
+  default:
+    depth = CV_64FC1;
+    break;
+  }
+
+  CvMat* p_mat = cvCreateMat( size.height, size.width,  depth);
+
+  //get pointer to array/image data
+  matlab::traits<T>::ptr p_data = 
+	  static_cast<matlab::traits<T>::ptr >(mxGetData(p_array));
+
+  //here cycle to convert ...
+  const size_t n_pixel = size.height*size.width;
+  //
+  size_t start_pixel_index = 0;
+  //
+  const size_t channel_offset = n_pixel;
+  //
+
+  for (int row_iter = 0; row_iter < size.height; row_iter++)
+  {
+    for (int col_iter = 0; col_iter < size.width; col_iter++)
+    {
+      for (int channel_index = 0; channel_index < channels; channel_index++)
+      {
+       
+		  cvmSet(	  p_mat
+					, row_iter
+					, col_iter
+					//, col_iter*channels
+					, static_cast<T>(p_data[(col_iter*size.height)+ row_iter+(channel_index*channel_offset)]));
+        //(CV_IMAGE_ELEM( p_iplimage, T, row_iter, (col_iter*channels) ) )= 
+        //  static_cast<T>(p_data[(col_iter*size.height)+ row_iter+(channel_index*channel_offset)]);
+
+      }
+    }
+  }
+
+  //done
+  return p_iplimage;
+}
+//=============================================================================
 template < typename T >
 static mxArray* iplimage_to_mxarray(IplImage* p_iplimage)
 {

@@ -1,10 +1,16 @@
 #include "net_packet_t.hpp"
 #include <iostream>
 
+#define WIN32_LEAN_AND_MEAN
+
+#include <boost/numeric/conversion/bounds.hpp>
+#include <boost/limits.hpp>
+
 namespace all {
 	namespace core {
 
-const unsigned short net_packet_header_t::MAX_ID = std::numeric_limits<unsigned short>::max();
+//const unsigned short net_packet_header_t::MAX_ID = std::numeric_limits<unsigned short>::max();
+const unsigned short net_packet_header_t::MAX_ID = boost::numeric::bounds<unsigned short>::highest() ;
 const std::string net_packet_t::END_SEQUENCE = "#end#";
 unsigned short net_packet_header_t::next_id = 0;
 

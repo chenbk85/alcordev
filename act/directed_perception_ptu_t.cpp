@@ -124,7 +124,7 @@ bool directed_perception_ptu_t::set_pantilt(float pan, float tilt, float waitsec
   //
   impl->setPanTilt(pan, tilt);
   //
-	impl->awaitPosCommandCompletion();
+  impl->awaitPosCommandCompletion();
   //  
   //if(waitsec>0)
   //{
@@ -132,10 +132,10 @@ bool directed_perception_ptu_t::set_pantilt(float pan, float tilt, float waitsec
   //boost::timer quit_timer;
   //quit_timer.restart();
 
-  while ( !impl->isPTUidle())
-    {
-      //if(quit_timer.elapsed() > waitsec) break;
-  }
+  //while ( !impl->isPTUidle())
+  //  {
+  //    //if(quit_timer.elapsed() > waitsec) break;
+  //}
 
   //}
   ptangle_.set_pan(math::deg_tag,   pan);

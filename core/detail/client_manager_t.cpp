@@ -1,5 +1,9 @@
+#define WIN32_LEAN_AND_MEAN
+
 #include "client_manager_t.hpp"
 #include <boost/bind.hpp>
+
+
 
 namespace all {
 	namespace core {

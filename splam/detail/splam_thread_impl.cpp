@@ -303,7 +303,7 @@ void*	splam_thread_impl::runThread(void* arg)
 		else
 			current_scan_.odo_pose_ = emulate_odometry();
 
-		// slam processin
+		// slam processing
 		std::cout << "runThread......... STEP "<<step<< " - FASE 3"<<std::endl;
 		pmap_wrap_.process(current_scan_);
 

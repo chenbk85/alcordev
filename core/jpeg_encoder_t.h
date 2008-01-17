@@ -24,12 +24,12 @@ public:
   ///Perform actual encoding.
   ///jpeg_encoder_t::encode([raw image as a shared_array], quality).
   boost::function< core::jpeg_data_t  (all::core::uint8_sarr, int ) > encode;
-
-  ///
+  //Callbacks
+  ///Interleaved RGB color image
   void reset (all::core::rgb_t,  interleaved_t, int height, int width);
-  ///
+  ///Planar RGB color image
   void reset (all::core::rgb_t,  planar_t, int height, int width);
-  ///
+  ///Grey Level Image
   void reset (all::core::gray_t, int height, int width);
 
 private:
