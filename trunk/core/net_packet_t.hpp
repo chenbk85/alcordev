@@ -1,6 +1,8 @@
 #ifndef net_packet_t_H_INCLUDED
 #define net_packet_t_H_INCLUDED
 
+#define WIN32_LEAN_AND_MEAN
+
 #include <boost/lexical_cast.hpp>
 #include <boost/shared_ptr.hpp>
 #include <alcor/core/core.h>
