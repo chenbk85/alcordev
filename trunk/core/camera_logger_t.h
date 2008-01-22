@@ -1,7 +1,6 @@
 #ifndef camera_logger_t_H_INCLUDED
 #define camera_logger_t_H_INCLUDED
 //-------------------------------------------------------------------
-#include "alcor/sense/opencv_grabber_t.h"
 #include "alcor/core/imagestream_logger_t.h"
 #include "alcor/core/cameralog_inc.h"
 //-------------------------------------------------------------------
@@ -14,11 +13,12 @@
 //-------------------------------------------------------------------
 //-------------------------------------------------------------------
 #ifdef USE_VIDEOINPUT
-  #include "alcor.extern/videoinput/include/videoinput.h"
+  #include "alcor.extern/videoinput/videoinput.h"
   #include <highgui.h>
   #pragma comment (lib, "highgui.lib")
   #pragma comment(lib, "videoInput.lib")
 #else 
+#include "alcor/sense/opencv_grabber_t.h"
   #pragma comment (lib, "opencv_grabber_t.lib")
 #endif
 namespace
@@ -126,9 +126,9 @@ void camera_logger_t::init_()
 	//to get a settings dialog for the device
 	VI->showSettingsWindow(0);
   //
-	width 	= VI->getWidth(0);
-	height 	= VI->getHeight(0);
-	size	  = VI->getSize(0);
+	width 		= VI->getWidth(0);
+	height 		= VI->getHeight(0);
+	size		= VI->getSize(0);
   channels = 3;
 
   avifile_ = 

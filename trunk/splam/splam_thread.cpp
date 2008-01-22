@@ -1,3 +1,5 @@
+#define WIN32_LEAN_AND_MEAN
+
 #include "splam_thread.h"
 #include "detail/splam_thread_impl.cpp"
 //-----------------------------------------------------------------------------------------------

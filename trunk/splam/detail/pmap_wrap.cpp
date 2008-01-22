@@ -1,3 +1,5 @@
+#define WIN32_LEAN_AND_MEAN
+
 #include "pmap_wrap.h"
 #include "conversion.hpp"
 #include "alcor/core/iniWrapper.h"

@@ -126,7 +126,7 @@ static size_t size_from_ipldepth(int depth)
 //=============================================================================
     static void release_iplimage(IplImage* p_image)
     {
-      cvReleaseImage(&p_image);
+      if (p_image!=0) cvReleaseImage(&p_image);
     }
 //=============================================================================
     //
