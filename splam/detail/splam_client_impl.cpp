@@ -190,4 +190,3 @@ void	splam_client_impl::show_display()
 }//namespace splam
 }//namespace all
 //---------------------------------------------------------------------------
-
