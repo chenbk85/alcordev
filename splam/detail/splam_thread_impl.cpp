@@ -11,6 +11,9 @@
 #include "alcor/splam/scan_data.h"
 #include "splam_data_net.h"
 #include "pmap_wrap.h"
+
+// Aggiunte di Francesco
+
 //-----------------------------------------------------------------------------------------------
 using namespace all::core;
 using namespace all::act;
@@ -46,12 +49,15 @@ private:	// hokuyo urg laser
 	//bool				set_laser_mask(sizes2d);			// to do...
 	//void				filter();			// to do...
 	scan_data			current_scan_;		//
-	ArMutex				scan_data_mutex_;	//
+	// ArMutex				scan_data_mutex_;	// old mutex style
 	size_t				scan_count_;		//number of current scan
 	int					urg_step_start_;	//
 	int					urg_step_end_;		//
 	int					urg_cc_;			//
 	bool				laser_present_;
+
+	// Aggiunte Francesco
+	//boost::mutex		scan_data_mute;x // mutex boost style
 
 public:		// Pioneer Robot (p3dx or p3at)
 	p3_client_ptr_t		robot_;
@@ -64,8 +70,9 @@ private:	// splam
 	pmap_wrap			pmap_wrap_;
 	splam_data_ptr		splam_data_;
 	splam_data_net_ptr	splam_data_net_;
-	ArMutex				splam_data_mutex_;
-	ArMutex				pmap_mutex_;
+	//ArMutex				splam_data_mutex_; // non vengono utilizzate
+	//ArMutex				pmap_mutex_; // non vengono utilizzate
+
 
 public:		// data Broadcasting
 	void				start_server();			// 
@@ -114,15 +121,29 @@ splam_thread_impl::splam_thread_impl( const char* name)
 	urg_step_end_	= ini_.GetInt("laser:end_step", urg_scan_data_t::default_end);
 	urg_cc_	= ini_.GetInt("laser:cc", 1);
 	if(!urg_laser_.connect())
-		laser_present_ = false;
+		laser_present_ = false;	
+	
+	std::cout << "-------------------------------------------" << std::endl;
+	std::cout << "Laser present : " << laser_present_ << std::endl;
+	std::cout << "-------------------------------------------" << std::endl;
 
-		// robot client
+	// robot client
+
+	std::cout << "-------------------------------------------" << std::endl;
+	std::cout << "Attempting connection with robot" << std::endl;
+	std::cout << "-------------------------------------------" << std::endl;
+
 	robot_.reset(new p3_client_t("config/p3_conf.ini"));
 	robot_->run_async();
 
-		// server IP initialization... to start server clients must call "splam_thread::start_server()"
+	// server IP initialization... to start server clients must call "splam_thread::start_server()"
+
+	std::cout << "-------------------------------------------" << std::endl;
+	std::cout << "Setting server datas" << std::endl;
+	std::cout << "-------------------------------------------" << std::endl;
+
 	server_address_.hostname = "127.0.0.1";
-	server_address_.port = ini_.GetInt("server:port",12321);
+	server_address_.port = ini_.GetInt("server:port",12321); 
 }
 
 splam_thread_impl::~splam_thread_impl()
@@ -154,8 +175,17 @@ void	splam_thread_impl::others_cb(ArServerClient* client, ArNetPacket* clientPac
 void	splam_thread_impl::start_server()
 {
 		// open the server
+	std::cout << "-------------------------------------------" << std::endl;
+	std::cout << "Starting server on port " << server_address_.port << std::endl;
+	std::cout << "-------------------------------------------" << std::endl;
+
 	if (!server_.open(server_address_.port))
 		throw std::runtime_error("Error in SlamServer::start_server");
+
+	std::cout << "-------------------------------------------" << std::endl;
+	std::cout << "Server opened" << std::endl;
+	std::cout << "-------------------------------------------" << std::endl;
+
 
 		// add the "splam_data" service
 	server_.addData("Occupancy", "OG from SLAM module", &map_callback, "none", "none");
@@ -163,12 +193,16 @@ void	splam_thread_impl::start_server()
 	server_.addData("Others", "Other data from SLAM module", &others_callback, "none", "none");
 
 		// run the server thread
+	std::cout << "-------------------------------------------" << std::endl;
+	std::cout << "Running server async" << std::endl;
+	std::cout << "-------------------------------------------" << std::endl;
+
 	server_.runAsync();
 
 		// notification
 	server_started_ = true;
 
-	std::cout << "SPLAM Server Started at - hostname: " << server_address_.hostname<< " - port: " << server_address_.port<< std::endl;
+	std::cout << "SPLAM Server Started at - hostname: " << server_address_.hostname<< " - port: " << server_address_.port << std::endl;
 }
 
 void	splam_thread_impl::stop_server()
@@ -181,7 +215,7 @@ void	splam_thread_impl::stop_server()
 
 void	splam_thread_impl::fill_scan_data()
 {
-	current_scan_.start_angle_ = urg_laser_t::step2angle(urg_step_start_) ;
+	current_scan_.start_angle_ = urg_laser_t::step2angle(urg_step_start_);
 	current_scan_.angle_step_ = urg_laser_t::resolution(urg_cc_);
 	current_scan_.scan_step_ = scan_count_;
 	current_scan_.time_stamp_ = clock();
