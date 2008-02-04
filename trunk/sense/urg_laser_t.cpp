@@ -65,17 +65,17 @@ urg_multi_scan_t urg_laser_t::get_scan_vector() {
 	return pimpl->m_last_scan;
 }
 
-//all::math::angle urg_laser_t::step2angle(int step) {
-//	return all::math::angle((360.0/1024.0)*(static_cast<double>(step) - 384.0), all::math::deg_tag);
-//}
-//
-//int urg_laser_t::angle2step(all::math::angle a) {
-//	return static_cast<int> ((double(1024)/double(360)) * a.deg())+384;
-//}
-//
-//all::math::angle urg_laser_t::resolution (int cc) {
-//	return all::math::angle(static_cast<double>(cc)*(360.0/1024.0) , all::math::deg_tag);
-//}
+all::math::angle urg_laser_t::step2angle(int step) {
+	return all::math::angle((360.0/1024.0)*(static_cast<double>(step) - 384.0), all::math::deg_tag);
+}
+
+int urg_laser_t::angle2step(all::math::angle a) {
+	return static_cast<int> ((double(1024)/double(360)) * a.deg())+384;
+}
+
+all::math::angle urg_laser_t::resolution (int cc) {
+	return all::math::angle(static_cast<double>(cc)*(360.0/1024.0) , all::math::deg_tag);
+}
 
 } //namespace sense
 } //namespace all

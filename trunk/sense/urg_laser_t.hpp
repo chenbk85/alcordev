@@ -21,9 +21,9 @@ namespace all {
 class urg_laser_t {
 
 public:
-	//static all::math::angle step2angle(int);
-	//static int angle2step(all::math::angle);
-	//static all::math::angle resolution(int);
+	static all::math::angle step2angle(int); // erano commentati!
+	static int angle2step(all::math::angle); // erano commentati!
+	static all::math::angle resolution(int); // erano commentati!
 
 	urg_laser_t(char* ini_file = "config/urg_driver.ini");
 	
