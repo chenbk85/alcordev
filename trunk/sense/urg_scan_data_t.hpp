@@ -22,7 +22,11 @@ public:
 		max_scan_points		=	769
 	};
 
+	typedef short int value_type;
+
 	static const int MAX_NUM_POINTS = 769;
+
+
 
 	static all::math::angle step2angle(int);
 	static int angle2step(all::math::angle);
@@ -42,7 +46,7 @@ public:
 	int end_step;
 	int cc;
 
-	std::vector <short int> scan_points;
+	std::vector <value_type> scan_points;
 };
 
 typedef boost::shared_ptr <urg_scan_data_t> urg_scan_data_ptr;
