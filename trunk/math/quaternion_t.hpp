@@ -57,6 +57,7 @@ namespace all { namespace math {
     ///radians to degree
     static inline T r2d(T val)  {
     return static_cast<T>(val * 180.0/3.1415926535897932384626433832795);
+	//return static_cast<T>(val * 57.2958 );
     };
 
     };
