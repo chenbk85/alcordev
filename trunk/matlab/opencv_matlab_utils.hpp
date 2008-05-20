@@ -200,8 +200,9 @@ static CvMat* mxarray_to_cvmat(const mxArray* p_array)
   }
 
   //done
-  return p_iplimage;
+  return p_mat;
 }
+//=============================================================================
 //=============================================================================
 template < typename T >
 static mxArray* iplimage_to_mxarray(IplImage* p_iplimage)
@@ -224,10 +225,6 @@ static mxArray* iplimage_to_mxarray(IplImage* p_iplimage)
   //pointer to newly created mxArray
 	matlab::traits<T>::ptr mx_start_ptr = 
       static_cast<matlab::traits<T>::ptr>(mxGetData(mxresult));
-  
-  //pointer to IplImage passed in
-  //matlab::traits<T>::ptr ipl_start_ptr = 
-  //  static_cast<>(p_iplimage->imageData);
 
   //offsets
   int col_offset_ = 0;
@@ -254,6 +251,67 @@ static mxArray* iplimage_to_mxarray(IplImage* p_iplimage)
       }
 
   }
+	return mxresult;
+}
+//=============================================================================
+template < typename T >
+static mxArray* cvmat_to_mxarray(const CvMat* p_mat)
+{
+
+	//info
+	CvSize size = cvGetSize( p_mat );
+	//
+	int height_ = size.height;
+	int width_ = size.width;
+	//
+	mwSize dims[] = {height_, width_, 1};
+
+    ///TODO: mmmh  
+	int ndimensions = 2;
+    //
+	mxArray* mxresult = mxCreateNumericArray(ndimensions, dims, matlab::traits<T>::tag, mxREAL);
+
+  //pointer to newly created mxArray
+	matlab::traits<T>::ptr mx_start_ptr = 
+      static_cast<matlab::traits<T>::ptr>(mxGetData(mxresult));
+	int col_offset_ = 0;
+	//
+	for(int col_ = 0 ; col_ < width_; col_++)
+	{
+		col_offset_ = col_*height_;
+    //rows
+		for(int row_ = 0 ; row_ < height_; row_++)
+		{
+          mx_start_ptr[col_offset_+ row_] =
+			  cvmGet(p_mat, row_, col_);
+		}
+	}
+
+ // //offsets
+ // int col_offset_ = 0;
+ // const int channel_offset_ = height_*width_;
+ // size_t bgr_channel_index_ = 0;
+
+	////Loop...
+ // //cols
+	//for(int col_ = 0 ; col_ < width_; col_++)
+ // {
+	//	col_offset_ = col_*height_;
+ //   //rows
+	//	for(int row_ = 0 ; row_ < height_; row_++)
+	//		{
+ //       //channels
+ //       for(int channel_index_ = 0; channel_index_ < channels_; channel_index_++)
+ //       {
+ //         ///IplImage is BGR
+ //         bgr_channel_index_ = (channels_ - channel_index_ - 1);
+
+ //         mx_start_ptr[(col_offset_)+ row_+(channel_index_*channel_offset_)] =
+ //           CV_IMAGE_ELEM(p_iplimage,T, row_, (col_*channels_) + bgr_channel_index_);
+ //       }
+ //     }
+
+ // }
 	return mxresult;
 }
 //----------------------------------------------------------------------++
