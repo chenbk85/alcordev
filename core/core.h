@@ -307,6 +307,19 @@ inline void BOOST_SLEEP(unsigned int _millisecs_)
    boost::thread::sleep(xt);
 }
 //-------------------------------------------------------------------------++
+void do_sleep(int ms) {
+    using namespace boost;
+    boost::xtime next;
+    boost::xtime_get( &next, boost::TIME_UTC);
+    next.nsec += (ms % 1000) * 1000000;
+
+    int nano_per_sec = 1000000000;
+    next.sec += next.nsec / nano_per_sec;
+    next.sec += ms / 1000;
+    next.nsec %= nano_per_sec;
+    boost::thread::sleep( next);
+}
+//-------------------------------------------------------------------------++
 inline void SLEEP_MSECS(unsigned int _millisecs_)
 {
    boost::xtime xt; 
