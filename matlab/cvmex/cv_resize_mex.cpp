@@ -32,13 +32,6 @@ void mexFunction( int nlhs
           IplImage* p_image   = matlab::mxcv::mxarray_to_iplimage<core::single_t>(prhs[0]);
 
           //
-          //if(p_image->nChannels > 1)
-          //{
-          //  cvCvtColor(p_image,p_image,CV_RGB2GRAY);
-
-          //}
-
-          //
           int height = 0;
           int width  = 0;
 
