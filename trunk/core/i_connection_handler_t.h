@@ -22,7 +22,7 @@ class i_connection_state_t;
 class i_connection_handler_t
 {
 public:
-  i_connection_handler_t(core::i_service_handler*, const char*);
+	i_connection_handler_t(core::i_service_handler*, const char*);
 
 public:
 	net_state_t this_state() const;
