@@ -26,7 +26,7 @@ struct p3_gateway_impl
 	///Serial Connection
 	bool serial_connect(char*);
 	///TCP Connection
-  bool tcp_connect(char*, int){return true;};
+    bool tcp_connect(char*, int);
 	//
 	bool blocking_connect();
   ///
@@ -39,7 +39,7 @@ struct p3_gateway_impl
   void init_follow_action(iniWrapper&);//follow
   void set_target(const math::point2d& reltarget , double mmpersecs);//set_follow
 
-  void init_wander_action();//wander
+  void init_wander_action(iniWrapper&);//wander
   void init_stop_action();//stop
   void init_goto_action(iniWrapper&);//goto
   void set_goto_pose(const math::point2d& reltarget , double mmpersecs);//set_goto
@@ -71,6 +71,10 @@ struct p3_gateway_impl
 	ArRobot*          m_robot;	
   ///
   p3_t              m_type;
+
+  // Ini
+
+  iniWrapper* iniFile;
 };
 
 //###########################################################################
@@ -82,7 +86,7 @@ inline p3_gateway_impl::p3_gateway_impl(bool is_p3dx, iniWrapper& ini)
 	Aria::init();
 	//
 	m_robot = new ArRobot;
-
+	iniFile = &ini;
 
   if (is_p3dx)
   {
@@ -105,7 +109,7 @@ inline p3_gateway_impl::p3_gateway_impl(bool is_p3dx, iniWrapper& ini)
   init_stop_action();
 
   ///
-  init_wander_action();
+  init_wander_action(ini);
 
   ///Follow
   init_follow_action(ini);
@@ -134,7 +138,7 @@ inline bool p3_gateway_impl::serial_connect(char* comPort)
 	{
 		printf("Attempting %s connection on port: %s\n",m_robot->getName(), comPort);
 		// connection to the robot		
-    m_serialConn.setPort(comPort);
+        m_serialConn.setPort(comPort);
     
 		if(!m_serialConn.openSimple() )
 		{
@@ -157,6 +161,34 @@ inline bool p3_gateway_impl::serial_connect(char* comPort)
 		return true;
 	}
 //---------------------------------------------------------------------------
+	///TCP Connection
+inline bool p3_gateway_impl::tcp_connect(char* hostName, int port)
+	{
+		printf("Attempting %s tcp connection on port: %d\n",m_robot->getName(), port);
+		// connection to the robot	
+		
+		m_tcpConn.setPort();
+		if(!m_tcpConn.openSimple() )
+		{
+			printf( "%s TCP Connection failed on port %d on host %s!!\n", m_robot->getName(), port, m_tcpConn.getHost());
+			return false;    
+		}
+
+		
+		m_robot->setDeviceConnection(&m_tcpConn);
+
+		// try to connect, if we fail, the connection handler should bail
+		if (!blocking_connect())
+		{
+			return false;
+		}
+	
+		robot_run();
+
+		return true;
+	}
+//---------------------------------------------------------------------------
+
 inline void p3_gateway_impl::robot_run()
 {    
   // run the robot in its own thread, so it gets and processes packets and such
@@ -192,10 +224,16 @@ inline void p3_gateway_impl::init_stop_action()
   m_stop.reset(new 	ArActionGroupStop(m_robot));
 }
 //---------------------------------------------------------------------------
-inline void p3_gateway_impl::init_wander_action()
+inline void p3_gateway_impl::init_wander_action(iniWrapper& ini)
 {
+  		
+  int distance = ini.GetInt("p3at_follow_far:distance", 300);
+  int velocity = ini.GetInt("p3at_follow_far:velocity", 150);
+  int turn = ini.GetInt("p3at_follow_far:turn", 5);
+  int priority = ini.GetInt("p3at_follow_far:priority", 70);
 
-	int velocity, turn, priority, distance;
+  m_wander.reset( new ArActionGroupWander(m_robot, 150, 80, 0, 5));
+/*
 
   m_wander.reset(new 	ArActionGroupStop(m_robot));
 
@@ -206,13 +244,16 @@ inline void p3_gateway_impl::init_wander_action()
   m_wander->addAction(new ArActionStallRecover, 100);
 
   // avoid things closer to us
-  m_wander->addAction(new ArActionAvoidFront("Avoid Front Near", 225, 0), 50);
+  //m_wander->addAction(new ArActionAvoidFront("Avoid Front Near", 225, 0), 50);
+  m_wander->addAction(new ArActionAvoidFront("Avoid Front Near", 225, 0, 3), 50);
 
   // avoid things further away
-  m_wander->addAction(new ArActionAvoidFront, 45);
+  //m_wander->addAction(new ArActionAvoidFront, 45);
+  m_wander->addAction(new ArActionAvoidFront("Avoid Front Near", 450, 200, 3), 45);
 
   // keep moving
   m_wander->addAction(new ArActionConstantVelocity("Constant Velocity", 150), 25);
+*/
 }
 //---------------------------------------------------------------------------
 inline void p3_gateway_impl::init_follow_action(iniWrapper& ini)
