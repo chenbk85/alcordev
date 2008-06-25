@@ -195,7 +195,7 @@ urg_scan_data_ptr urg_laser_impl::do_scan(int start_step, int end_step, int cc) 
 		m_last_scan.scan_vec[0]->end_step = end_step;
 		m_last_scan.scan_vec[0]->cc = cc;
 		decode_scan(m_last_scan.scan_vec[0]);
-
+		
 		return m_last_scan.scan_vec[0];
 	}
 }
