@@ -26,8 +26,9 @@ p3_gateway::~p3_gateway()
 //---------------------------------------------------------------------------
 bool p3_gateway::open(std::string inifile)
 {
-  iniWrapper ini;
-  if ( ini.Load(inifile.c_str()) ) 
+	printf("Gateway_open\n");
+	//iniWrapper ini;
+ // if ( ini.Load(inifile.c_str()) ) 
   if ( ini_.Load(inifile.c_str()) ) 
   {
     bool is_p3dx = true;
@@ -47,9 +48,16 @@ bool p3_gateway::open(std::string inifile)
     if(ini_.GetInt("config:serialmode", 1))
     {
       printf("Opening serial connection\n");
-      char* port = ini.GetStringAsChar("config:comport","COM5");
+      char* port = ini_.GetStringAsChar("config:comport","COM5");
       return (impl->serial_connect(port));
     }
+	else {
+	 printf("Opening TCP connection\n");
+	 int port = ini_.GetInt("config:tcpport",8101);
+	 char* hostname = ini_.GetStringAsChar("config:tcphostname","localhost");
+	 printf("Server port read : %d | Server host read : %s\n", port, hostname);
+	 return (impl->tcp_connect(hostname,port));
+	}
   }
   return false;
 }
