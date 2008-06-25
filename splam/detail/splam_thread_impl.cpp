@@ -13,6 +13,8 @@
 #include "pmap_wrap.h"
 
 // Aggiunte di Francesco
+#include "alcor/core/slam_logger_t.h"
+
 
 //-----------------------------------------------------------------------------------------------
 using namespace all::core;
@@ -57,7 +59,8 @@ private:	// hokuyo urg laser
 	bool				laser_present_;
 
 	// Aggiunte Francesco
-	//boost::mutex		scan_data_mute;x // mutex boost style
+	slam_data_log_t loggedData_;
+	slam_logger_t *slamLogger_;
 
 public:		// Pioneer Robot (p3dx or p3at)
 	p3_client_ptr_t		robot_;
@@ -144,6 +147,15 @@ splam_thread_impl::splam_thread_impl( const char* name)
 
 	server_address_.hostname = "127.0.0.1";
 	server_address_.port = ini_.GetInt("server:port",12321); 
+
+	loggedData_.laserData.reset(new all::sense::urg_scan_data_t());
+	loggedData_.laserData->scan_points.resize(lenghtmask);
+
+	std::cout << "-------------------------------------------" << std::endl;
+	std::cout << "Scan vector size set to : " << lenghtmask << std::endl;
+	std::cout << "-------------------------------------------" << std::endl;
+
+	slamLogger_ = new slam_logger_t("slam.bin", true,true,false,lenghtmask);
 }
 
 splam_thread_impl::~splam_thread_impl()
@@ -152,6 +164,7 @@ splam_thread_impl::~splam_thread_impl()
 		stop_server();
 	this->stopRunning();
 	this->join();
+	delete(slamLogger_);
 }
 
 void	splam_thread_impl::map_cb(ArServerClient* client, ArNetPacket* clientPack)
@@ -179,7 +192,7 @@ void	splam_thread_impl::start_server()
 	std::cout << "Starting server on port " << server_address_.port << std::endl;
 	std::cout << "-------------------------------------------" << std::endl;
 
-	if (!server_.open(server_address_.port))
+	if (!server_.open(server_address_.port,server_address_.hostname.c_str()))
 		throw std::runtime_error("Error in SlamServer::start_server");
 
 	std::cout << "-------------------------------------------" << std::endl;
@@ -328,6 +341,7 @@ void*	splam_thread_impl::runThread(void* arg)
 			acquire_laser_scan();
 		else
 			emulate_laser_scan();
+		std::cout << "fill_scan_data" << std::endl;
 		fill_scan_data();
 
 		// odometry acquisition
@@ -369,6 +383,15 @@ void*	splam_thread_impl::runThread(void* arg)
 		// processor yielding and heartbeat
 		ArUtil::sleep(100);
 		cout << "splam_thread_impl IS RUNNING....................................." << endl;
+
+	std::cout << "-------------------------------------------" << std::endl;
+	std::cout << "Logging section";
+	std::cout << "-------------------------------------------" << std::endl;
+	
+	loggedData_.laserData->scan_points = current_scan_.ranges_;
+	loggedData_.odo = robot_->get_odometry();
+
+	slamLogger_->add_data_(loggedData_);
 
 		step++;
 	}
