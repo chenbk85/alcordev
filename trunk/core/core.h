@@ -307,7 +307,7 @@ inline void BOOST_SLEEP(unsigned int _millisecs_)
    boost::thread::sleep(xt);
 }
 //-------------------------------------------------------------------------++
-void do_sleep(int ms) {
+inline void do_sleep(int ms) {
     using namespace boost;
     boost::xtime next;
     boost::xtime_get( &next, boost::TIME_UTC);
