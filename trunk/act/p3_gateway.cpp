@@ -2,6 +2,7 @@
 #include "p3_gateway.h"
 #include "detail/p3_gateway_impl.cpp"
 #include "alcor/core/iniWrapper.h"
+
 //---------------------------------------------------------------------------
 namespace all{namespace act{
 //---------------------------------------------------------------------------
