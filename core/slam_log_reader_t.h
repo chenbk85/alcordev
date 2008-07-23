@@ -15,7 +15,8 @@ class slam_log_reader_t{
 public :
 	slam_log_reader_t(const slam_data_log_t& data, const std::string& fname = "general_data_log.bin"): //ctor
 	   logFileName_(fname),
-	   loggedData_(data)
+	   loggedData_(data),
+	   numSamplesRead_(0)
 	{
 		chunkSize_ = sizeof(loggedData_); // Save the chunk size as slam_data_log_t struct size
 		headerSize_ = sizeof(numSamples_) + 
@@ -58,16 +59,18 @@ public :
 			4) inertial datas
 		*/
 		logFile_.read((char *) &loggedData_.timestamp, sizeof(loggedData_.timestamp)); // Timestamp of the sample read
-		std::cout << "Timestamp sample : " << loggedData_.timestamp << std::endl;
+		//std::cout << "Timestamp sample : " << loggedData_.timestamp << std::endl;
 		logFile_.read((char *) &loggedData_.laserData->scan_points[0], sizeof(sense::urg_scan_data_t::value_type)*numLaserScans_); // Scan points of the sample read
+		/*
 		for(int i=0;i<numLaserScans_ ;i++){
 			std::cout << "Scan points sample : " << loggedData_.laserData->scan_points[i] << std::endl;
 		}
+		*/
 		logFile_.read((char *) &loggedData_.odo, sizeof(loggedData_.odo)); // Odometry of the sample read
-		std::cout << "Odometry sample : " << loggedData_.odo << std::endl;
+		//std::cout << "Odometry sample : " << loggedData_.odo << std::endl;
 		logFile_.read((char *) &loggedData_.inertialSensor, sizeof(loggedData_.inertialSensor)); // Inertial values of the sample read
-		std::cout << "Inertial sensor sample : " << loggedData_.inertialSensor << std::endl;
-
+		//std::cout << "Inertial sensor sample : " << loggedData_.inertialSensor << std::endl;
+		numSamplesRead_++;
 		return loggedData_;
 	}
 
@@ -94,6 +97,29 @@ public :
 		return numSamples_;
 	}
 
+	bool convert2text(){
+		std::string outputFileName_;
+		outputFileName_ = logFileName_.replace(logFileName_.end()-4,logFileName_.end(),".txt");
+		std::fstream fname_text;
+		std::cout << "apro il file" << std::endl;
+		std::cout << "numero campioni letti:" << numSamplesRead_ << " - numero campioni totali : " << numSamples_ << std::endl;
+		fname_text.open(outputFileName_.c_str(),std::ios::out);
+		while(numSamplesRead_ < numSamples_){
+			loggedData_ = next_sample();
+			if(odoPresent_) fname_text << loggedData_.odo << std::endl;
+			if(laserPresent_){
+				for(int i=0;i<numLaserScans_ ;i++){
+					fname_text  << loggedData_.laserData->scan_points[i] << " ";
+				}
+			}
+			if(inertialPresent_) fname_text << loggedData_.inertialSensor << std::endl;
+			fname_text << std::endl;
+			std::cout << "*";
+		}
+		std::cout << std::endl;
+		return true;
+	}
+
 
 private:
 
@@ -101,6 +127,7 @@ private:
 	std::string logFileName_; // name of log file
 
 	size_t numSamples_; // Samples recorded into log file
+	size_t numSamplesRead_; // number of samples read
 	size_t headerSize_; // Size of the header
 	size_t chunkSize_; // Chunk size
 

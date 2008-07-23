@@ -14,7 +14,7 @@ struct slam_data_log_t{
 	math::pose2d odo; // pose2d is composed by x,y and th
 
 	// inertial sensor
-	math::rpy_angle_t inertialSensor;
+	math::rpy_angle_t inertialSensor; // roll, pitch, yaw
 
 	double timestamp;
 
