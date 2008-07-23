@@ -38,6 +38,8 @@ namespace all { namespace act{
     ///
     void set_vel(double mmpersecs);
     ///
+	void set_rot_vel(double mmpersecs);
+	///
     void set_dheading(double offset);
 
     ///
