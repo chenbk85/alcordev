@@ -1,3 +1,4 @@
+#define WIN32_LEAN_AND_MEAN
 #include "in_stream_manager_t.hpp"
 
 namespace all {

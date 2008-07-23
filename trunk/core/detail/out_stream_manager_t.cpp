@@ -1,3 +1,4 @@
+#define WIN32_LEAN_AND_MEAN
 #include "out_stream_manager_t.hpp"
 
 namespace all {
