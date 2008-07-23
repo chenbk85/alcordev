@@ -21,10 +21,11 @@ p3_ = p3ptr;
 //-------------------------------------------------------------------
 void p3_server_t::register_()
 {
-	add_command_handler("getData",  boost::bind(&p3_server_t::send_p3_data, this, _1, _2));
+  add_command_handler("getData",  boost::bind(&p3_server_t::send_p3_data, this, _1, _2));
   add_command_handler("setSlamPose",  boost::bind(&p3_server_t::set_slam_localized, this, _1, _2));
 
   add_command_handler("setVel",       boost::bind(&p3_server_t::set_vel, this, _1, _2));
+  add_command_handler("setRotVel",    boost::bind(&p3_server_t::set_rot_vel, this, _1, _2));
   add_command_handler("setDHeading",   boost::bind(&p3_server_t::set_dheading, this, _1, _2));
 
 
@@ -52,6 +53,14 @@ void p3_server_t::set_vel(client_connection_ptr_t, net_packet_ptr_t pkt)
   double vel = pkt->buf_to_double();
   p3_->set_vel(vel);
   //printf("setVel: %f", vel);
+}
+//-------------------------------------------------------------------
+///
+void p3_server_t::set_rot_vel(client_connection_ptr_t, net_packet_ptr_t pkt)
+{
+  double vel = pkt->buf_to_double();
+  p3_->set_rot_vel(vel);
+  //printf("setRotVel: %f", vel);
 }
 //-------------------------------------------------------------------
 ///
