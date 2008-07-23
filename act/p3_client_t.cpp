@@ -57,6 +57,14 @@ void p3_client_t::set_vel(double mmpersecs)
   send_command("setVel", packet);
 }
 //-------------------------------------------------------------------
+///
+void p3_client_t::set_rot_vel(double mmpersecs)
+{
+  core::net_packet_ptr_t packet(new core::net_packet_t());
+  packet->double_to_buf(mmpersecs);
+  send_command("setRotVel", packet);
+}
+//-------------------------------------------------------------------
 //
 void p3_client_t::set_dheading(double offset)
 {
