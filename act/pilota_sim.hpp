@@ -1,5 +1,8 @@
+#define WIN32_LEAN_AND_MEAN
+
 #ifndef pilota_sim_HPP_INCLUDED
 #define pilota_sim_HPP_INCLUDED
+
 //-----------------------------------------------
 #include "alcor/act/p3_gateway.h"
 #include "alcor/act/p3_server_t.h"
@@ -22,7 +25,6 @@
 //-----------------------------------------------
 #endif
 //-----------------------------------------------
-#endif
 //-----------------------------------------------
 #include <boost/lexical_cast.hpp>
 //-----------------------------------------------
@@ -39,6 +41,8 @@ public:
 
 	void wandering();
 	void stop();
+	void set_vel(double);
+	void set_rot_vel(double);
 
 
 private:
@@ -74,3 +78,13 @@ inline void pilota_sim::wandering(){
 inline void pilota_sim::stop(){
 	p3->enable_stop_mode();
 }
+
+inline void pilota_sim::set_rot_vel(double vel){
+	p3->set_rot_vel(vel);
+}
+
+inline void pilota_sim::set_vel(double vel){
+	p3->set_vel(vel);
+}
+
+#endif // endif pilota_sim
