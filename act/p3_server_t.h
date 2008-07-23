@@ -27,6 +27,8 @@ private:
   ///
   void set_vel(client_connection_ptr_t, net_packet_ptr_t);
   ///
+  void set_rot_vel(client_connection_ptr_t, net_packet_ptr_t);
+  ///
   void set_dheading(client_connection_ptr_t, net_packet_ptr_t);
 
   ///
