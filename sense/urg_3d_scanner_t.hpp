@@ -1,7 +1,7 @@
 #ifndef urg_3d_scanner_H_INCLUDED
 #define urg_3d_scanner_H_INCLUDED
 
-#include <alcor.extern/cgal/config.h>
+#include <cgal/config.h>
 
 #include <alcor/sense/urg_laser_t.hpp>
 #include <alcor/act/pololu_ctrl_client_t.hpp>
@@ -9,7 +9,7 @@
 #include <alcor/math/angle.h>
 #include <alcor/core/core.h>
 #include <boost/shared_array.hpp>
-#include <alcor.extern/cgal/basic.h>
+#include <CGAL/basic.h>
 
 
 #include "urg_pcd_t.hpp"

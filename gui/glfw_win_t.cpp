@@ -14,7 +14,7 @@ namespace all {
 
 	_cam_x = 0;
 	_cam_y = 0;
-	_cam_z = 100;
+	_cam_z = 1000;
 
 	_curr_wheel = 0;
 
@@ -73,11 +73,13 @@ void glfw_win_t::_set_view() {
 	// Setup projection matrix
 	glMatrixMode( GL_PROJECTION );
 	glLoadIdentity();
+
+	//glOrtho(-3000, 3000, -3000, 3000, 0, 10000);
 	gluPerspective(
 		90.0f,                            // Angle of view
 		(GLfloat)_screen_width/(GLfloat)_screen_height,   // Aspect
 		1,                             // Near Z
-		1000                            // Far Z
+		10000                            // Far Z
 	);
 
 	glMatrixMode( GL_MODELVIEW );
