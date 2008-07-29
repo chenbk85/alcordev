@@ -1,3 +1,5 @@
+#define WIN32_LEAN_AND_MEAN
+
 #include "urg_3d_scanner_t.hpp"
 
 
@@ -32,13 +34,14 @@ void urg_3d_scanner_t::reset(all::math::angle h_start_angle, all::math::angle h_
 
 	m_scan->cartesian_buffer.reset(new all::core::single_t[m_scan->ncols * m_scan->nrows * 3]);
 	m_scan->polar_buffer.reset(new all::core::int16_t[m_scan->ncols * m_scan->nrows]);
+	//m_scan->cartesian_buffer.reset(new urg_pcd_t::Point_3*[m_scan->ncols * m_scan->nrows]);
 
 	m_scan->th_index.reset(new all::core::single_t[m_scan->ncols]);
 	m_scan->ph_index.reset(new all::core::single_t[m_scan->nrows]);
 
-	//m_scan->x_buffer_ptr = m_scan->cartesian_buffer.get();
-	//m_scan->y_buffer_ptr = m_scan->x_buffer_ptr + (m_scan->nrows * m_scan->ncols);
-	//m_scan->z_buffer_ptr = m_scan->y_buffer_ptr + (m_scan->nrows * m_scan->ncols);
+	m_scan->x_buffer_ptr = m_scan->cartesian_buffer.get();
+	m_scan->y_buffer_ptr = m_scan->x_buffer_ptr + (m_scan->nrows * m_scan->ncols);
+	m_scan->z_buffer_ptr = m_scan->y_buffer_ptr + (m_scan->nrows * m_scan->ncols);
 
 	
 	//temp vector for trigonometric computation
@@ -55,13 +58,16 @@ void urg_3d_scanner_t::reset(all::math::angle h_start_angle, all::math::angle h_
 	}
 
 	//init phi index
-	double ph = m_v_start_angle.deg();
-	double delta_ph = (m_v_end_angle.deg() - m_v_start_angle.deg()) / (double)m_scan->nrows;
+	//double ph = m_v_start_angle.deg();
+	//double delta_ph = (m_v_end_angle.deg() - m_v_start_angle.deg()) / (double)m_scan->nrows;
 	
+	all::math::angle ph = m_v_start_angle;
+	all::math::angle delta_ph = (m_v_end_angle - m_v_start_angle) / (m_scan->nrows);
+
 	for (int i = 0; i < m_scan->nrows; i++) {
 		
-		m_scan->ph_index[i] = ph;
-		ph_rad_index[i] = all::core::constants<double>::deg_to_rad (ph);
+		m_scan->ph_index[i] = ph.deg();
+		ph_rad_index[i] = ph.rad();
 
 		printf("rad phi: %f ", ph_rad_index[i]);
 		
@@ -85,7 +91,7 @@ urg_pcd_ptr urg_3d_scanner_t::do_scan() {
 
 urg_pcd_ptr urg_3d_scanner_t::do_linear_scan() {
 
-	m_pololu->set_speed(m_laser_servo, 40);
+	m_pololu->set_speed(m_laser_servo, 20);
 	m_pololu->set_pose(m_laser_servo, m_v_start_angle.deg());
 
 	Sleep(1000);
@@ -112,6 +118,9 @@ urg_pcd_ptr urg_3d_scanner_t::do_linear_scan() {
 	
 	int buf_index = 0;
 	double ph;
+	double th;
+
+	all::core::single_t x,y,z;
 
 	m_scan->m_point_cloud.clear();
 
@@ -120,25 +129,25 @@ urg_pcd_ptr urg_3d_scanner_t::do_linear_scan() {
 		ph = ph_rad_index[i];
 		
 		for (int j=0; j < m_scan->ncols; j++) {
+
+			th = th_rad_index[j];
+
 			m_scan->polar_buffer[buf_index] = scan.scan_vec[i]->scan_points[j];
-			
-			////planar buffer
-			//get_cartesian(m_scan->polar_buffer[buf_index], th_rad_index[j], ph, 
-			//			  m_scan->x_buffer_ptr[buf_index], m_scan->y_buffer_ptr[buf_index],
-			//			  m_scan->z_buffer_ptr[buf_index]);
 
 			
-			//interleaved buffer
-			if (get_cartesian(m_scan->polar_buffer[buf_index], th_rad_index[j], ph, 
-							 m_scan->cartesian_buffer[buf_index * 3], m_scan->cartesian_buffer[buf_index * 3 + 1],
-							 m_scan->cartesian_buffer[buf_index * 3 + 2]))
-
+			//planar buffer
+			if (get_cartesian(m_scan->polar_buffer[buf_index], th, ph, x, y, z)) {
 				//cgal point vector
-				m_scan->m_point_cloud.push_back(urg_pcd_t::Point_3(m_scan->cartesian_buffer[buf_index * 3], m_scan->cartesian_buffer[buf_index * 3 +1],
-														 m_scan->cartesian_buffer[buf_index * 3 +2]));
+				m_scan->m_point_cloud.push_back(urg_pcd_t::Point_3(x, y, z));
 
 
-			//ph += delta_ph;
+				//m_scan->cartesian_buffer[buf_index] = &(*(m_scan->m_point_cloud.end()-1));
+			}
+			
+			m_scan->x_buffer_ptr[buf_index] = x;
+			m_scan->y_buffer_ptr[buf_index] = y;
+			m_scan->z_buffer_ptr[buf_index] = z;
+
 			buf_index++;
 
 		}
@@ -151,15 +160,52 @@ urg_pcd_ptr urg_3d_scanner_t::do_linear_scan() {
 
 
 urg_pcd_ptr urg_3d_scanner_t::do_step_scan() {
+	
+	m_pololu->set_speed(m_laser_servo, 40);
+	m_pololu->set_pose(m_laser_servo, m_v_start_angle.deg());
+
+	Sleep(1000);
+
+	all::sense::urg_scan_data_ptr scan;
+
+	m_scan->m_point_cloud.clear();
+
+	int buf_index = 0;
+
+	all::core::single_t x,y,z;
+
+	for (int i=0; i < m_scan->nrows; i++) {
+
+		m_pololu->set_pose(m_laser_servo, m_scan->ph_index[i]);
+
+		Sleep(100);
+		
+		scan = m_urg->do_scan(m_h_start_angle, m_h_end_angle, 1);
+
+		for (int j=0; j < m_scan->ncols; j++) {
+			
+			m_scan->polar_buffer[buf_index] = scan->scan_points[j];
+
+			if (get_cartesian(m_scan->polar_buffer[buf_index], th_rad_index[j], ph_rad_index[i], x, y, z))
+				//cgal point vector
+				m_scan->m_point_cloud.push_back(urg_pcd_t::Point_3(x, y, z));
+
+			buf_index++;
+		}
+
+		Sleep(300);
+	}
+
 	return m_scan;
 }
 
+
 bool urg_3d_scanner_t::get_cartesian(double rho, double theta, double phi, all::core::single_t& x, all::core::single_t& y, all::core::single_t& z) {
 	if (rho > 19) {
-		rho = rho / 1000.0f;
-		z = rho * sin(3.14/2-phi) * cos(theta);
-		x = rho * sin(3.14/2-phi) * sin(theta);
-		y = rho * cos(3.14/2-phi);
+		//rho = rho / 1000.0f;
+		z = rho * cos(phi) * cos(theta);
+		x = rho * sin(theta);
+		y = rho * sin(phi) * cos(theta);
 		return true;
 	}
 	else {
