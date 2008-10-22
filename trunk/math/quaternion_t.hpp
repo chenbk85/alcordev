@@ -134,9 +134,9 @@ namespace all { namespace math {
     T dot(const quaternion_t<T>& rhs) const;
     ///operator
     quaternion_t<T> operator*(const quaternion_t<T>& rhs) const ;
-    ///
-    ublas::bounded_vector<T, quaternion_t<T>::AXSIZE >  
-      operator* (const ublas::bounded_vector<T, quaternion_t<T>::AXSIZE>& v) const;
+    /////
+    //ublas::bounded_vector<T, quaternion_t<T>::AXSIZE >  
+    //  operator* (const ublas::bounded_vector<T, quaternion_t<T>::AXSIZE>& v) const;
 
   public: //ACCESSORS
     ///W

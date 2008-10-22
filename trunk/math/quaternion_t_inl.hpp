@@ -148,21 +148,22 @@ namespace all { namespace math {
     return tmp;
   }
 //---------------------------------------------------------
-  template <typename T>
-  ublas::bounded_vector<T, quaternion_t<T>::AXSIZE>  quaternion_t<T>::operator*(const ublas::bounded_vector<T, quaternion_t<T>::AXSIZE>& v) const
-  {
-  //  // nVidia SDK implementation
+  //template <typename T>
+  //ublas::bounded_vector<T, quaternion_t<T>::AXSIZE>  
+	 // quaternion_t<T>::operator*(const ublas::bounded_vector<T, quaternion_t<T>::AXSIZE>& v) const
+  //{
+  ////  // nVidia SDK implementation
 
-    ublas::bounded_vector<T, quaternion_t<T>::AXSIZE > uv;
-    ublas::bounded_vector<T, quaternion_t<T>::AXSIZE > uuv;
+  //  ublas::bounded_vector<T, quaternion_t<T>::AXSIZE > uv;
+  //  ublas::bounded_vector<T, quaternion_t<T>::AXSIZE > uuv;
 
-    uv  = cross_product<T>(axis_,  v);
-    uuv = cross_product<T>(axis_, uv);
-    uv *= (2.0 * quat_(eW));
-    uuv *= 2.0;
+  //  uv  = cross_product<T>(axis_,  v);
+  //  uuv = cross_product<T>(axis_, uv);
+  //  uv *= (2.0 * quat_(eW));
+  //  uuv *= 2.0;
 
-    return v + uv + uuv;
-  }
+  //  return v + uv + uuv;
+  //}
 //---------------------------------------------------------
   template <typename T>
   T quaternion_t<T>::norm() const
