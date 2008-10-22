@@ -3,19 +3,9 @@
 ///////////////////////////////////////////////////////////////////
 #include <boost/shared_ptr.hpp>
 ///////////////////////////////////////////////////////////////////
-#include "alcor/core/core.h"
 #include "alcor/math/rpy_angle_t.h"
 ///////////////////////////////////////////////////////////////////
-//#pragma comment (lib, "MTi_driver_t.lib")
-///////////////////////////////////////////////////////////////////
 namespace all { namespace  sense{
-class mti_data_t
-{
-public:
-
-private:
-
-};
   ///////////////////////////////////////////////////////////////////
 namespace detail
 {
@@ -43,6 +33,7 @@ namespace tags
     MTi_driver_t();
     ///
     ~MTi_driver_t();
+
     ///
     bool open(std::string configfile);
 
@@ -55,9 +46,23 @@ namespace tags
     //
     void reset(tags::align_reset_t);
 
+	///
+	bool req_data();
+
     ///
     all::math::rpy_angle_t  
         get_euler();
+
+	///3 floats
+    void  get_acc(float data_[]);
+
+	///9 floats 
+	// get GS
+	//[a b c d e f g h i]
+	//GS [a d g; b e h; c f i] //MTi(S) to global(G)
+	//SG [a b c;d e f; g h i]  //global(G) to MTi(S)
+	void get_dcm(float dcm_[]);
+
 
   private:
     boost::shared_ptr<detail::MTi_driver_impl> impl;

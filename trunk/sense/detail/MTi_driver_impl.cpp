@@ -9,12 +9,12 @@ struct MTi_driver_impl
   ///
   MTi_driver_impl(){};
   ///
-	unsigned char data[MAXMSGLEN];
+  unsigned char data[MAXMSGLEN];
   ///
-	short datalen;
+  short datalen;
 
   ///
-	float fdata[18];
+  float fdata[18];
 
   ///[roll pitch yaw] (xyz)degrees
   float rpy[3];
