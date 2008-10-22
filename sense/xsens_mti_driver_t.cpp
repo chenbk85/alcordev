@@ -1,9 +1,11 @@
 #include "alcor/core/core.h"
-#include "alcor/core/config_parser_t.hpp"
 #include "detail/MTi_driver_impl.cpp"
 ///////////////////////////////////////////////////////////////////
 #include "alcor/sense/xsens_mti_driver_t.h"
 #include <boost/bind.hpp>
+//boost includes
+#include <boost/program_options.hpp>
+#include <fstream>
 ///////////////////////////////////////////////////////////////////
 namespace all { namespace sense {
 ///////////////////////////////////////////////////////////////////
@@ -27,11 +29,25 @@ xsens_mti_driver_t::~xsens_mti_driver_t()
 //-----------------------------------------------------------------
 bool xsens_mti_driver_t::open(std::string& configfile)
 {
-  //
-  core::config_parser_t mticonfig;
-  mticonfig.load(core::tags::ini,configfile);
-  //
-  int port = mticonfig.get("config.comport",11);
+	//-------------------------------------------------------
+	// Importing settings from the ini
+	namespace po = boost::program_options;
+	po::variables_map vm;
+	po::options_description desc("Allowed options");
+	//
+	desc.add_options()
+	//physical sensor
+	("config.comport", po::value<int>() )
+	;
+
+	std::ifstream fis(configfile.c_str(), std::ifstream::in);
+
+	po::store(po::parse_config_file(fis, desc, true), vm);
+	po::notify(vm);
+
+				///		
+	int port = vm["config.comport"].as<int>();
+
   //
   printf("Search MTi on port: %d\n", port);
   //
@@ -56,7 +72,7 @@ bool xsens_mti_driver_t::open(std::string& configfile)
 	// OUTPUTSETTINGS_ORIENTMODE_MATRIX;
   impl->output_settings = OUTPUTSETTINGS_ORIENTMODE_MATRIX|OUTPUTSETTINGS_TIMESTAMP_SAMPLECNT;
 
-  // Set output mode and output settings for each attached MTi/MTx
+  // Set output mode and output settings for each attached MTi/MTx  - BID_MT
   if (impl->mtcomm.setDeviceMode( impl->output_mode
                                 , impl->output_settings
                                 , impl->SENSOR_BID) != MTRV_OK) 
@@ -66,8 +82,8 @@ bool xsens_mti_driver_t::open(std::string& configfile)
 	}
   
   // Put MTi/MTx in Measurement State
-	impl->mtcomm.writeMessage(MID_GOTOMEASUREMENT);
-  impl->mtcomm.flush();
+  impl->mtcomm.writeMessage(MID_GOTOMEASUREMENT);
+  //impl->mtcomm.flush();
 
   core::SLEEP_MSECS(10);
   return true;
